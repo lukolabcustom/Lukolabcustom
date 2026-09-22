@@ -1,0 +1,6 @@
+{
+  "version": 2.1,
+  "dependencies": {
+    "stripe": "^18.5.0"
+  }
+}
