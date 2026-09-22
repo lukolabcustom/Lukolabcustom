@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Luko Lab Custom</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#07120d;color:#f4f0df;font-family:Arial,sans-serif}header{position:sticky;top:0;z-index:5;background:#07120df2;padding:18px 5%;display:flex;justify-content:space-between;border-bottom:1px solid #ffffff14}.logo{font-weight:900;letter-spacing:2px}nav{display:flex;gap:22px;font-size:13px}.hero{min-height:70vh;padding:90px 7%;display:flex;align-items:center;background:radial-gradient(circle at 70% 20%,#21452b,#10271a 35%,#07120d 72%)}.kicker{text-transform:uppercase;letter-spacing:4px;font-size:12px;opacity:.7}h1{font-size:clamp(50px,10vw,110px);line-height:.9;margin:20px 0}.hero p{max-width:600px;font-size:18px;line-height:1.6;color:#c8c9b8}.shop,.lab{padding:70px 5%}.shop{background:#09150f}.shop-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap}h2{font-size:40px;margin:0 0 10px}.filters{display:flex;gap:8px;flex-wrap:wrap}.filter{border:1px solid #506152;background:transparent;color:#eee;padding:10px 15px;border-radius:999px}.filter.active{background:#e8e1c7;color:#102016}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-top:35px}.card{background:#101d15;border:1px solid #ffffff12;border-radius:18px;overflow:hidden}.photo{aspect-ratio:1;background:linear-gradient(145deg,#1d3524,#0b160f);display:flex;align-items:center;justify-content:center;color:#839080;font-size:12px;letter-spacing:2px}.info{padding:18px}.info h3{margin:0 0 8px}.price{color:#ddd5b9;margin-bottom:15px}.btn,.checkout{width:100%;padding:12px;border:0;border-radius:10px;background:#e8e1c7;color:#101810;font-weight:700}.lab{background:#0c1911}.lab p{max-width:720px;line-height:1.7;color:#c8c9b8}.cart{position:fixed;right:18px;bottom:18px;z-index:20;background:#e8e1c7;color:#101810;border:0;border-radius:999px;padding:15px 20px;font-weight:800}.drawer{position:fixed;right:0;top:0;height:100%;width:min(390px,92vw);background:#0d1911;z-index:30;transform:translateX(105%);transition:.25s;padding:25px;border-left:1px solid #324536;overflow:auto}.drawer.open{transform:translateX(0)}.drawer-top{display:flex;justify-content:space-between}.close{background:none;border:0;color:white;font-size:28px}.item{padding:15px 0;border-bottom:1px solid #26372b}.qty{display:flex;gap:10px;align-items:center;margin-top:8px}.qty button{background:none;color:white;border:1px solid #506152;padding:4px 9px;border-radius:6px}.total{font-size:22px;font-weight:800;margin:25px 0}footer{padding:35px 5%;color:#899286;font-size:13px}
+</style>
+</head>
+<body>
+<header><div class="logo">LUKO LAB CUSTOM</div><nav><a href="#shop">SHOP</a><a href="#lab">IL LAB</a></nav></header>
+<section class="hero"><div><div class="kicker">Handmade • Tropical Lab</div><h1>WEAR THE<br>JUNGLE.</h1><p>Cappelli e abbigliamento handmade. Pezzi creati a mano, uno alla volta, per portare un po' di foresta nel tuo mondo.</p></div></section>
+<section class="shop" id="shop"><div class="shop-head"><div><div class="kicker">Luko Lab Shop</div><h2>Trova il tuo pezzo.</h2></div><div class="filters"><button class="filter active" data-cat="Tutti">TUTTI</button><button class="filter" data-cat="Cappelli">CAPPELLI</button><button class="filter" data-cat="Abbigliamento">ABBIGLIAMENTO</button></div></div><div class="grid" id="grid"></div></section>
+<section class="lab" id="lab"><div class="kicker">Il Lab</div><h2>Fatto a mano.</h2><p>Luko Lab Custom nasce dalla voglia di trasformare materiali e idee in pezzi unici. Il catalogo crescerà nel tempo con nuove creazioni.</p></section>
+<footer>© Luko Lab Custom</footer>
+<button class="cart" onclick="openCart()">CARRELLO (<span id="count">0</span>)</button>
+<aside class="drawer" id="drawer"><div class="drawer-top"><h2>Carrello</h2><button class="close" onclick="closeCart()">×</button></div><div id="cartItems"></div><div class="total">Totale: €<span id="total">0.00</span></div><button class="checkout" id="checkoutBtn" onclick="checkout()">PAGA CON CARTA</button></aside>
+<script>
+const products=Array.from({length:14},(_,i)=>({id:`cap-${String(i+1).padStart(2,"0")}`,name:`Cappello Luko Lab ${String(i+1).padStart(2,"0")}`,cat:"Cappelli",price:35}));
+let cart=JSON.parse(localStorage.getItem("lukoCart")||"{}");
+function render(cat="Tutti"){grid.innerHTML="";products.filter(p=>cat==="Tutti"||p.cat===cat).forEach(p=>{grid.innerHTML+=`<article class="card"><div class="photo">FOTO PRODOTTO</div><div class="info"><h3>${p.name}</h3><div class="price">€${p.price.toFixed(2)}</div><button class="btn" onclick="add('${p.id}')">AGGIUNGI AL CARRELLO</button></div></article>`})}
+function add(id){cart[id]=(cart[id]||0)+1;save();openCart()}
+function save(){localStorage.setItem("lukoCart",JSON.stringify(cart));updateCart()}
+function updateCart(){let c=0,t=0,h="";Object.entries(cart).forEach(([id,q])=>{let p=products.find(x=>x.id===id);if(!p)return;c+=q;t+=p.price*q;h+=`<div class="item"><strong>${p.name}</strong><div>€${p.price.toFixed(2)} × ${q}</div><div class="qty"><button onclick="change('${id}',-1)">−</button>${q}<button onclick="change('${id}',1)">+</button></div></div>`});count.textContent=c;total.textContent=t.toFixed(2);cartItems.innerHTML=h||"<p>Il carrello è vuoto.</p>"}
+function change(id,n){cart[id]=(cart[id]||0)+n;if(cart[id]<=0)delete cart[id];save()}
+function openCart(){drawer.classList.add("open");updateCart()}
+function closeCart(){drawer.classList.remove("open")}
+async function checkout(){
+  if(!Object.keys(cart).length){alert("Il carrello è vuoto.");return}
+  const btn=document.getElementById("checkoutBtn");
+  btn.disabled=true;btn.textContent="APERTURA PAGAMENTO…";
+  try{
+    const items=Object.entries(cart).map(([id,quantity])=>({id,quantity}));
+    const response=await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data.url)throw new Error(data.error||"Errore");
+    location.href=data.url;
+  }catch(e){
+    console.error(e);
+    alert("Non è stato possibile aprire il pagamento. Riprova tra poco.");
+    btn.disabled=false;btn.textContent="PAGA CON CARTA";
+  }
+}
+document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");render(b.dataset.cat)});
+render();updateCart();
+</script>
+</body>
+</html>
