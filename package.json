@@ -1,6 +1,7 @@
 {
-  "version": 2.1,
+  "version": 2.2,
   "dependencies": {
-    "stripe": "^18.5.0"
+    "stripe": "^18.5.0",
+    "@vercel/blob": "^2.4.0"
   }
 }
