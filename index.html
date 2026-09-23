@@ -4,767 +4,752 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Luko Lab Custom</title>
-
 <style>
-*{box-sizing:border-box}
-
+*{
+  box-sizing:border-box;
+}
+html{
+  scroll-behavior:smooth;
+}
 body{
-margin:0;
-background:#06100b;
-color:#eee9dc;
-font-family:Arial,Helvetica,sans-serif
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#071b12;
+  color:#fff;
 }
-
 header{
-position:sticky;
-top:0;
-z-index:20;
-background:rgba(6,16,11,.94);
-border-bottom:1px solid rgba(238,233,220,.08)
+  min-height:430px;
+  padding:70px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(50,180,90,.35),transparent 30%),
+    radial-gradient(circle at 80% 30%,rgba(0,130,80,.35),transparent 30%),
+    linear-gradient(135deg,#092b19,#03150d);
+  position:relative;
+  overflow:hidden;
 }
-
-.nav{
-max-width:1200px;
-margin:auto;
-padding:18px 22px;
-display:flex;
-justify-content:space-between;
-align-items:center
+header:before,
+header:after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  opacity:.15;
 }
-
-.logo{
-font-weight:900;
-letter-spacing:3px
+header:before{
+  width:500px;
+  height:500px;
+  background:#3aff86;
+  left:-220px;
+  top:-250px;
 }
-
-.nav a{
-color:#eee9dc;
-text-decoration:none;
-margin-left:20px
+header:after{
+  width:600px;
+  height:600px;
+  background:#0a8f58;
+  right:-300px;
+  bottom:-350px;
 }
-
 .hero{
-min-height:72vh;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-padding:80px 20px;
-background:
-radial-gradient(circle at 50% 35%,rgba(48,91,56,.5),transparent 38%),
-linear-gradient(#07140c,#06100b)
+  position:relative;
+  z-index:2;
+  max-width:850px;
 }
-
-.hero h1{
-font-size:clamp(54px,12vw,130px);
-line-height:.88;
-margin:0;
-letter-spacing:-5px
+.logo{
+  font-size:clamp(42px,9vw,90px);
+  font-weight:900;
+  letter-spacing:-4px;
+  margin:0;
 }
-
-.hero p{
-max-width:560px;
-margin:28px auto;
-color:#aaa79e;
-font-size:18px;
-line-height:1.5
+.subtitle{
+  margin:18px 0 0;
+  font-size:clamp(16px,3vw,23px);
+  color:#b8d9c5;
 }
-
-.section{
-max-width:1200px;
-margin:auto;
-padding:70px 22px
+.hero-text{
+  margin:30px auto 0;
+  max-width:650px;
+  color:#dcebe2;
+  line-height:1.6;
 }
-
+nav{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(3,20,13,.94);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.nav-inner{
+  max-width:1200px;
+  margin:auto;
+  min-height:70px;
+  padding:12px 20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
 .filters{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin:25px 0 35px
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
 }
-
 .filters button{
-border:1px solid #344139;
-background:transparent;
-color:#eee9dc;
-border-radius:999px;
-padding:11px 18px
+  border:1px solid rgba(255,255,255,.2);
+  background:#102d1e;
+  color:#fff;
+  border-radius:999px;
+  padding:12px 20px;
+  font-weight:700;
+  cursor:pointer;
 }
-
-.filters .active{
-background:#eee9dc;
-color:#07100b
+.filters button.active,
+.filters button:hover{
+  background:#35d978;
+  color:#062012;
 }
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:18px
+main{
+  max-width:1200px;
+  margin:auto;
+  padding:70px 20px 120px;
 }
-
+.section-title{
+  text-align:center;
+  margin-bottom:40px;
+}
+.section-title h2{
+  margin:0 0 10px;
+  font-size:clamp(30px,6vw,52px);
+}
+.section-title p{
+  margin:0;
+  color:#a8c4b3;
+}
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:22px;
+}
 .card{
-border:1px solid rgba(238,233,220,.1);
-background:#0a160f;
-border-radius:18px;
-overflow:hidden
+  background:#10291c;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 18px 50px rgba(0,0,0,.25);
 }
-
 .photo{
-aspect-ratio:1;
-background:linear-gradient(135deg,#17271c,#0b1710);
-display:flex;
-align-items:center;
-justify-content:center;
-color:#777b72;
-font-size:13px
+  height:280px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:
+    radial-gradient(circle at 30% 30%,rgba(55,220,120,.3),transparent 35%),
+    linear-gradient(135deg,#173e27,#08170e);
+  color:#8fb8a0;
+  font-weight:800;
+  letter-spacing:1px;
 }
-
 .card-body{
-padding:18px
+  padding:20px;
 }
-
 .card h3{
-margin:0 0 8px
+  margin:0 0 12px;
+  font-size:19px;
 }
-
 .price{
-color:#bcb8ad;
-margin-bottom:16px
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:18px;
 }
-
-.card button,
-.checkout{
-width:100%;
-border:0;
-border-radius:10px;
-padding:13px;
-background:#eee9dc;
-color:#08100b;
-font-weight:800;
-cursor:pointer
+.card button{
+  width:100%;
+  border:0;
+  border-radius:13px;
+  padding:14px;
+  background:#35d978;
+  color:#062012;
+  font-weight:900;
+  cursor:pointer;
 }
-
-.card button:active,
-.checkout:active{
-transform:scale(.99)
+.card button:hover{
+  background:#55ee94;
 }
-
-.cart{
-position:fixed;
-right:18px;
-bottom:18px;
-z-index:30;
-width:min(430px,calc(100% - 36px));
-background:#0b1710;
-border:1px solid #364239;
-border-radius:22px;
-padding:22px;
-box-shadow:0 20px 70px #0008
+.empty{
+  grid-column:1/-1;
+  padding:50px;
+  text-align:center;
+  color:#9bb7a7;
 }
-
-.cart h2{
-margin-top:0
-}
-
-.cart-item{
-display:flex;
-justify-content:space-between;
-gap:12px;
-padding:10px 0;
-border-bottom:1px solid #eee1
-}
-
-.qty{
-display:flex;
-gap:8px;
-align-items:center
-}
-
-.qty button{
-width:30px;
-height:30px;
-background:transparent;
-color:#eee9dc;
-border:1px solid #344139;
-border-radius:8px
-}
-
-.total{
-font-size:24px;
-font-weight:800;
-margin:18px 0
-}
-
-.close{
-position:absolute;
-right:16px;
-top:12px;
-border:0;
-background:none;
-color:#aaa;
-font-size:28px
-}
-
 .cart-toggle{
-position:fixed;
-right:18px;
-bottom:18px;
-z-index:31;
-border:1px solid #364239;
-background:#eee9dc;
-color:#08100b;
-border-radius:999px;
-padding:14px 20px;
-font-weight:900
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:50;
+  border:0;
+  border-radius:999px;
+  padding:16px 22px;
+  background:#35d978;
+  color:#062012;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 12px 35px rgba(0,0,0,.4);
 }
-
 .hidden{
-display:none
+  display:none!important;
 }
-
+.cart{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:min(420px,calc(100vw - 36px));
+  max-height:80vh;
+  overflow:auto;
+  z-index:60;
+  background:#10291c;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+.cart-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+.cart-head h2{
+  margin:0;
+}
+.close{
+  border:0;
+  background:rgba(255,255,255,.1);
+  color:#fff;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:20px;
+}
+.cart-item{
+  padding:16px 0;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:center;
+}
+.cart-item strong{
+  display:inline-block;
+  margin-bottom:5px;
+}
+.qty{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.qty button{
+  width:32px;
+  height:32px;
+  border:0;
+  border-radius:8px;
+  background:#244d34;
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+}
+.total{
+  display:flex;
+  justify-content:space-between;
+  font-size:21px;
+  font-weight:900;
+  padding:20px 0;
+}
+.checkout{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:16px;
+  background:#35d978;
+  color:#062012;
+  font-weight:900;
+  font-size:16px;
+  cursor:pointer;
+}
+.checkout:disabled{
+  opacity:.6;
+  cursor:wait;
+}
+.secure{
+  text-align:center;
+  margin-top:12px;
+  font-size:12px;
+  color:#8fae9b;
+}
 footer{
-text-align:center;
-padding:70px 22px 130px;
-color:#777b72
+  padding:50px 20px;
+  text-align:center;
+  color:#759481;
+  border-top:1px solid rgba(255,255,255,.08);
 }
-
-.notice{
-text-align:center;
-color:#aaa;
-font-size:13px;
-margin-top:12px
+@media(max-width:600px){
+  header{
+    min-height:390px;
+    padding:50px 18px;
+  }
+  main{
+    padding-top:50px;
+  }
+  .products{
+    grid-template-columns:1fr;
+  }
+  .photo{
+    height:300px;
+  }
 }
 </style>
 </head>
-
 <body>
-
 <header>
-
-<div class="nav">
-
-<div class="logo">
-LUKO LAB CUSTOM
-</div>
-
-<nav>
-<a href="#shop">SHOP</a>
-<a href="#lab">IL LAB</a>
-</nav>
-
-</div>
-
+  <div class="hero">
+    <h1 class="logo">LUKO LAB</h1>
+    <div class="subtitle">CUSTOM · HANDMADE · JUNGLE SPIRIT</div>
+    <p class="hero-text">
+      Benvenuto nella giungla di Luko Lab Custom.
+      Esplora la collezione e porta con te un pezzo fatto a mano.
+    </p>
+  </div>
 </header>
-
-
-<section class="hero">
-
-<div>
-
-<h1>
-WEAR<br>
-THE JUNGLE
-</h1>
-
-<p>
-Handmade pieces created by Luko Lab Custom.
-Entra nel laboratorio e trova il tuo pezzo.
-</p>
-
-</div>
-
-</section>
-
-
-<section class="section" id="shop">
-
-<h2>SHOP</h2>
-
-<div class="filters">
-
-<button class="active" data-filter="all">
-TUTTI
-</button>
-
-<button data-filter="Cappelli">
-CAPPELLI
-</button>
-
-<button data-filter="Abbigliamento">
-ABBIGLIAMENTO
-</button>
-
-</div>
-
-
-<div class="grid" id="products"></div>
-
-</section>
-
-
-<section class="section" id="lab">
-
-<h2>IL LAB</h2>
-
-<p style="max-width:650px;color:#aaa;line-height:1.7">
-
-Luko Lab Custom è un laboratorio indipendente
-dedicato a pezzi handmade e personalizzati.
-
-</p>
-
-</section>
-
-
-<div id="cart" class="cart hidden">
-
-<button class="close" onclick="toggleCart()">
-×
-</button>
-
-<h2>
-Carrello
-</h2>
-
-<div id="cartItems"></div>
-
-<div class="total">
-Totale: €<span id="total">0.00</span>
-</div>
+<nav>
+  <div class="nav-inner">
+    <div class="filters">
+      <button class="active" data-filter="all">TUTTI</button>
+      <button data-filter="Cappelli">CAPPELLI</button>
+      <button data-filter="Abbigliamento">ABBIGLIAMENTO</button>
+    </div>
+  </div>
+</nav>
+<main>
+  <div class="section-title">
+    <h2>Esplora la collezione</h2>
+    <p>Creazioni handmade Luko Lab Custom</p>
+  </div>
+  <section class="products" id="products"></section>
+</main>
 
 <button
-id="checkoutBtn"
-class="checkout"
-onclick="checkout()">
+class=“cart-toggle”
+id=“cartToggle”
+type=“button”
+onclick=“toggleCart()”
+
+CARRELLO (0)
+<div class="cart hidden" id="cart">
+  <div class="cart-head">
+    <h2>Il tuo carrello</h2>
+<button
+  class="close"
+  type="button"
+  onclick="toggleCart()"
+>
+  ×
+</button>
+  </div>
+  <div id="cartItems"></div>
+  <div class="total">
+    <span>Totale</span>
+    <span>€<span id="total">0.00</span></span>
+  </div>
+
+<button
+class=“checkout”
+id=“checkoutBtn”
+type=“button”
+onclick=“checkout()”
 
 PAGA CON CARTA
-
-</button>
-
-<div class="notice">
-Pagamento sicuro tramite Stripe
+  </button>
+  <div class="secure">
+    Pagamento sicuro tramite Stripe
+  </div>
 </div>
-
-</div>
-
-
-<button
-id="cartToggle"
-class="cart-toggle"
-onclick="toggleCart()">
-
-CARRELLO (<span id="cartCount">0</span>)
-
-</button>
-
-
 <footer>
-LUKO LAB CUSTOM © 2026
+  © Luko Lab Custom
 </footer>
-
-
 <script>
-
-const products = Array.from(
-{length:14},
-(_,i)=>({
-
-id:`cap-${String(i+1).padStart(2,"0")}`,
-
-name:`Cappello Luko Lab ${String(i+1).padStart(2,"0")}`,
-
-price:35,
-
-category:"Cappelli"
-
-})
-);
-
-
-let cart = JSON.parse(
-localStorage.getItem("lukoCart") || "[]"
-);
-
-
-function save(){
-
-localStorage.setItem(
-"lukoCart",
-JSON.stringify(cart)
-);
-
+/* =========================
+   PRODOTTI
+========================= */
+const products = [];
+for(let i = 1; i <= 14; i++){
+  const number = String(i).padStart(2,"0");
+  products.push({
+    id: "cap-" + number,
+    name: "Cappello Luko Lab " + number,
+    price: 35,
+    category: "Cappelli"
+  });
 }
-
-
-function renderProducts(filter="all"){
-
-let list =
-filter==="all"
-?products
-:products.filter(
-p=>p.category===filter
-);
-
-document.getElementById("products").innerHTML =
-list.map(p=>`
-
-<article class="card">
-
-<div class="photo">
-FOTO PRODOTTO
-</div>
-
-<div class="card-body">
-
-<h3>
-${p.name}
-</h3>
-
-<div class="price">
-€${p.price.toFixed(2)}
-</div>
-
-<button
-onclick="add('${p.id}')">
-
-AGGIUNGI AL CARRELLO
-
-</button>
-
-</div>
-
-</article>
-
-`).join("");
-
-}
-
-
-function add(id){
-
-let x = cart.find(
-i=>i.id===id
-);
-
-if(x){
-
-x.quantity =
-Math.min(
-10,
-x.quantity+1
-);
-
-}else{
-
-cart.push({
-id:id,
-quantity:1
-});
-
-}
-
+/* =========================
+   CARRELLO
+========================= */
 /*
-Prima aggiorniamo il carrello
-visivamente e poi salviamo.
+  Carichiamo il vecchio carrello in modo sicuro.
+  Se Safari ha dati vecchi o corrotti,
+  il carrello viene automaticamente azzerato.
 */
-
-renderCart();
-
-toggleCart(true);
-
-save();
-
-}
-
-
-function qty(id,d){
-
-let x =
-cart.find(
-i=>i.id===id
-);
-
-if(!x)
-return;
-
-x.quantity += d;
-
-if(x.quantity<=0){
-
-cart =
-cart.filter(
-i=>i.id!==id
-);
-
-}
-
-if(x.quantity>10){
-
-x.quantity=10;
-
-}
-
-renderCart();
-
-save();
-
-}
-
-
-function renderCart(){
-
-let box =
-document.getElementById(
-"cartItems"
-);
-
-
-if(cart.length){
-
-box.innerHTML =
-cart.map(i=>{
-
-let p =
-products.find(
-x=>x.id===i.id
-);
-
-return `
-
-<div class="cart-item">
-
-<div>
-
-<strong>
-${p.name}
-</strong>
-
-<br>
-
-€${p.price.toFixed(2)}
-× ${i.quantity}
-
-</div>
-
-
-<div class="qty">
-
-<button
-onclick="qty('${p.id}',-1)">
-−
-</button>
-
-<span>
-${i.quantity}
-</span>
-
-<button
-onclick="qty('${p.id}',1)">
-+
-</button>
-
-</div>
-
-</div>
-
-`;
-
-}).join("");
-
-}else{
-
-box.innerHTML =
-"<div style='color:#999;padding:20px 0'>Il carrello è vuoto.</div>";
-
-}
-
-
-let total =
-cart.reduce(
-(s,i)=>s+35*i.quantity,
-0
-);
-
-
-document.getElementById(
-"total"
-).textContent =
-total.toFixed(2);
-
-
-document.getElementById(
-"cartCount"
-).textContent =
-cart.reduce(
-(s,i)=>s+i.quantity,
-0
-);
-
-}
-
-
-function toggleCart(force){
-
-let c =
-document.getElementById(
-"cart"
-);
-
-let b =
-document.getElementById(
-"cartToggle"
-);
-
-
-if(force){
-
-c.classList.remove(
-"hidden"
-);
-
-b.classList.add(
-"hidden"
-);
-
-return;
-
-}
-
-
-c.classList.toggle(
-"hidden"
-);
-
-b.classList.toggle(
-"hidden"
-);
-
-}
-
-
-async function checkout(){
-
-if(!cart.length){
-
-alert(
-"Il carrello è vuoto."
-);
-
-return;
-
-}
-
-
-let b =
-document.getElementById(
-"checkoutBtn"
-);
-
-b.disabled=true;
-
-b.textContent =
-"APERTURA PAGAMENTO…";
-
-
+let cart = [];
 try{
-
-let r =
-await fetch(
-"/api/checkout",
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":
-"application/json"
-},
-
-body:JSON.stringify({
-items:cart
-})
-
+  const savedCart =
+    localStorage.getItem("lukoCart");
+  if(savedCart){
+    const parsed =
+      JSON.parse(savedCart);
+    if(Array.isArray(parsed)){
+      cart = parsed.filter(item =>
+        item &&
+        typeof item.id === "string" &&
+        Number(item.quantity) > 0
+      );
+    }
+  }
+}catch(error){
+  console.log("Carrello precedente non valido.");
+  cart = [];
 }
-);
-
-
-let d =
-await r.json()
-.catch(
-()=>({})
-);
-
-
-if(!r.ok || !d.url){
-
-throw new Error(
-d.error || "Errore"
-);
-
+/* =========================
+   SALVATAGGIO
+========================= */
+function save(){
+  try{
+    localStorage.setItem(
+      "lukoCart",
+      JSON.stringify(cart)
+    );
+  }catch(error){
+    console.log("Impossibile salvare il carrello.");
+  }
 }
-
-
-location.href =
-d.url;
-
-
-}catch(e){
-
-console.error(e);
-
-alert(
-"Non è stato possibile aprire il pagamento. Riprova tra poco."
-);
-
-b.disabled=false;
-
-b.textContent =
-"PAGA CON CARTA";
-
+/* =========================
+   PRODOTTI
+========================= */
+function renderProducts(filter = "all"){
+  const container =
+    document.getElementById("products");
+  let list = products;
+  if(filter !== "all"){
+    list = products.filter(
+      product =>
+        product.category === filter
+    );
+  }
+  if(!list.length){
+    container.innerHTML = `
+      <div class="empty">
+        Nessun prodotto disponibile in questa categoria.
+      </div>
+    `;
+    return;
+  }
+  container.innerHTML =
+    list.map(product => `
+      <article class="card">
+        <div class="photo">
+          FOTO PRODOTTO
+        </div>
+        <div class="card-body">
+          <h3>
+            ${product.name}
+          </h3>
+          <div class="price">
+            €${product.price.toFixed(2)}
+          </div>
+          <button
+            type="button"
+            onclick="addToCart('${product.id}')"
+          >
+            AGGIUNGI AL CARRELLO
+          </button>
+        </div>
+      </article>
+    `).join("");
 }
-
+/* =========================
+   AGGIUNGI AL CARRELLO
+========================= */
+function addToCart(id){
+  const product =
+    products.find(
+      product => product.id === id
+    );
+  if(!product){
+    alert("Prodotto non trovato.");
+    return;
+  }
+  let item =
+    cart.find(
+      item => item.id === id
+    );
+  if(item){
+    item.quantity =
+      Math.min(
+        10,
+        Number(item.quantity) + 1
+      );
+  }else{
+    cart.push({
+      id: id,
+      quantity: 1
+    });
+  }
+  /*
+    Prima aggiorniamo la grafica,
+    poi salviamo il carrello.
+  */
+  renderCart();
+  save();
+  /*
+    Apriamo automaticamente il carrello.
+  */
+  openCart();
 }
-
-
+/* =========================
+   QUANTITÀ
+========================= */
+function changeQuantity(id, amount){
+  const item =
+    cart.find(
+      item => item.id === id
+    );
+  if(!item){
+    return;
+  }
+  item.quantity =
+    Number(item.quantity) + amount;
+  if(item.quantity <= 0){
+    cart =
+      cart.filter(
+        item => item.id !== id
+      );
+  }
+  if(item.quantity > 10){
+    item.quantity = 10;
+  }
+  renderCart();
+  save();
+}
+/* =========================
+   RENDER CARRELLO
+========================= */
+function renderCart(){
+  const box =
+    document.getElementById("cartItems");
+  /*
+    Rimuoviamo eventuali prodotti
+    non più presenti nel catalogo.
+  */
+  cart =
+    cart.filter(item =>
+      products.some(
+        product => product.id === item.id
+      )
+    );
+  if(cart.length === 0){
+    box.innerHTML = `
+      <div style="
+        color:#999;
+        padding:20px 0;
+      ">
+        Il carrello è vuoto.
+      </div>
+    `;
+  }else{
+    box.innerHTML =
+      cart.map(item => {
+        const product =
+          products.find(
+            product =>
+              product.id === item.id
+          );
+        return `
+          <div class="cart-item">
+            <div>
+              <strong>
+                ${product.name}
+              </strong>
+              <br>
+              €${product.price.toFixed(2)}
+              × ${item.quantity}
+            </div>
+            <div class="qty">
+              <button
+                type="button"
+                onclick="changeQuantity('${product.id}',-1)"
+              >
+                −
+              </button>
+              <span>
+                ${item.quantity}
+              </span>
+              <button
+                type="button"
+                onclick="changeQuantity('${product.id}',1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+  }
+  const total =
+    cart.reduce(
+      (sum,item) => {
+        const product =
+          products.find(
+            product =>
+              product.id === item.id
+          );
+        return sum +
+          (product.price * item.quantity);
+      },
+      0
+    );
+  const count =
+    cart.reduce(
+      (sum,item) =>
+        sum + Number(item.quantity),
+      0
+    );
+  document.getElementById(
+    "total"
+  ).textContent =
+    total.toFixed(2);
+  document.getElementById(
+    "cartCount"
+  ).textContent =
+    count;
+}
+/* =========================
+   CARRELLO APERTO / CHIUSO
+========================= */
+function openCart(){
+  document
+    .getElementById("cart")
+    .classList.remove("hidden");
+  document
+    .getElementById("cartToggle")
+    .classList.add("hidden");
+}
+function closeCart(){
+  document
+    .getElementById("cart")
+    .classList.add("hidden");
+  document
+    .getElementById("cartToggle")
+    .classList.remove("hidden");
+}
+function toggleCart(){
+  const cartBox =
+    document.getElementById("cart");
+  if(cartBox.classList.contains("hidden")){
+    openCart();
+  }else{
+    closeCart();
+  }
+}
+/* =========================
+   CHECKOUT STRIPE
+========================= */
+async function checkout(){
+  if(cart.length === 0){
+    alert("Il carrello è vuoto.");
+    return;
+  }
+  const button =
+    document.getElementById("checkoutBtn");
+  button.disabled = true;
+  button.textContent =
+    "APERTURA PAGAMENTO…";
+  try{
+    const response =
+      await fetch(
+        "/api/checkout",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:
+            JSON.stringify({
+              items: cart
+            })
+        }
+      );
+    const data =
+      await response
+        .json()
+        .catch(() => ({}));
+    if(
+      !response.ok ||
+      !data.url
+    ){
+      throw new Error(
+        data.error ||
+        "Errore nel pagamento"
+      );
+    }
+    /*
+      Stripe Checkout
+    */
+    window.location.href =
+      data.url;
+  }catch(error){
+    console.error(error);
+    alert(
+      "Non è stato possibile aprire il pagamento. Riprova tra poco."
+    );
+    button.disabled = false;
+    button.textContent =
+      "PAGA CON CARTA";
+  }
+}
+/* =========================
+   FILTRI
+========================= */
 document
-.querySelectorAll(
-".filters button"
-)
-.forEach(
-
-b=>{
-
-b.onclick=()=>{
-
-document
-.querySelectorAll(
-".filters button"
-)
-.forEach(
-x=>x.classList.remove(
-"active"
-)
-);
-
-b.classList.add(
-"active"
-);
-
-renderProducts(
-b.dataset.filter
-);
-
-};
-
-}
-);
-
-
+  .querySelectorAll(
+    ".filters button"
+  )
+  .forEach(button => {
+    button.addEventListener(
+      "click",
+      () => {
+        document
+          .querySelectorAll(
+            ".filters button"
+          )
+          .forEach(btn =>
+            btn.classList.remove("active")
+          );
+        button.classList.add("active");
+        renderProducts(
+          button.dataset.filter
+        );
+      }
+    );
+  });
+/* =========================
+   AVVIO
+========================= */
 renderProducts();
-
 renderCart();
-
 </script>
-
 </body>
 </html>
