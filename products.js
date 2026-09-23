@@ -3,7 +3,20 @@ const crypto = require("crypto");
 
 const CATALOG_PATH = "catalog/products.json";
 
-const defaultProducts = [];
+const defaultProducts = Array.from(
+  { length: 14 },
+  (_, index) => {
+    const number = String(index + 1).padStart(2, "0");
+
+    return {
+      id: "cap-" + number,
+      name: "Cappello Luko Lab " + number,
+      price: 35,
+      category: "Cappelli",
+      image: null
+    };
+  }
+);
 
 function isAdmin(req) {
   const cookie = req.headers.cookie || "";
@@ -61,7 +74,6 @@ module.exports = async (req, res) => {
       });
     }
 
-
     if (req.method === "POST") {
 
       if (!isAdmin(req)) {
@@ -77,13 +89,11 @@ module.exports = async (req, res) => {
         image
       } = req.body || {};
 
-
       if (!name || !image) {
         return res.status(400).json({
           error: "Nome e foto sono obbligatori"
         });
       }
-
 
       const numericPrice = Number(price);
 
@@ -96,7 +106,6 @@ module.exports = async (req, res) => {
         });
       }
 
-
       if (
         category !== "Cappelli" &&
         category !== "Abbigliamento"
@@ -106,9 +115,7 @@ module.exports = async (req, res) => {
         });
       }
 
-
       const products = await getCatalog();
-
 
       const product = {
         id:
@@ -130,11 +137,9 @@ module.exports = async (req, res) => {
           new Date().toISOString()
       };
 
-
       products.push(product);
 
       await saveCatalog(products);
-
 
       return res.status(200).json({
         ok: true,
@@ -142,11 +147,9 @@ module.exports = async (req, res) => {
       });
     }
 
-
     return res.status(405).json({
       error: "Metodo non consentito"
     });
-
 
   } catch (error) {
 
