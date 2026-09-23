@@ -24,8 +24,12 @@
     }
 
     h1 {
-      font-size: 28px;
-      margin-bottom: 8px;
+      font-size: 30px;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      margin-top: 0;
     }
 
     .subtitle {
@@ -67,6 +71,11 @@
       color: #111;
       font-weight: bold;
       font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .5;
     }
 
     .hidden {
@@ -83,11 +92,41 @@
       margin-top: 12px;
     }
 
+    .preview {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      display: none;
+    }
+
     .back {
       display: inline-block;
       color: white;
       margin-bottom: 25px;
       text-decoration: none;
+    }
+
+    .product {
+      border-top: 1px solid #333;
+      padding: 15px 0;
+    }
+
+    .product:first-child {
+      border-top: 0;
+    }
+
+    .product img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .muted {
+      color: #999;
     }
   </style>
 </head>
@@ -99,6 +138,7 @@
   <a class="back" href="/">← Torna allo shop</a>
 
   <h1>IL LAB</h1>
+
   <div class="subtitle">
     Area privata Luko Lab Custom
   </div>
@@ -116,13 +156,14 @@
       autocomplete="current-password"
     >
 
-    <button onclick="login()">
+    <button id="loginButton" type="button">
       ENTRA NEL LAB
     </button>
 
     <div id="loginMessage"></div>
 
   </div>
+
 
   <div id="adminBox" class="hidden">
 
@@ -160,10 +201,16 @@
       <input
         id="productImage"
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp,image/heic"
       >
 
-      <button onclick="publishProduct()">
+      <img
+        id="preview"
+        class="preview"
+        alt="Anteprima prodotto"
+      >
+
+      <button id="publishButton" type="button">
         PUBBLICA PRODOTTO
       </button>
 
@@ -171,12 +218,13 @@
 
     </div>
 
+
     <div class="box">
 
       <h2>Prodotti pubblicati</h2>
 
       <div id="productsList">
-        Caricamento...
+        <span class="muted">Caricamento...</span>
       </div>
 
     </div>
@@ -185,114 +233,338 @@
 
 </div>
 
-<script>
 
-async function login() {
+<script type="module">
 
-  const password =
-    document.getElementById("password").value;
+  import { upload } from "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm";
 
-  const message =
+
+  const passwordInput =
+    document.getElementById("password");
+
+  const loginButton =
+    document.getElementById("loginButton");
+
+  const loginMessage =
     document.getElementById("loginMessage");
 
-  message.className = "";
-  message.textContent = "";
+  const loginBox =
+    document.getElementById("loginBox");
 
-  if (!password) {
-    message.className = "error";
-    message.textContent = "Inserisci la password.";
-    return;
-  }
+  const adminBox =
+    document.getElementById("adminBox");
 
-  try {
+  const productImage =
+    document.getElementById("productImage");
 
-    const response = await fetch("/api/admin-login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ password })
-    });
+  const preview =
+    document.getElementById("preview");
 
-    const data = await response.json();
+  const publishButton =
+    document.getElementById("publishButton");
 
-    if (!response.ok) {
-      throw new Error(
-        data.error || "Accesso non riuscito"
-      );
-    }
-
-    document.getElementById("loginBox")
-      .classList.add("hidden");
-
-    document.getElementById("adminBox")
-      .classList.remove("hidden");
-
-    loadProducts();
-
-  } catch (error) {
-
-    message.className = "error";
-    message.textContent = error.message;
-
-  }
-}
-
-
-async function publishProduct() {
-
-  const name =
-    document.getElementById("productName").value.trim();
-
-  const price =
-    document.getElementById("productPrice").value;
-
-  const category =
-    document.getElementById("productCategory").value;
-
-  const image =
-    document.getElementById("productImage").files[0];
-
-  const message =
+  const publishMessage =
     document.getElementById("publishMessage");
 
-  message.className = "";
-  message.textContent = "";
 
-  if (!name || !price || !image) {
+  productImage.addEventListener("change", () => {
 
-    message.className = "error";
-    message.textContent =
-      "Inserisci nome, prezzo e foto.";
+    const file = productImage.files[0];
 
-    return;
+    if (!file) {
+      preview.style.display = "none";
+      return;
+    }
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+  });
+
+
+  loginButton.addEventListener("click", login);
+
+
+  async function login() {
+
+    const password =
+      passwordInput.value.trim();
+
+    loginMessage.className = "";
+    loginMessage.textContent = "";
+
+    if (!password) {
+
+      loginMessage.className = "error";
+      loginMessage.textContent =
+        "Inserisci la password.";
+
+      return;
+    }
+
+    loginButton.disabled = true;
+    loginButton.textContent = "ACCESSO...";
+
+    try {
+
+      const response = await fetch(
+        "/api/admin-login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            password
+          })
+        }
+      );
+
+      const data =
+        await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Accesso non riuscito"
+        );
+      }
+
+      loginBox.classList.add("hidden");
+      adminBox.classList.remove("hidden");
+
+      await loadProducts();
+
+    } catch (error) {
+
+      loginMessage.className = "error";
+      loginMessage.textContent =
+        error.message;
+
+      loginButton.disabled = false;
+      loginButton.textContent =
+        "ENTRA NEL LAB";
+    }
   }
 
-  message.className = "success";
-  message.textContent =
-    "Preparazione del prodotto...";
 
-  /*
-    Il caricamento effettivo della foto e
-    la pubblicazione nel catalogo verranno
-    collegati nel prossimo passaggio.
-  */
-
-  setTimeout(() => {
-
-    message.textContent =
-      "Area pronta. Ora colleghiamo il caricamento foto.";
-
-  }, 500);
-}
+  publishButton.addEventListener(
+    "click",
+    publishProduct
+  );
 
 
-async function loadProducts() {
+  async function publishProduct() {
 
-  document.getElementById("productsList").innerHTML =
-    "<p style='color:#aaa'>Catalogo in preparazione...</p>";
+    const name =
+      document.getElementById("productName")
+        .value.trim();
 
-}
+    const price =
+      Number(
+        document.getElementById("productPrice")
+          .value
+      );
+
+    const category =
+      document.getElementById("productCategory")
+        .value;
+
+    const file =
+      productImage.files[0];
+
+
+    publishMessage.className = "";
+    publishMessage.textContent = "";
+
+
+    if (!name) {
+
+      publishMessage.className = "error";
+      publishMessage.textContent =
+        "Inserisci il nome del prodotto.";
+
+      return;
+    }
+
+
+    if (!price || price <= 0) {
+
+      publishMessage.className = "error";
+      publishMessage.textContent =
+        "Inserisci un prezzo valido.";
+
+      return;
+    }
+
+
+    if (!file) {
+
+      publishMessage.className = "error";
+      publishMessage.textContent =
+        "Seleziona una foto.";
+
+      return;
+    }
+
+
+    publishButton.disabled = true;
+    publishButton.textContent =
+      "CARICAMENTO FOTO...";
+
+
+    try {
+
+      const blob =
+        await upload(
+          `prodotti/${Date.now()}-${file.name}`,
+          file,
+          {
+            access: "public",
+            handleUploadUrl: "/api/upload"
+          }
+        );
+
+
+      publishMessage.className = "success";
+      publishMessage.textContent =
+        "Foto caricata. Salvataggio prodotto...";
+
+
+      const response =
+        await fetch("/api/products", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name,
+            price,
+            category,
+            image: blob.url
+          })
+        });
+
+
+      const data =
+        await response.json().catch(() => ({}));
+
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Impossibile salvare il prodotto."
+        );
+      }
+
+
+      publishMessage.textContent =
+        "Prodotto pubblicato!";
+
+
+      document.getElementById("productName")
+        .value = "";
+
+      document.getElementById("productPrice")
+        .value = "";
+
+      productImage.value = "";
+
+      preview.src = "";
+      preview.style.display = "none";
+
+
+      await loadProducts();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      publishMessage.className = "error";
+      publishMessage.textContent =
+        error.message ||
+        "Errore durante la pubblicazione.";
+
+    }
+
+
+    publishButton.disabled = false;
+    publishButton.textContent =
+      "PUBBLICA PRODOTTO";
+  }
+
+
+  async function loadProducts() {
+
+    const list =
+      document.getElementById("productsList");
+
+    try {
+
+      const response =
+        await fetch("/api/products");
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !Array.isArray(data.products)
+      ) {
+        throw new Error();
+      }
+
+
+      if (data.products.length === 0) {
+
+        list.innerHTML =
+          "<span class='muted'>Nessun prodotto.</span>";
+
+        return;
+      }
+
+
+      list.innerHTML =
+        data.products.map(product => `
+
+          <div class="product">
+
+            ${
+              product.image
+              ? `<img src="${product.image}" alt="">`
+              : ""
+            }
+
+            <strong>
+              ${escapeHtml(product.name)}
+            </strong>
+
+            <div class="muted">
+              €${Number(product.price).toFixed(2)}
+              · ${escapeHtml(product.category)}
+            </div>
+
+          </div>
+
+        `).join("");
+
+    } catch (error) {
+
+      list.innerHTML =
+        "<span class='muted'>Catalogo non ancora disponibile.</span>";
+    }
+  }
+
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
 
 </script>
 
