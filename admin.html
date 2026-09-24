@@ -91,7 +91,7 @@
     }
 
     button:disabled {
-      opacity: 0.5;
+      opacity: .5;
     }
 
     .login-card {
@@ -101,7 +101,7 @@
 
     .product {
       border-top: 1px solid #444;
-      padding: 25px 0;
+      padding: 30px 0;
     }
 
     .product:first-child {
@@ -131,7 +131,7 @@
     .delete-button {
       background: #d93636;
       color: #fff;
-      margin-top: 10px;
+      margin-top: 15px;
     }
 
     .message {
@@ -151,7 +151,7 @@
       object-fit: cover;
     }
 
-    @media (max-width: 600px) {
+    @media(max-width:600px) {
       .page {
         padding: 25px 18px 60px;
       }
@@ -180,7 +180,11 @@
 
 <div class="page">
 
-  <a class="back" href="/">← Torna allo shop</a>
+  <a class="back" href="/">
+    ← Torna allo shop
+  </a>
+
+  <!-- LOGIN -->
 
   <div id="loginSection">
 
@@ -207,14 +211,22 @@
         ENTRA NEL LAB
       </button>
 
-      <div id="loginMessage" class="message"></div>
+      <div
+        id="loginMessage"
+        class="message"
+      ></div>
 
     </div>
 
   </div>
 
 
-  <div id="labSection" style="display:none;">
+  <!-- LAB -->
+
+  <div
+    id="labSection"
+    style="display:none;"
+  >
 
     <h1>IL LAB</h1>
 
@@ -223,11 +235,15 @@
     </div>
 
 
+    <!-- AGGIUNGI PRODOTTO -->
+
     <div class="card">
 
       <h2>Aggiungi prodotto</h2>
 
-      <label>Nome prodotto</label>
+      <label>
+        Nome prodotto
+      </label>
 
       <input
         id="name"
@@ -235,7 +251,10 @@
         placeholder="Es. Cappello Jungle"
       >
 
-      <label>Prezzo €</label>
+
+      <label>
+        Prezzo €
+      </label>
 
       <input
         id="price"
@@ -245,27 +264,42 @@
         step="0.01"
       >
 
-      <label>Categoria</label>
+
+      <label>
+        Categoria
+      </label>
 
       <select id="category">
-        <option value="Cappelli">Cappelli</option>
-        <option value="Abbigliamento">Abbigliamento</option>
+
+        <option value="Cappelli">
+          Cappelli
+        </option>
+
+        <option value="Abbigliamento">
+          Abbigliamento
+        </option>
+
       </select>
 
-      <label>Foto</label>
+
+      <label>
+        Foto
+      </label>
 
       <input
         id="photo"
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept="image/jpeg,image/png,image/webp,image/heic"
         onchange="previewPhoto()"
       >
+
 
       <img
         id="preview"
         class="preview"
         alt="Anteprima"
       >
+
 
       <button
         id="publishButton"
@@ -274,10 +308,16 @@
         PUBBLICA PRODOTTO
       </button>
 
-      <div id="publishMessage" class="message"></div>
+
+      <div
+        id="publishMessage"
+        class="message"
+      ></div>
 
     </div>
 
+
+    <!-- LISTA PRODOTTI -->
 
     <div class="card">
 
@@ -300,6 +340,8 @@
     "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm";
 
 
+  // LOGIN
+
   window.login = async function () {
 
     const password =
@@ -308,28 +350,42 @@
     const message =
       document.getElementById("loginMessage");
 
+
     if (!password) {
+
       message.textContent =
         "Inserisci la password.";
-      message.style.display = "block";
+
+      message.style.display =
+        "block";
+
       return;
     }
+
 
     try {
 
       const response =
-        await fetch("/api/admin-login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            password
-          })
-        });
+        await fetch(
+          "/api/admin-login",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              password: password
+            })
+          }
+        );
+
 
       const data =
         await response.json();
+
 
       if (!response.ok) {
 
@@ -337,18 +393,22 @@
           data.error ||
           "Password non corretta.";
 
-        message.style.display = "block";
+        message.style.display =
+          "block";
 
         return;
       }
+
 
       document.getElementById(
         "loginSection"
       ).style.display = "none";
 
+
       document.getElementById(
         "labSection"
       ).style.display = "block";
+
 
       loadProducts();
 
@@ -357,70 +417,114 @@
       message.textContent =
         "Errore di connessione.";
 
-      message.style.display = "block";
+      message.style.display =
+        "block";
     }
+
   };
 
+
+  // ANTEPRIMA FOTO
 
   window.previewPhoto = function () {
 
     const file =
-      document.getElementById("photo").files[0];
+      document.getElementById(
+        "photo"
+      ).files[0];
+
 
     const preview =
-      document.getElementById("preview");
+      document.getElementById(
+        "preview"
+      );
+
 
     if (!file) {
-      preview.style.display = "none";
+
+      preview.style.display =
+        "none";
+
       return;
     }
+
 
     preview.src =
       URL.createObjectURL(file);
 
-    preview.style.display = "block";
+
+    preview.style.display =
+      "block";
   };
 
+
+  // PUBBLICA PRODOTTO
 
   window.publishProduct = async function () {
 
     const button =
-      document.getElementById("publishButton");
+      document.getElementById(
+        "publishButton"
+      );
 
     const message =
-      document.getElementById("publishMessage");
+      document.getElementById(
+        "publishMessage"
+      );
+
 
     const name =
-      document.getElementById("name").value.trim();
+      document.getElementById(
+        "name"
+      ).value.trim();
+
 
     const price =
-      document.getElementById("price").value;
+      document.getElementById(
+        "price"
+      ).value;
+
 
     const category =
-      document.getElementById("category").value;
+      document.getElementById(
+        "category"
+      ).value;
+
 
     const file =
-      document.getElementById("photo").files[0];
+      document.getElementById(
+        "photo"
+      ).files[0];
 
 
     if (!name) {
+
       message.textContent =
         "Inserisci il nome del prodotto.";
-      message.style.display = "block";
+
+      message.style.display =
+        "block";
+
       return;
     }
 
 
     if (!file) {
+
       message.textContent =
         "Seleziona una foto.";
-      message.style.display = "block";
+
+      message.style.display =
+        "block";
+
       return;
     }
 
 
     button.disabled = true;
-    button.textContent = "CARICAMENTO...";
+
+    button.textContent =
+      "CARICAMENTO...";
 
 
     try {
@@ -431,24 +535,36 @@
           file,
           {
             access: "public",
-            handleUploadUrl: "/api/upload"
+            handleUploadUrl:
+              "/api/upload"
           }
         );
 
 
       const response =
-        await fetch("/api/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name,
-            price,
-            category,
-            image: blob.url
-          })
-        });
+        await fetch(
+          "/api/products",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              name: name,
+
+              price: price,
+
+              category: category,
+
+              image: blob.url
+
+            })
+          }
+        );
 
 
       const data =
@@ -456,6 +572,7 @@
 
 
       if (!response.ok) {
+
         throw new Error(
           data.error ||
           "Impossibile pubblicare il prodotto."
@@ -466,17 +583,28 @@
       message.textContent =
         "Prodotto pubblicato con successo.";
 
-      message.style.display = "block";
+      message.style.display =
+        "block";
 
 
-      document.getElementById("name").value = "";
+      document.getElementById(
+        "name"
+      ).value = "";
 
-      document.getElementById("price").value = "35";
 
-      document.getElementById("photo").value = "";
+      document.getElementById(
+        "price"
+      ).value = "35";
 
-      document.getElementById("preview").style.display =
-        "none";
+
+      document.getElementById(
+        "photo"
+      ).value = "";
+
+
+      document.getElementById(
+        "preview"
+      ).style.display = "none";
 
 
       loadProducts();
@@ -488,7 +616,9 @@
         error.message ||
         "Errore durante la pubblicazione.";
 
-      message.style.display = "block";
+      message.style.display =
+        "block";
+
 
     } finally {
 
@@ -497,21 +627,38 @@
       button.textContent =
         "PUBBLICA PRODOTTO";
     }
+
   };
 
+
+  // CARICA PRODOTTI
 
   window.loadProducts = async function () {
 
     const container =
-      document.getElementById("products");
+      document.getElementById(
+        "products"
+      );
+
+
+    container.innerHTML =
+      "Caricamento prodotti...";
+
 
     try {
 
       const response =
-        await fetch("/api/products");
+        await fetch(
+          "/api/products",
+          {
+            cache: "no-store"
+          }
+        );
+
 
       const data =
         await response.json();
+
 
       const products =
         Array.isArray(data.products)
@@ -529,39 +676,49 @@
 
 
       container.innerHTML =
-        products.map(product => {
+        products.map(
+          product => {
 
-          const image =
-            product.image
-              ? `<img src="${product.image}" alt="">`
-              : "";
+            const image =
+              product.image
+                ? `
+                  <img
+                    src="${escapeHtml(product.image)}"
+                    alt=""
+                  >
+                `
+                : "";
 
 
-          return `
-            <div class="product">
+            return `
 
-              ${image}
+              <div class="product">
 
-              <div class="product-name">
-                ${escapeHtml(product.name)}
+                ${image}
+
+                <div class="product-name">
+                  ${escapeHtml(product.name)}
+                </div>
+
+                <div class="product-info">
+                  € ${Number(product.price).toFixed(2)}
+                  ·
+                  ${escapeHtml(product.category)}
+                </div>
+
+                <button
+                  class="delete-button"
+                  onclick="deleteProduct('${escapeHtml(product.id)}')"
+                >
+                  ELIMINA PRODOTTO
+                </button>
+
               </div>
 
-              <div class="product-info">
-                € ${Number(product.price).toFixed(2)}
-                · ${escapeHtml(product.category)}
-              </div>
+            `;
 
-              <button
-                class="delete-button"
-                onclick="deleteProduct('${product.id}')"
-              >
-                ELIMINA PRODOTTO
-              </button>
-
-            </div>
-          `;
-
-        }).join("");
+          }
+        ).join("");
 
 
     } catch (error) {
@@ -569,8 +726,11 @@
       container.innerHTML =
         "<p>Impossibile caricare i prodotti.</p>";
     }
+
   };
 
+
+  // ELIMINA PRODOTTO
 
   window.deleteProduct = async function (id) {
 
@@ -578,6 +738,7 @@
       confirm(
         "Vuoi davvero eliminare questo prodotto?"
       );
+
 
     if (!conferma) {
       return;
@@ -587,15 +748,21 @@
     try {
 
       const response =
-        await fetch("/api/products", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            id
-          })
-        });
+        await fetch(
+          "/api/products",
+          {
+            method: "DELETE",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              id: id
+            })
+          }
+        );
 
 
       const data =
@@ -613,7 +780,10 @@
       }
 
 
-      alert("Prodotto eliminato.");
+      alert(
+        "Prodotto eliminato."
+      );
+
 
       loadProducts();
 
@@ -623,18 +793,43 @@
       alert(
         "Errore durante l'eliminazione."
       );
+
     }
+
   };
 
+
+  // SICUREZZA TESTO
 
   function escapeHtml(value) {
 
     return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+
+      .replaceAll(
+        "&",
+        "&amp;"
+      )
+
+      .replaceAll(
+        "<",
+        "&lt;"
+      )
+
+      .replaceAll(
+        ">",
+        "&gt;"
+      )
+
+      .replaceAll(
+        '"',
+        "&quot;"
+      )
+
+      .replaceAll(
+        "'",
+        "&#039;"
+      );
+
   }
 
 </script>
