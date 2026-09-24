@@ -1,4 +1,4 @@
-const { put, list } = require("@vercel/blob");
+const { put, list, del } = require("@vercel/blob");
 const crypto = require("crypto");
 
 const CATALOG_PATH = "catalog/products.json";
@@ -18,9 +18,36 @@ const defaultProducts = Array.from(
   }
 );
 
+function createToken() {
+  return crypto
+    .createHmac("sha256", process.env.ADMIN_PASSWORD)
+    .update("luko-lab-admin-session")
+    .digest("hex");
+}
+
 function isAdmin(req) {
-  const cookie = req.headers.cookie || "";
-  return cookie.includes("luko_admin=");
+  try {
+    const cookie = req.headers.cookie || "";
+    const match = cookie.match(/(?:^|;\s*)luko_admin=([^;]+)/);
+
+    if (!match || !process.env.ADMIN_PASSWORD) {
+      return false;
+    }
+
+    const received = decodeURIComponent(match[1]);
+    const expected = createToken();
+
+    if (received.length !== expected.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(
+      Buffer.from(received),
+      Buffer.from(expected)
+    );
+  } catch (error) {
+    return false;
+  }
 }
 
 async function getCatalog() {
@@ -144,6 +171,56 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         ok: true,
         product
+      });
+    }
+
+    if (req.method === "DELETE") {
+
+      if (!isAdmin(req)) {
+        return res.status(401).json({
+          error: "Non autorizzato"
+        });
+      }
+
+      const { id } = req.body || {};
+
+      if (!id) {
+        return res.status(400).json({
+          error: "ID prodotto mancante"
+        });
+      }
+
+      const products = await getCatalog();
+
+      const product = products.find(
+        item => item.id === id
+      );
+
+      if (!product) {
+        return res.status(404).json({
+          error: "Prodotto non trovato"
+        });
+      }
+
+      const updatedProducts = products.filter(
+        item => item.id !== id
+      );
+
+      await saveCatalog(updatedProducts);
+
+      if (product.image) {
+        try {
+          await del(product.image);
+        } catch (imageError) {
+          console.error(
+            "Impossibile eliminare la foto:",
+            imageError
+          );
+        }
+      }
+
+      return res.status(200).json({
+        ok: true
       });
     }
 
