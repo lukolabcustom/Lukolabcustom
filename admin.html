@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>IL LAB — Luko Lab Custom</title>
+  <title>Il Lab — Luko Lab Custom</title>
 
   <style>
     * {
@@ -13,132 +13,176 @@
 
     body {
       margin: 0;
-      background: #101010;
+      background: #111;
       color: #fff;
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    .wrap {
+    .page {
       max-width: 900px;
       margin: 0 auto;
       padding: 40px 20px 80px;
     }
 
     .back {
+      display: inline-block;
+      margin-bottom: 50px;
       color: #fff;
       text-decoration: none;
-      font-size: 20px;
-      display: inline-block;
-      margin-bottom: 60px;
+      font-size: 18px;
     }
 
     h1 {
-      font-size: 58px;
+      font-size: 56px;
       margin: 0 0 10px;
     }
 
     .subtitle {
       color: #aaa;
-      font-size: 22px;
-      margin-bottom: 50px;
+      font-size: 28px;
+      margin-bottom: 55px;
     }
 
-    .box {
+    .card {
       background: #1d1d1d;
-      border-radius: 28px;
+      border-radius: 32px;
       padding: 38px;
-      margin-bottom: 30px;
+      margin-bottom: 35px;
     }
 
     h2 {
-      font-size: 32px;
+      font-size: 42px;
       margin-top: 0;
     }
 
     label {
       display: block;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
-      margin: 22px 0 10px;
+      margin: 25px 0 10px;
     }
 
     input,
     select {
       width: 100%;
-      padding: 18px;
-      border-radius: 15px;
-      border: 1px solid #555;
+      padding: 20px;
+      border-radius: 18px;
+      border: 2px solid #555;
       background: #111;
-      color: white;
-      font-size: 18px;
+      color: #fff;
+      font-size: 19px;
+    }
+
+    input[type="file"] {
+      padding: 15px;
     }
 
     button {
       width: 100%;
-      padding: 19px;
-      margin-top: 25px;
+      padding: 22px;
       border: 0;
-      border-radius: 15px;
-      background: white;
+      border-radius: 20px;
+      background: #fff;
       color: #111;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
+      margin-top: 30px;
       cursor: pointer;
     }
 
     button:disabled {
-      opacity: .5;
+      opacity: 0.5;
     }
 
-    .hidden {
-      display: none;
-    }
-
-    .message {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 12px;
-      background: #292929;
-      color: #ddd;
-      display: none;
+    .login-card {
+      max-width: 600px;
+      margin: 80px auto;
     }
 
     .product {
       border-top: 1px solid #444;
-      padding: 20px 0;
+      padding: 25px 0;
     }
 
     .product:first-child {
       border-top: 0;
     }
 
+    .product img {
+      width: 100%;
+      max-height: 350px;
+      object-fit: cover;
+      border-radius: 18px;
+      margin-bottom: 18px;
+    }
+
     .product-name {
-      font-size: 20px;
+      font-size: 25px;
       font-weight: bold;
+      margin-bottom: 8px;
     }
 
     .product-info {
       color: #aaa;
-      margin-top: 7px;
+      font-size: 17px;
+      margin-bottom: 15px;
+    }
+
+    .delete-button {
+      background: #d93636;
+      color: #fff;
+      margin-top: 10px;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 14px;
+      background: #292929;
+      display: none;
     }
 
     .preview {
       width: 100%;
-      max-height: 350px;
-      object-fit: contain;
+      border-radius: 18px;
       margin-top: 15px;
-      border-radius: 15px;
       display: none;
-      background: #111;
+      max-height: 400px;
+      object-fit: cover;
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 25px 18px 60px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .subtitle {
+        font-size: 23px;
+      }
+
+      .card {
+        padding: 28px 22px;
+        border-radius: 26px;
+      }
+
+      h2 {
+        font-size: 34px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <main class="wrap">
+<div class="page">
 
-    <a class="back" href="/">← Torna allo shop</a>
+  <a class="back" href="/">← Torna allo shop</a>
+
+  <div id="loginSection">
 
     <h1>IL LAB</h1>
 
@@ -146,521 +190,454 @@
       Area privata Luko Lab Custom
     </div>
 
-
-    <!-- LOGIN -->
-
-    <section id="loginBox" class="box">
+    <div class="card login-card">
 
       <h2>Accesso</h2>
 
-      <label for="password">
-        Password
-      </label>
+      <label>Password</label>
 
       <input
         id="password"
         type="password"
-        placeholder="Inserisci la password"
         autocomplete="current-password"
+        placeholder="Inserisci password"
       >
 
-      <button id="loginButton">
+      <button onclick="login()">
         ENTRA NEL LAB
       </button>
 
       <div id="loginMessage" class="message"></div>
 
-    </section>
+    </div>
+
+  </div>
 
 
-    <!-- LAB -->
+  <div id="labSection" style="display:none;">
 
-    <section id="labBox" class="hidden">
+    <h1>IL LAB</h1>
 
-      <div class="box">
+    <div class="subtitle">
+      Gestisci i tuoi prodotti
+    </div>
 
-        <h2>Aggiungi prodotto</h2>
 
-        <label for="name">
-          Nome prodotto
-        </label>
+    <div class="card">
 
-        <input
-          id="name"
-          type="text"
-          placeholder="Es. Cappello Jungle"
-        >
+      <h2>Aggiungi prodotto</h2>
 
-        <label for="price">
-          Prezzo €
-        </label>
+      <label>Nome prodotto</label>
 
-        <input
-          id="price"
-          type="number"
-          value="35"
-          min="0.01"
-          step="0.01"
-        >
+      <input
+        id="name"
+        type="text"
+        placeholder="Es. Cappello Jungle"
+      >
 
-        <label for="category">
-          Categoria
-        </label>
+      <label>Prezzo €</label>
 
-        <select id="category">
-          <option value="Cappelli">
-            Cappelli
-          </option>
+      <input
+        id="price"
+        type="number"
+        value="35"
+        min="1"
+        step="0.01"
+      >
 
-          <option value="Abbigliamento">
-            Abbigliamento
-          </option>
-        </select>
+      <label>Categoria</label>
 
-        <label for="photo">
-          Foto
-        </label>
+      <select id="category">
+        <option value="Cappelli">Cappelli</option>
+        <option value="Abbigliamento">Abbigliamento</option>
+      </select>
 
-        <input
-          id="photo"
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/heic"
-        >
+      <label>Foto</label>
 
-        <img
-          id="preview"
-          class="preview"
-          alt="Anteprima"
-        >
+      <input
+        id="photo"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        onchange="previewPhoto()"
+      >
 
-        <button id="publishButton">
-          PUBBLICA PRODOTTO
-        </button>
+      <img
+        id="preview"
+        class="preview"
+        alt="Anteprima"
+      >
 
-        <div id="publishMessage" class="message"></div>
+      <button
+        id="publishButton"
+        onclick="publishProduct()"
+      >
+        PUBBLICA PRODOTTO
+      </button>
 
+      <div id="publishMessage" class="message"></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>Prodotti</h2>
+
+      <div id="products">
+        Caricamento prodotti...
       </div>
 
+    </div>
 
-      <div class="box">
+  </div>
 
-        <h2>Prodotti</h2>
-
-        <div id="productsList">
-          Caricamento...
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
+</div>
 
 
-  <script>
+<script type="module">
 
-    const loginBox =
-      document.getElementById("loginBox");
+  import { upload } from
+    "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm";
 
-    const labBox =
-      document.getElementById("labBox");
 
-    const passwordInput =
-      document.getElementById("password");
+  window.login = async function () {
 
-    const loginButton =
-      document.getElementById("loginButton");
+    const password =
+      document.getElementById("password").value;
 
-    const loginMessage =
+    const message =
       document.getElementById("loginMessage");
 
-    const publishButton =
-      document.getElementById("publishButton");
+    if (!password) {
+      message.textContent =
+        "Inserisci la password.";
+      message.style.display = "block";
+      return;
+    }
 
-    const publishMessage =
-      document.getElementById("publishMessage");
+    try {
 
-    const photoInput =
-      document.getElementById("photo");
+      const response =
+        await fetch("/api/admin-login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            password
+          })
+        });
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+
+        message.textContent =
+          data.error ||
+          "Password non corretta.";
+
+        message.style.display = "block";
+
+        return;
+      }
+
+      document.getElementById(
+        "loginSection"
+      ).style.display = "none";
+
+      document.getElementById(
+        "labSection"
+      ).style.display = "block";
+
+      loadProducts();
+
+    } catch (error) {
+
+      message.textContent =
+        "Errore di connessione.";
+
+      message.style.display = "block";
+    }
+  };
+
+
+  window.previewPhoto = function () {
+
+    const file =
+      document.getElementById("photo").files[0];
 
     const preview =
       document.getElementById("preview");
 
+    if (!file) {
+      preview.style.display = "none";
+      return;
+    }
 
-    function showMessage(element, text) {
+    preview.src =
+      URL.createObjectURL(file);
 
-      element.textContent = text;
-      element.style.display = "block";
+    preview.style.display = "block";
+  };
 
+
+  window.publishProduct = async function () {
+
+    const button =
+      document.getElementById("publishButton");
+
+    const message =
+      document.getElementById("publishMessage");
+
+    const name =
+      document.getElementById("name").value.trim();
+
+    const price =
+      document.getElementById("price").value;
+
+    const category =
+      document.getElementById("category").value;
+
+    const file =
+      document.getElementById("photo").files[0];
+
+
+    if (!name) {
+      message.textContent =
+        "Inserisci il nome del prodotto.";
+      message.style.display = "block";
+      return;
     }
 
 
-    loginButton.addEventListener(
-      "click",
-      async function () {
-
-        const password =
-          passwordInput.value.trim();
-
-        if (!password) {
-
-          showMessage(
-            loginMessage,
-            "Inserisci la password."
-          );
-
-          return;
-        }
-
-        loginButton.disabled = true;
-
-        loginButton.textContent =
-          "ACCESSO...";
-
-        loginMessage.style.display =
-          "none";
-
-        try {
-
-          const response =
-            await fetch(
-              "/api/admin-login",
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
-
-                body:
-                  JSON.stringify({
-                    password
-                  })
-              }
-            );
+    if (!file) {
+      message.textContent =
+        "Seleziona una foto.";
+      message.style.display = "block";
+      return;
+    }
 
 
-          const data =
-            await response.json();
+    button.disabled = true;
+    button.textContent = "CARICAMENTO...";
 
 
-          if (!response.ok) {
+    try {
 
-            throw new Error(
-              data.error ||
-              "Password non corretta"
-            );
-
+      const blob =
+        await upload(
+          file.name,
+          file,
+          {
+            access: "public",
+            handleUploadUrl: "/api/upload"
           }
-
-
-          loginBox.classList.add(
-            "hidden"
-          );
-
-          labBox.classList.remove(
-            "hidden"
-          );
-
-          await loadProducts();
-
-
-        } catch (error) {
-
-          showMessage(
-            loginMessage,
-            error.message
-          );
-
-          loginButton.disabled =
-            false;
-
-          loginButton.textContent =
-            "ENTRA NEL LAB";
-        }
-
-      }
-    );
-
-
-    passwordInput.addEventListener(
-      "keydown",
-      function (event) {
-
-        if (event.key === "Enter") {
-
-          loginButton.click();
-
-        }
-
-      }
-    );
-
-
-    photoInput.addEventListener(
-      "change",
-      function () {
-
-        const file =
-          photoInput.files[0];
-
-        if (!file) {
-
-          preview.style.display =
-            "none";
-
-          return;
-        }
-
-        const url =
-          URL.createObjectURL(file);
-
-        preview.src = url;
-
-        preview.style.display =
-          "block";
-
-      }
-    );
-
-
-    async function loadProducts() {
-
-      const list =
-        document.getElementById(
-          "productsList"
         );
 
-      try {
 
-        const response =
-          await fetch(
-            "/api/products"
-          );
-
-        const data =
-          await response.json();
-
-        const products =
-          Array.isArray(data.products)
-            ? data.products
-            : [];
-
-
-        if (products.length === 0) {
-
-          list.textContent =
-            "Nessun prodotto.";
-
-          return;
-        }
+      const response =
+        await fetch("/api/products", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name,
+            price,
+            category,
+            image: blob.url
+          })
+        });
 
 
-        list.innerHTML =
-          products
-            .map(function (product) {
+      const data =
+        await response.json();
 
-              return `
-                <div class="product">
 
-                  <div class="product-name">
-                    ${escapeHtml(product.name)}
-                  </div>
-
-                  <div class="product-info">
-                    €${Number(product.price).toFixed(2)}
-                    ·
-                    ${escapeHtml(product.category)}
-                  </div>
-
-                </div>
-              `;
-
-            })
-            .join("");
-
-      } catch (error) {
-
-        list.textContent =
-          "Impossibile caricare i prodotti.";
-
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Impossibile pubblicare il prodotto."
+        );
       }
 
+
+      message.textContent =
+        "Prodotto pubblicato con successo.";
+
+      message.style.display = "block";
+
+
+      document.getElementById("name").value = "";
+
+      document.getElementById("price").value = "35";
+
+      document.getElementById("photo").value = "";
+
+      document.getElementById("preview").style.display =
+        "none";
+
+
+      loadProducts();
+
+
+    } catch (error) {
+
+      message.textContent =
+        error.message ||
+        "Errore durante la pubblicazione.";
+
+      message.style.display = "block";
+
+    } finally {
+
+      button.disabled = false;
+
+      button.textContent =
+        "PUBBLICA PRODOTTO";
+    }
+  };
+
+
+  window.loadProducts = async function () {
+
+    const container =
+      document.getElementById("products");
+
+    try {
+
+      const response =
+        await fetch("/api/products");
+
+      const data =
+        await response.json();
+
+      const products =
+        Array.isArray(data.products)
+          ? data.products
+          : [];
+
+
+      if (products.length === 0) {
+
+        container.innerHTML =
+          "<p>Nessun prodotto.</p>";
+
+        return;
+      }
+
+
+      container.innerHTML =
+        products.map(product => {
+
+          const image =
+            product.image
+              ? `<img src="${product.image}" alt="">`
+              : "";
+
+
+          return `
+            <div class="product">
+
+              ${image}
+
+              <div class="product-name">
+                ${escapeHtml(product.name)}
+              </div>
+
+              <div class="product-info">
+                € ${Number(product.price).toFixed(2)}
+                · ${escapeHtml(product.category)}
+              </div>
+
+              <button
+                class="delete-button"
+                onclick="deleteProduct('${product.id}')"
+              >
+                ELIMINA PRODOTTO
+              </button>
+
+            </div>
+          `;
+
+        }).join("");
+
+
+    } catch (error) {
+
+      container.innerHTML =
+        "<p>Impossibile caricare i prodotti.</p>";
+    }
+  };
+
+
+  window.deleteProduct = async function (id) {
+
+    const conferma =
+      confirm(
+        "Vuoi davvero eliminare questo prodotto?"
+      );
+
+    if (!conferma) {
+      return;
     }
 
 
-    publishButton.addEventListener(
-      "click",
-      async function () {
+    try {
 
-        const name =
-          document.getElementById(
-            "name"
-          ).value.trim();
-
-        const price =
-          document.getElementById(
-            "price"
-          ).value;
-
-        const category =
-          document.getElementById(
-            "category"
-          ).value;
-
-        const file =
-          photoInput.files[0];
+      const response =
+        await fetch("/api/products", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            id
+          })
+        });
 
 
-        if (!name) {
-
-          showMessage(
-            publishMessage,
-            "Inserisci il nome del prodotto."
-          );
-
-          return;
-        }
+      const data =
+        await response.json();
 
 
-        if (!file) {
+      if (!response.ok) {
 
-          showMessage(
-            publishMessage,
-            "Seleziona una foto."
-          );
+        alert(
+          data.error ||
+          "Impossibile eliminare il prodotto."
+        );
 
-          return;
-        }
-
-
-        publishButton.disabled =
-          true;
-
-        publishButton.textContent =
-          "CARICAMENTO...";
-
-        publishMessage.style.display =
-          "none";
-
-
-        try {
-
-          const { upload } =
-            await import(
-              "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm"
-            );
-
-
-          const blob =
-            await upload(
-              file.name,
-              file,
-              {
-                access: "public",
-
-                handleUploadUrl:
-                  "/api/upload"
-              }
-            );
-
-
-          const response =
-            await fetch(
-              "/api/products",
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
-
-                body:
-                  JSON.stringify({
-
-                    name,
-
-                    price,
-
-                    category,
-
-                    image:
-                      blob.url
-
-                  })
-              }
-            );
-
-
-          const data =
-            await response.json();
-
-
-          if (!response.ok) {
-
-            throw new Error(
-              data.error ||
-              "Errore pubblicazione"
-            );
-
-          }
-
-
-          showMessage(
-            publishMessage,
-            "Prodotto pubblicato!"
-          );
-
-
-          document.getElementById(
-            "name"
-          ).value = "";
-
-
-          photoInput.value = "";
-
-          preview.style.display =
-            "none";
-
-
-          await loadProducts();
-
-
-        } catch (error) {
-
-          showMessage(
-            publishMessage,
-            error.message ||
-            "Errore durante il caricamento."
-          );
-
-        }
-
-
-        publishButton.disabled =
-          false;
-
-        publishButton.textContent =
-          "PUBBLICA PRODOTTO";
-
+        return;
       }
-    );
 
 
-    function escapeHtml(value) {
+      alert("Prodotto eliminato.");
 
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+      loadProducts();
 
+
+    } catch (error) {
+
+      alert(
+        "Errore durante l'eliminazione."
+      );
     }
+  };
 
-  </script>
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+</script>
 
 </body>
 </html>
