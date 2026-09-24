@@ -26,28 +26,20 @@ function createToken() {
 }
 
 function isAdmin(req) {
-  try {
-    const cookie = req.headers.cookie || "";
-    const match = cookie.match(/(?:^|;\s*)luko_admin=([^;]+)/);
+  const cookie = req.headers.cookie || "";
 
-    if (!match || !process.env.ADMIN_PASSWORD) {
-      return false;
-    }
+  const match = cookie.match(
+    /(?:^|;\s*)luko_admin=([^;]+)/
+  );
 
-    const received = decodeURIComponent(match[1]);
-    const expected = createToken();
-
-    if (received.length !== expected.length) {
-      return false;
-    }
-
-    return crypto.timingSafeEqual(
-      Buffer.from(received),
-      Buffer.from(expected)
-    );
-  } catch (error) {
+  if (!match || !process.env.ADMIN_PASSWORD) {
     return false;
   }
+
+  const receivedToken = match[1];
+  const validToken = createToken();
+
+  return receivedToken === validToken;
 }
 
 async function getCatalog() {
@@ -92,6 +84,7 @@ module.exports = async (req, res) => {
 
   try {
 
+    // MOSTRA PRODOTTI
     if (req.method === "GET") {
 
       const products = await getCatalog();
@@ -101,6 +94,8 @@ module.exports = async (req, res) => {
       });
     }
 
+
+    // AGGIUNGE PRODOTTO
     if (req.method === "POST") {
 
       if (!isAdmin(req)) {
@@ -174,6 +169,8 @@ module.exports = async (req, res) => {
       });
     }
 
+
+    // ELIMINA PRODOTTO
     if (req.method === "DELETE") {
 
       if (!isAdmin(req)) {
@@ -208,6 +205,7 @@ module.exports = async (req, res) => {
 
       await saveCatalog(updatedProducts);
 
+      // Prova anche a eliminare la foto dal Blob
       if (product.image) {
         try {
           await del(product.image);
@@ -223,6 +221,7 @@ module.exports = async (req, res) => {
         ok: true
       });
     }
+
 
     return res.status(405).json({
       error: "Metodo non consentito"
