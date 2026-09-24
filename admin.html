@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Luko Lab — Il Lab</title>
+
+  <title>IL LAB — Luko Lab Custom</title>
 
   <style>
     * {
@@ -12,65 +13,76 @@
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
+      background: #101010;
       color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     .wrap {
-      max-width: 600px;
-      margin: auto;
-      padding: 30px 20px 60px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    .back {
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      display: inline-block;
+      margin-bottom: 60px;
     }
 
     h1 {
-      font-size: 30px;
-      margin-bottom: 6px;
-    }
-
-    h2 {
-      margin-top: 0;
+      font-size: 58px;
+      margin: 0 0 10px;
     }
 
     .subtitle {
       color: #aaa;
-      margin-bottom: 30px;
+      font-size: 22px;
+      margin-bottom: 50px;
     }
 
     .box {
-      background: #1c1c1c;
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 20px;
+      background: #1d1d1d;
+      border-radius: 28px;
+      padding: 38px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      font-size: 32px;
+      margin-top: 0;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      font-size: 18px;
       font-weight: bold;
+      margin: 22px 0 10px;
     }
 
     input,
     select {
       width: 100%;
-      padding: 14px;
-      margin-bottom: 18px;
-      border-radius: 10px;
-      border: 1px solid #444;
+      padding: 18px;
+      border-radius: 15px;
+      border: 1px solid #555;
       background: #111;
       color: white;
-      font-size: 16px;
+      font-size: 18px;
     }
 
     button {
       width: 100%;
-      padding: 15px;
+      padding: 19px;
+      margin-top: 25px;
       border: 0;
-      border-radius: 12px;
+      border-radius: 15px;
       background: white;
       color: #111;
+      font-size: 18px;
       font-weight: bold;
-      font-size: 15px;
       cursor: pointer;
     }
 
@@ -82,491 +94,573 @@
       display: none;
     }
 
-    .error {
-      color: #ff7777;
-      margin-top: 12px;
-    }
-
-    .success {
-      color: #79e6a3;
-      margin-top: 12px;
-    }
-
-    .preview {
-      width: 100%;
-      max-height: 300px;
-      object-fit: cover;
-      border-radius: 14px;
-      margin-bottom: 18px;
+    .message {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #292929;
+      color: #ddd;
       display: none;
     }
 
-    .back {
-      display: inline-block;
-      color: white;
-      margin-bottom: 25px;
-      text-decoration: none;
-    }
-
     .product {
-      border-top: 1px solid #333;
-      padding: 15px 0;
+      border-top: 1px solid #444;
+      padding: 20px 0;
     }
 
     .product:first-child {
       border-top: 0;
     }
 
-    .product img {
-      width: 100%;
-      max-height: 220px;
-      object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 10px;
+    .product-name {
+      font-size: 20px;
+      font-weight: bold;
     }
 
-    .muted {
-      color: #999;
+    .product-info {
+      color: #aaa;
+      margin-top: 7px;
+    }
+
+    .preview {
+      width: 100%;
+      max-height: 350px;
+      object-fit: contain;
+      margin-top: 15px;
+      border-radius: 15px;
+      display: none;
+      background: #111;
     }
   </style>
 </head>
 
 <body>
 
-<div class="wrap">
+  <main class="wrap">
 
-  <a class="back" href="/">← Torna allo shop</a>
+    <a class="back" href="/">← Torna allo shop</a>
 
-  <h1>IL LAB</h1>
+    <h1>IL LAB</h1>
 
-  <div class="subtitle">
-    Area privata Luko Lab Custom
-  </div>
-
-  <div id="loginBox" class="box">
-
-    <h2>Accesso</h2>
-
-    <label>Password</label>
-
-    <input
-      id="password"
-      type="password"
-      placeholder="Inserisci la password"
-      autocomplete="current-password"
-    >
-
-    <button id="loginButton" type="button">
-      ENTRA NEL LAB
-    </button>
-
-    <div id="loginMessage"></div>
-
-  </div>
+    <div class="subtitle">
+      Area privata Luko Lab Custom
+    </div>
 
 
-  <div id="adminBox" class="hidden">
+    <!-- LOGIN -->
 
-    <div class="box">
+    <section id="loginBox" class="box">
 
-      <h2>Nuovo prodotto</h2>
+      <h2>Accesso</h2>
 
-      <label>Nome prodotto</label>
+      <label for="password">
+        Password
+      </label>
 
       <input
-        id="productName"
-        type="text"
-        placeholder="Es. Cappello Tropical"
+        id="password"
+        type="password"
+        placeholder="Inserisci la password"
+        autocomplete="current-password"
       >
 
-      <label>Prezzo (€)</label>
-
-      <input
-        id="productPrice"
-        type="number"
-        step="0.01"
-        min="0"
-        placeholder="35"
-      >
-
-      <label>Categoria</label>
-
-      <select id="productCategory">
-        <option value="Cappelli">Cappelli</option>
-        <option value="Abbigliamento">Abbigliamento</option>
-      </select>
-
-      <label>Foto</label>
-
-      <input
-        id="productImage"
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/heic"
-      >
-
-      <img
-        id="preview"
-        class="preview"
-        alt="Anteprima prodotto"
-      >
-
-      <button id="publishButton" type="button">
-        PUBBLICA PRODOTTO
+      <button id="loginButton">
+        ENTRA NEL LAB
       </button>
 
-      <div id="publishMessage"></div>
+      <div id="loginMessage" class="message"></div>
 
-    </div>
+    </section>
 
 
-    <div class="box">
+    <!-- LAB -->
 
-      <h2>Prodotti pubblicati</h2>
+    <section id="labBox" class="hidden">
 
-      <div id="productsList">
-        <span class="muted">Caricamento...</span>
+      <div class="box">
+
+        <h2>Aggiungi prodotto</h2>
+
+        <label for="name">
+          Nome prodotto
+        </label>
+
+        <input
+          id="name"
+          type="text"
+          placeholder="Es. Cappello Jungle"
+        >
+
+        <label for="price">
+          Prezzo €
+        </label>
+
+        <input
+          id="price"
+          type="number"
+          value="35"
+          min="0.01"
+          step="0.01"
+        >
+
+        <label for="category">
+          Categoria
+        </label>
+
+        <select id="category">
+          <option value="Cappelli">
+            Cappelli
+          </option>
+
+          <option value="Abbigliamento">
+            Abbigliamento
+          </option>
+        </select>
+
+        <label for="photo">
+          Foto
+        </label>
+
+        <input
+          id="photo"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/heic"
+        >
+
+        <img
+          id="preview"
+          class="preview"
+          alt="Anteprima"
+        >
+
+        <button id="publishButton">
+          PUBBLICA PRODOTTO
+        </button>
+
+        <div id="publishMessage" class="message"></div>
+
       </div>
 
-    </div>
 
-  </div>
+      <div class="box">
 
-</div>
+        <h2>Prodotti</h2>
 
+        <div id="productsList">
+          Caricamento...
+        </div>
 
-<script type="module">
+      </div>
 
-  import { upload } from "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm";
+    </section>
 
-
-  const passwordInput =
-    document.getElementById("password");
-
-  const loginButton =
-    document.getElementById("loginButton");
-
-  const loginMessage =
-    document.getElementById("loginMessage");
-
-  const loginBox =
-    document.getElementById("loginBox");
-
-  const adminBox =
-    document.getElementById("adminBox");
-
-  const productImage =
-    document.getElementById("productImage");
-
-  const preview =
-    document.getElementById("preview");
-
-  const publishButton =
-    document.getElementById("publishButton");
-
-  const publishMessage =
-    document.getElementById("publishMessage");
+  </main>
 
 
-  productImage.addEventListener("change", () => {
+  <script>
 
-    const file = productImage.files[0];
+    const loginBox =
+      document.getElementById("loginBox");
 
-    if (!file) {
-      preview.style.display = "none";
-      return;
+    const labBox =
+      document.getElementById("labBox");
+
+    const passwordInput =
+      document.getElementById("password");
+
+    const loginButton =
+      document.getElementById("loginButton");
+
+    const loginMessage =
+      document.getElementById("loginMessage");
+
+    const publishButton =
+      document.getElementById("publishButton");
+
+    const publishMessage =
+      document.getElementById("publishMessage");
+
+    const photoInput =
+      document.getElementById("photo");
+
+    const preview =
+      document.getElementById("preview");
+
+
+    function showMessage(element, text) {
+
+      element.textContent = text;
+      element.style.display = "block";
+
     }
 
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
 
-  });
+    loginButton.addEventListener(
+      "click",
+      async function () {
 
+        const password =
+          passwordInput.value.trim();
 
-  loginButton.addEventListener("click", login);
+        if (!password) {
 
+          showMessage(
+            loginMessage,
+            "Inserisci la password."
+          );
 
-  async function login() {
-
-    const password =
-      passwordInput.value.trim();
-
-    loginMessage.className = "";
-    loginMessage.textContent = "";
-
-    if (!password) {
-
-      loginMessage.className = "error";
-      loginMessage.textContent =
-        "Inserisci la password.";
-
-      return;
-    }
-
-    loginButton.disabled = true;
-    loginButton.textContent = "ACCESSO...";
-
-    try {
-
-      const response = await fetch(
-        "/api/admin-login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            password
-          })
+          return;
         }
-      );
 
-      const data =
-        await response.json().catch(() => ({}));
+        loginButton.disabled = true;
 
-      if (!response.ok) {
-        throw new Error(
-          data.error || "Accesso non riuscito"
-        );
-      }
+        loginButton.textContent =
+          "ACCESSO...";
 
-      loginBox.classList.add("hidden");
-      adminBox.classList.remove("hidden");
+        loginMessage.style.display =
+          "none";
 
-      await loadProducts();
+        try {
 
-    } catch (error) {
+          const response =
+            await fetch(
+              "/api/admin-login",
+              {
+                method: "POST",
 
-      loginMessage.className = "error";
-      loginMessage.textContent =
-        error.message;
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
 
-      loginButton.disabled = false;
-      loginButton.textContent =
-        "ENTRA NEL LAB";
-    }
-  }
-
-
-  publishButton.addEventListener(
-    "click",
-    publishProduct
-  );
+                body:
+                  JSON.stringify({
+                    password
+                  })
+              }
+            );
 
 
-  async function publishProduct() {
-
-    const name =
-      document.getElementById("productName")
-        .value.trim();
-
-    const price =
-      Number(
-        document.getElementById("productPrice")
-          .value
-      );
-
-    const category =
-      document.getElementById("productCategory")
-        .value;
-
-    const file =
-      productImage.files[0];
+          const data =
+            await response.json();
 
 
-    publishMessage.className = "";
-    publishMessage.textContent = "";
+          if (!response.ok) {
 
+            throw new Error(
+              data.error ||
+              "Password non corretta"
+            );
 
-    if (!name) {
-
-      publishMessage.className = "error";
-      publishMessage.textContent =
-        "Inserisci il nome del prodotto.";
-
-      return;
-    }
-
-
-    if (!price || price <= 0) {
-
-      publishMessage.className = "error";
-      publishMessage.textContent =
-        "Inserisci un prezzo valido.";
-
-      return;
-    }
-
-
-    if (!file) {
-
-      publishMessage.className = "error";
-      publishMessage.textContent =
-        "Seleziona una foto.";
-
-      return;
-    }
-
-
-    publishButton.disabled = true;
-    publishButton.textContent =
-      "CARICAMENTO FOTO...";
-
-
-    try {
-
-      const blob =
-        await upload(
-          `prodotti/${Date.now()}-${file.name}`,
-          file,
-          {
-            access: "public",
-            handleUploadUrl: "/api/upload"
           }
+
+
+          loginBox.classList.add(
+            "hidden"
+          );
+
+          labBox.classList.remove(
+            "hidden"
+          );
+
+          await loadProducts();
+
+
+        } catch (error) {
+
+          showMessage(
+            loginMessage,
+            error.message
+          );
+
+          loginButton.disabled =
+            false;
+
+          loginButton.textContent =
+            "ENTRA NEL LAB";
+        }
+
+      }
+    );
+
+
+    passwordInput.addEventListener(
+      "keydown",
+      function (event) {
+
+        if (event.key === "Enter") {
+
+          loginButton.click();
+
+        }
+
+      }
+    );
+
+
+    photoInput.addEventListener(
+      "change",
+      function () {
+
+        const file =
+          photoInput.files[0];
+
+        if (!file) {
+
+          preview.style.display =
+            "none";
+
+          return;
+        }
+
+        const url =
+          URL.createObjectURL(file);
+
+        preview.src = url;
+
+        preview.style.display =
+          "block";
+
+      }
+    );
+
+
+    async function loadProducts() {
+
+      const list =
+        document.getElementById(
+          "productsList"
         );
 
+      try {
 
-      publishMessage.className = "success";
-      publishMessage.textContent =
-        "Foto caricata. Salvataggio prodotto...";
+        const response =
+          await fetch(
+            "/api/products"
+          );
 
+        const data =
+          await response.json();
 
-      const response =
-        await fetch("/api/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name,
-            price,
-            category,
-            image: blob.url
-          })
-        });
+        const products =
+          Array.isArray(data.products)
+            ? data.products
+            : [];
 
 
-      const data =
-        await response.json().catch(() => ({}));
+        if (products.length === 0) {
 
+          list.textContent =
+            "Nessun prodotto.";
 
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-          "Impossibile salvare il prodotto."
-        );
-      }
+          return;
+        }
 
-
-      publishMessage.textContent =
-        "Prodotto pubblicato!";
-
-
-      document.getElementById("productName")
-        .value = "";
-
-      document.getElementById("productPrice")
-        .value = "";
-
-      productImage.value = "";
-
-      preview.src = "";
-      preview.style.display = "none";
-
-
-      await loadProducts();
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      publishMessage.className = "error";
-      publishMessage.textContent =
-        error.message ||
-        "Errore durante la pubblicazione.";
-
-    }
-
-
-    publishButton.disabled = false;
-    publishButton.textContent =
-      "PUBBLICA PRODOTTO";
-  }
-
-
-  async function loadProducts() {
-
-    const list =
-      document.getElementById("productsList");
-
-    try {
-
-      const response =
-        await fetch("/api/products");
-
-      const data =
-        await response.json();
-
-      if (
-        !response.ok ||
-        !Array.isArray(data.products)
-      ) {
-        throw new Error();
-      }
-
-
-      if (data.products.length === 0) {
 
         list.innerHTML =
-          "<span class='muted'>Nessun prodotto.</span>";
+          products
+            .map(function (product) {
 
-        return;
+              return `
+                <div class="product">
+
+                  <div class="product-name">
+                    ${escapeHtml(product.name)}
+                  </div>
+
+                  <div class="product-info">
+                    €${Number(product.price).toFixed(2)}
+                    ·
+                    ${escapeHtml(product.category)}
+                  </div>
+
+                </div>
+              `;
+
+            })
+            .join("");
+
+      } catch (error) {
+
+        list.textContent =
+          "Impossibile caricare i prodotti.";
+
       }
 
-
-      list.innerHTML =
-        data.products.map(product => `
-
-          <div class="product">
-
-            ${
-              product.image
-              ? `<img src="${product.image}" alt="">`
-              : ""
-            }
-
-            <strong>
-              ${escapeHtml(product.name)}
-            </strong>
-
-            <div class="muted">
-              €${Number(product.price).toFixed(2)}
-              · ${escapeHtml(product.category)}
-            </div>
-
-          </div>
-
-        `).join("");
-
-    } catch (error) {
-
-      list.innerHTML =
-        "<span class='muted'>Catalogo non ancora disponibile.</span>";
     }
-  }
 
 
-  function escapeHtml(value) {
+    publishButton.addEventListener(
+      "click",
+      async function () {
 
-    return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
+        const name =
+          document.getElementById(
+            "name"
+          ).value.trim();
 
-</script>
+        const price =
+          document.getElementById(
+            "price"
+          ).value;
+
+        const category =
+          document.getElementById(
+            "category"
+          ).value;
+
+        const file =
+          photoInput.files[0];
+
+
+        if (!name) {
+
+          showMessage(
+            publishMessage,
+            "Inserisci il nome del prodotto."
+          );
+
+          return;
+        }
+
+
+        if (!file) {
+
+          showMessage(
+            publishMessage,
+            "Seleziona una foto."
+          );
+
+          return;
+        }
+
+
+        publishButton.disabled =
+          true;
+
+        publishButton.textContent =
+          "CARICAMENTO...";
+
+        publishMessage.style.display =
+          "none";
+
+
+        try {
+
+          const { upload } =
+            await import(
+              "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm"
+            );
+
+
+          const blob =
+            await upload(
+              file.name,
+              file,
+              {
+                access: "public",
+
+                handleUploadUrl:
+                  "/api/upload"
+              }
+            );
+
+
+          const response =
+            await fetch(
+              "/api/products",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body:
+                  JSON.stringify({
+
+                    name,
+
+                    price,
+
+                    category,
+
+                    image:
+                      blob.url
+
+                  })
+              }
+            );
+
+
+          const data =
+            await response.json();
+
+
+          if (!response.ok) {
+
+            throw new Error(
+              data.error ||
+              "Errore pubblicazione"
+            );
+
+          }
+
+
+          showMessage(
+            publishMessage,
+            "Prodotto pubblicato!"
+          );
+
+
+          document.getElementById(
+            "name"
+          ).value = "";
+
+
+          photoInput.value = "";
+
+          preview.style.display =
+            "none";
+
+
+          await loadProducts();
+
+
+        } catch (error) {
+
+          showMessage(
+            publishMessage,
+            error.message ||
+            "Errore durante il caricamento."
+          );
+
+        }
+
+
+        publishButton.disabled =
+          false;
+
+        publishButton.textContent =
+          "PUBBLICA PRODOTTO";
+
+      }
+    );
+
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    }
+
+  </script>
 
 </body>
 </html>
