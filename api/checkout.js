@@ -45,41 +45,56 @@ module.exports = async (req, res) => {
       });
     }
 
-    const line_items = items.map((item) => {
+    const line_items = [];
+
+    for (const item of items) {
+      const name = String(item.name || "").trim();
+
       const price = Number(item.price);
-      const quantity = Number(item.quantity);
+
+      const quantity = Number(
+        item.quantity ?? item.qty ?? 1
+      );
 
       if (
-        !item.name ||
+        !name ||
         !Number.isFinite(price) ||
         price <= 0 ||
         !Number.isInteger(quantity) ||
         quantity <= 0
       ) {
-        throw new Error("Prodotto non valido");
+        return res.status(400).json({
+          error: "Prodotto non valido"
+        });
       }
 
-      return {
+      line_items.push({
         price_data: {
           currency: "eur",
+
           product_data: {
-            name: String(item.name)
+            name
           },
+
           unit_amount: Math.round(price * 100)
         },
-        quantity
-      };
-    });
 
-    // Aggiunge il costo della spedizione
+        quantity
+      });
+    }
+
+    // COSTO SPEDIZIONE
     line_items.push({
       price_data: {
         currency: "eur",
+
         product_data: {
           name: shipping.name
         },
+
         unit_amount: shipping.amount
       },
+
       quantity: 1
     });
 
@@ -118,7 +133,7 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("CHECKOUT ERROR:", error);
 
     return res.status(500).json({
       error: "Impossibile creare il pagamento"
