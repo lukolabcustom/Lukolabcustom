@@ -1,6 +1,8 @@
 const Stripe = require("stripe");
 
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY, {
+  httpClient: Stripe.createNodeHttpClient()
+});
 
 const shippingOptions = {
   north: {
@@ -49,9 +51,7 @@ module.exports = async (req, res) => {
 
     for (const item of items) {
       const name = String(item.name || "").trim();
-
       const price = Number(item.price);
-
       const quantity = Number(
         item.quantity ?? item.qty ?? 1
       );
@@ -71,38 +71,29 @@ module.exports = async (req, res) => {
       line_items.push({
         price_data: {
           currency: "eur",
-
           product_data: {
             name
           },
-
           unit_amount: Math.round(price * 100)
         },
-
         quantity
       });
     }
 
-    // COSTO SPEDIZIONE
     line_items.push({
       price_data: {
         currency: "eur",
-
         product_data: {
           name: shipping.name
         },
-
         unit_amount: shipping.amount
       },
-
       quantity: 1
     });
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-
       payment_method_types: ["card"],
-
       line_items,
 
       shipping_address_collection: {
