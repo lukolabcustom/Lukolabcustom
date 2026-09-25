@@ -4,174 +4,97 @@ const stripe = new Stripe(
   process.env.STRIPE_SECRET_KEY
 );
 
-
 module.exports = async (req, res) => {
-
   if (req.method !== "POST") {
-
     return res.status(405).json({
       error: "Metodo non consentito"
     });
-
   }
 
-
   try {
-
     const { items } = req.body || {};
 
-
-    if (
-      !Array.isArray(items) ||
-      items.length === 0
-    ) {
-
+    if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         error: "Carrello vuoto"
       });
-
     }
-
-
-    /*
-      Leggiamo il catalogo aggiornato
-      dal nostro sistema prodotti.
-    */
 
     const baseUrl =
       process.env.PUBLIC_URL ||
       `https://${req.headers.host}`;
 
-
-    const catalogResponse =
-      await fetch(
-        `${baseUrl}/api/products`,
-        {
-          cache: "no-store"
-        }
-      );
-
+    const catalogResponse = await fetch(
+      `${baseUrl}/api/products`,
+      {
+        cache: "no-store"
+      }
+    );
 
     if (!catalogResponse.ok) {
-
-      throw new Error(
-        "Catalogo non disponibile"
-      );
-
+      throw new Error("Catalogo non disponibile");
     }
-
 
     const catalogData =
       await catalogResponse.json();
 
-
     const products =
-      Array.isArray(
-        catalogData.products
-      )
+      Array.isArray(catalogData.products)
         ? catalogData.products
         : [];
 
-
     if (products.length === 0) {
-
       throw new Error(
         "Nessun prodotto disponibile"
       );
-
     }
 
+    const line_items = items.map(item => {
+      const product = products.find(
+        product => product.id === item.id
+      );
 
-    /*
-      Creiamo gli articoli Stripe
-      usando prezzo e nome presenti
-      nel catalogo reale.
-    */
+      if (!product) {
+        throw new Error(
+          "Prodotto non valido"
+        );
+      }
 
-    const line_items =
-      items.map(item => {
+      const quantity = Math.max(
+        1,
+        Math.min(
+          10,
+          Number(item.quantity) || 1
+        )
+      );
 
-        const product =
-          products.find(
-            product =>
-              product.id === item.id
-          );
+      const unitAmount = Math.round(
+        Number(product.price) * 100
+      );
 
+      if (
+        !Number.isFinite(unitAmount) ||
+        unitAmount <= 0
+      ) {
+        throw new Error(
+          "Prezzo prodotto non valido"
+        );
+      }
 
-        if (!product) {
+      return {
+        price_data: {
+          currency: "eur",
 
-          throw new Error(
-            "Prodotto non valido"
-          );
-
-        }
-
-
-        const quantity =
-          Math.max(
-            1,
-            Math.min(
-              10,
-              Number(
-                item.quantity
-              ) || 1
-            )
-          );
-
-
-        const unitAmount =
-          Math.round(
-            Number(
-              product.price
-            ) * 100
-          );
-
-
-        if (
-          !Number.isFinite(
-            unitAmount
-          ) ||
-          unitAmount <= 0
-        ) {
-
-          throw new Error(
-            "Prezzo prodotto non valido"
-          );
-
-        }
-
-
-        return {
-
-          price_data: {
-
-            currency: "eur",
-
-            product_data: {
-
-              name:
-                String(
-                  product.name
-                )
-
-            },
-
-            unit_amount:
-              unitAmount
-
+          product_data: {
+            name: String(product.name)
           },
 
-          quantity
+          unit_amount: unitAmount
+        },
 
-        };
-
-      });
-
-
-    /*
-      Checkout esclusivamente
-      con carta.
-    */
+        quantity
+      };
+    });
 
     const session =
       await stripe.checkout.sessions.create({
@@ -184,31 +107,38 @@ module.exports = async (req, res) => {
 
         line_items,
 
+        shipping_address_collection: {
+          allowed_countries: [
+            "IT"
+          ]
+        },
+
+        phone_number_collection: {
+          enabled: true
+        },
+
+        billing_address_collection: "auto",
+
+        customer_creation: "always",
+
         success_url:
           `${baseUrl}/?pagamento=successo`,
 
         cancel_url:
           `${baseUrl}/?pagamento=annullato`
-
       });
-
 
     return res.status(200).json({
       url: session.url
     });
-
 
   } catch (error) {
 
     console.error(error);
 
     return res.status(500).json({
-
       error:
         "Impossibile creare il pagamento"
-
     });
-
   }
-
 };
