@@ -24,10 +24,7 @@
 
     body {
       margin: 0;
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background: #071b12;
       color: #fff;
     }
@@ -41,21 +38,14 @@
       position: sticky;
       top: 0;
       z-index: 50;
-
       height: 72px;
-
       display: flex;
       align-items: center;
       justify-content: space-between;
-
       padding: 0 28px;
-
       background: rgba(4, 22, 14, 0.88);
-
       backdrop-filter: blur(14px);
-
-      border-bottom:
-        1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
     .logo {
@@ -82,15 +72,11 @@
 
     .hero {
       min-height: 650px;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       text-align: center;
-
       padding: 90px 25px;
-
       position: relative;
       overflow: hidden;
 
@@ -100,225 +86,147 @@
           rgba(31,180,85,.42),
           transparent 38%
         ),
-
         radial-gradient(
           circle at 85% 30%,
           rgba(0,95,52,.45),
           transparent 42%
         ),
-
         radial-gradient(
           circle at 40% 90%,
           rgba(0,55,31,.55),
           transparent 45%
         ),
-
         #062015;
     }
 
     .hero::before {
       content: "";
-
       position: absolute;
-
       width: 620px;
       height: 620px;
-
       left: -260px;
       top: -200px;
-
       border-radius: 50%;
-
-      background:
-        rgba(27,160,76,.28);
-
+      background: rgba(27,160,76,.28);
       filter: blur(4px);
     }
 
     .hero::after {
       content: "";
-
       position: absolute;
-
       width: 520px;
       height: 520px;
-
       right: -250px;
       bottom: -200px;
-
       border-radius: 50%;
-
-      background:
-        rgba(12,94,53,.34);
-
+      background: rgba(12,94,53,.34);
       filter: blur(3px);
     }
 
     .hero-content {
       position: relative;
       z-index: 2;
-
       max-width: 760px;
     }
 
     .hero h1 {
       margin: 0;
-
-      font-size:
-        clamp(48px, 12vw, 82px);
-
+      font-size: clamp(48px, 12vw, 82px);
       line-height: .95;
-
       font-weight: 900;
-
       letter-spacing: -3px;
     }
 
     .hero-subtitle {
-
       margin-top: 32px;
-
-      font-size:
-        clamp(18px, 4vw, 27px);
-
+      font-size: clamp(18px, 4vw, 27px);
       color: #b9c9c1;
-
       letter-spacing: 1px;
     }
 
     .hero-text {
-
       margin: 44px auto 0;
-
       max-width: 680px;
-
-      font-size:
-        clamp(17px, 4vw, 23px);
-
+      font-size: clamp(17px, 4vw, 23px);
       line-height: 1.65;
-
       color: #d6dfda;
     }
 
     .filters-bar {
-
       position: sticky;
-
       top: 72px;
-
       z-index: 40;
-
       padding: 24px 16px;
-
       display: flex;
-
       justify-content: center;
-
       gap: 16px;
-
       flex-wrap: wrap;
-
-      background:
-        rgba(3,24,15,.95);
-
-      border-bottom:
-        1px solid rgba(255,255,255,.08);
-
+      background: rgba(3,24,15,.95);
+      border-bottom: 1px solid rgba(255,255,255,.08);
       backdrop-filter: blur(12px);
     }
 
+    .filters {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     .filters button {
-
-      border: 1px solid
-        rgba(255,255,255,.18);
-
-      background:
-        rgba(255,255,255,.04);
-
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.04);
       color: white;
-
-      padding:
-        15px 30px;
-
+      padding: 15px 30px;
       border-radius: 40px;
-
       font-size: 15px;
-
       font-weight: 800;
-
       letter-spacing: .5px;
-
       cursor: pointer;
-
       transition: .2s;
     }
 
     .filters button:hover {
-      background:
-        rgba(255,255,255,.1);
+      background: rgba(255,255,255,.1);
     }
 
     .filters button.active {
-
-      background:
-        #35e17c;
-
+      background: #35e17c;
       color: #06150d;
-
-      border-color:
-        #35e17c;
+      border-color: #35e17c;
     }
 
     .shop {
-
       max-width: 1400px;
-
       margin: auto;
-
-      padding:
-        80px 24px 120px;
+      padding: 80px 24px 120px;
     }
 
     .shop-title {
-
       text-align: center;
-
       margin-bottom: 60px;
     }
 
     .shop-title h2 {
-
       margin: 0;
-
-      font-size:
-        clamp(38px, 8vw, 58px);
-
+      font-size: clamp(38px, 8vw, 58px);
       letter-spacing: -2px;
     }
 
     .shop-title p {
-
       margin-top: 20px;
-
       font-size: 21px;
-
       color: #aebdb5;
     }
 
     #products {
-
       display: grid;
-
-      grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 28px;
     }
 
     .card {
-
       overflow: hidden;
-
       border-radius: 28px;
 
       background:
@@ -328,13 +236,10 @@
           #071b12
         );
 
-      border:
-        1px solid
-        rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.10);
 
       box-shadow:
-        0 20px 60px
-        rgba(0,0,0,.25);
+        0 20px 60px rgba(0,0,0,.25);
 
       transition:
         transform .25s ease,
@@ -342,20 +247,13 @@
     }
 
     .card:hover {
-
-      transform:
-        translateY(-5px);
-
-      border-color:
-        rgba(53,225,124,.35);
+      transform: translateY(-5px);
+      border-color: rgba(53,225,124,.35);
     }
 
     .photo {
-
       width: 100%;
-
       aspect-ratio: 1 / 1;
-
       overflow: hidden;
 
       background:
@@ -367,174 +265,107 @@
     }
 
     .photo img {
-
       width: 100%;
       height: 100%;
-
       object-fit: cover;
-
       display: block;
     }
 
     .card-body {
-
       padding: 24px;
     }
 
     .card-body h3 {
-
-      margin:
-        0 0 12px;
-
+      margin: 0 0 12px;
       font-size: 20px;
-
       line-height: 1.3;
     }
 
     .price {
-
       font-size: 21px;
-
       font-weight: 800;
-
       margin-bottom: 20px;
     }
 
     .card-body button {
-
       width: 100%;
-
       border: 0;
-
       padding: 15px;
-
       border-radius: 13px;
-
-      background:
-        #35e17c;
-
-      color:
-        #06150d;
-
+      background: #35e17c;
+      color: #06150d;
       font-weight: 900;
-
       font-size: 14px;
-
       cursor: pointer;
-
       transition: .2s;
     }
 
     .card-body button:hover {
-
-      transform:
-        translateY(-1px);
-
-      filter:
-        brightness(1.08);
+      transform: translateY(-1px);
+      filter: brightness(1.08);
     }
 
     .empty {
-
       grid-column: 1 / -1;
-
       text-align: center;
-
       padding: 60px 20px;
-
       color: #aabbb2;
-
       font-size: 18px;
     }
 
     #cartToggle {
-
       position: fixed;
-
       right: 20px;
       bottom: 20px;
-
       z-index: 100;
-
       width: 62px;
       height: 62px;
-
       border-radius: 50%;
-
-      border:
-        1px solid
-        rgba(255,255,255,.25);
-
-      background:
-        rgba(5,24,15,.94);
-
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(5,24,15,.94);
       color: white;
-
       cursor: pointer;
 
       box-shadow:
-        0 15px 45px
-        rgba(0,0,0,.4);
+        0 15px 45px rgba(0,0,0,.4);
 
       font-size: 25px;
     }
 
     #cartCount {
-
       position: absolute;
-
       right: -3px;
       top: -3px;
-
       min-width: 23px;
       height: 23px;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       border-radius: 50%;
-
-      background:
-        #35e17c;
-
-      color:
-        #06150d;
-
+      background: #35e17c;
+      color: #06150d;
       font-size: 12px;
-
       font-weight: 900;
     }
 
+    #cartToggle.hidden {
+      display: none;
+    }
+
     #cart {
-
       position: fixed;
-
       right: 20px;
       bottom: 20px;
-
       z-index: 110;
-
-      width:
-        min(390px, calc(100vw - 40px));
-
-      max-height:
-        calc(100vh - 40px);
-
+      width: min(390px, calc(100vw - 40px));
+      max-height: calc(100vh - 40px);
       overflow-y: auto;
-
       border-radius: 25px;
-
-      background:
-        #0b2116;
-
-      border:
-        1px solid
-        rgba(255,255,255,.13);
+      background: #0b2116;
+      border: 1px solid rgba(255,255,255,.13);
 
       box-shadow:
-        0 25px 80px
-        rgba(0,0,0,.55);
+        0 25px 80px rgba(0,0,0,.55);
 
       padding: 24px;
     }
@@ -544,52 +375,32 @@
     }
 
     .cart-header {
-
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
-
       margin-bottom: 20px;
     }
 
     .cart-header h2 {
-
       margin: 0;
-
       font-size: 25px;
     }
 
     .cart-close {
-
       border: 0;
-
       background: transparent;
-
       color: white;
-
       font-size: 28px;
-
       cursor: pointer;
     }
 
     .cart-item {
-
       display: flex;
-
       justify-content: space-between;
-
       align-items: center;
-
       gap: 15px;
-
-      padding:
-        16px 0;
-
-      border-bottom:
-        1px solid
-        rgba(255,255,255,.08);
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
     }
 
     .cart-item strong {
@@ -597,136 +408,77 @@
     }
 
     .qty {
-
       display: flex;
-
       align-items: center;
-
       gap: 10px;
     }
 
     .qty button {
-
       width: 30px;
       height: 30px;
-
       border: 0;
-
       border-radius: 50%;
-
-      background:
-        rgba(255,255,255,.1);
-
+      background: rgba(255,255,255,.1);
       color: white;
-
       cursor: pointer;
-
       font-size: 18px;
     }
 
     .cart-total {
-
       display: flex;
-
       justify-content: space-between;
-
       margin-top: 25px;
-
       font-size: 20px;
-
       font-weight: 900;
     }
 
     #shippingBox {
-
       margin-top: 20px;
-
       padding: 16px;
-
       border-radius: 14px;
-
-      background:
-        rgba(255,255,255,.05);
-
-      border:
-        1px solid
-        rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
     }
 
     #shippingBox label {
-
       display: block;
-
       margin-bottom: 10px;
-
       font-weight: 800;
-
       font-size: 14px;
     }
 
     #shippingZone {
-
       width: 100%;
-
       padding: 14px;
-
       border-radius: 10px;
-
-      border:
-        1px solid
-        rgba(255,255,255,.18);
-
-      background:
-        #071b12;
-
+      border: 1px solid rgba(255,255,255,.18);
+      background: #071b12;
       color: white;
-
       font-size: 15px;
     }
 
     #checkoutBtn {
-
       width: 100%;
-
       margin-top: 20px;
-
       padding: 16px;
-
       border: 0;
-
       border-radius: 13px;
-
-      background:
-        #35e17c;
-
-      color:
-        #06150d;
-
+      background: #35e17c;
+      color: #06150d;
       font-weight: 900;
-
       font-size: 15px;
-
       cursor: pointer;
     }
 
     #checkoutBtn:disabled {
-
       opacity: .5;
-
       cursor: wait;
     }
 
     footer {
-
-      padding:
-        50px 25px;
-
+      padding: 50px 25px;
       text-align: center;
-
-      border-top:
-        1px solid
-        rgba(255,255,255,.08);
-
+      border-top: 1px solid rgba(255,255,255,.08);
       color: #91a39a;
     }
 
@@ -763,9 +515,7 @@
       }
 
       #products {
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 15px;
       }
 
@@ -787,8 +537,7 @@
       }
 
       .shop {
-        padding:
-          60px 15px 100px;
+        padding: 60px 15px 100px;
       }
     }
 
@@ -821,453 +570,808 @@
 
 <body>
 
-  <header>
+<header>
 
-    <div class="logo">
-      LUKO LAB CUSTOM
+  <div class="logo">
+    LUKO LAB CUSTOM
+  </div>
+
+  <nav>
+
+    <a href="#shop">
+      SHOP
+    </a>
+
+    <a href="/admin.html">
+      IL LAB
+    </a>
+
+  </nav>
+
+</header>
+
+
+<section class="hero">
+
+  <div class="hero-content">
+
+    <h1>
+      LUKO LAB
+    </h1>
+
+    <div class="hero-subtitle">
+      CUSTOM · HANDMADE · JUNGLE SPIRIT
     </div>
 
-    <nav>
-
-      <a href="#shop">
-        SHOP
-      </a>
-
-      <a href="/admin.html">
-        IL LAB
-      </a>
-
-    </nav>
-
-  </header>
-
-  <section class="hero">
-
-    <div class="hero-content">
-
-      <h1>
-        LUKO LAB
-      </h1>
-
-      <div class="hero-subtitle">
-        CUSTOM · HANDMADE · JUNGLE SPIRIT
-      </div>
-
-      <div class="hero-text">
-        Benvenuto nella giungla di
-        Luko Lab Custom.
-        Esplora la collezione e porta
-        con te un pezzo fatto a mano.
-      </div>
-
-    </div>
-
-  </section>
-
-  <div class="filters-bar">
-
-    <div class="filters">
-
-      <button
-        type="button"
-        data-filter="all"
-        class="active"
-      >
-        TUTTI
-      </button>
-
-      <button
-        type="button"
-        data-filter="Cappelli"
-      >
-        CAPPELLI
-      </button>
-
-      <button
-        type="button"
-        data-filter="Abbigliamento"
-      >
-        ABBIGLIAMENTO
-      </button>
-
+    <div class="hero-text">
+      Benvenuto nella giungla di
+      Luko Lab Custom.
+      Esplora la collezione e porta
+      con te un pezzo fatto a mano.
     </div>
 
   </div>
 
-  <main
-    class="shop"
-    id="shop"
-  >
+</section>
 
-    <div class="shop-title">
 
-      <h2>
-        Esplora la collezione
-      </h2>
+<div class="filters-bar">
 
-      <p>
-        Creazioni handmade Luko Lab Custom
-      </p>
-
-    </div>
-
-    <div id="products">
-
-      <div class="empty">
-        Caricamento collezione...
-      </div>
-
-    </div>
-
-  </main>
-
-  <button
-    id="cartToggle"
-    type="button"
-    onclick="toggleCart()"
-    aria-label="Apri carrello"
-  >
-
-    🛒
-
-    <span id="cartCount">
-      0
-    </span>
-
-  </button>
-
-  <aside
-    id="cart"
-    class="hidden"
-  >
-
-    <div class="cart-header">
-
-      <h2>
-        Il tuo carrello
-      </h2>
-
-      <button
-        class="cart-close"
-        type="button"
-        onclick="closeCart()"
-      >
-        ×
-      </button>
-
-    </div>
-
-    <div id="cartItems">
-
-      <div
-        style="
-          color:#999;
-          padding:20px 0;
-        "
-      >
-        Il carrello è vuoto.
-      </div>
-
-    </div>
-
-    <div id="shippingBox">
-
-      <label for="shippingZone">
-        Zona di spedizione
-      </label>
-
-      <select id="shippingZone">
-
-        <option value="">
-          Seleziona la zona
-        </option>
-
-        <option value="north">
-          Nord Italia — €5,00
-        </option>
-
-        <option value="center">
-          Centro Italia — €6,00
-        </option>
-
-        <option value="south">
-          Sud Italia — €7,00
-        </option>
-
-        <option value="islands">
-          Sicilia e Sardegna — €9,00
-        </option>
-
-      </select>
-
-    </div>
-
-    <div class="cart-total">
-
-      <span>
-        Totale prodotti
-      </span>
-
-      <span>
-        €<span id="total">0.00</span>
-      </span>
-
-    </div>
+  <div class="filters">
 
     <button
-      id="checkoutBtn"
       type="button"
-      onclick="checkout()"
+      data-filter="all"
+      class="active"
     >
-      PAGA CON CARTA
+      TUTTI
     </button>
 
-  </aside>
+    <button
+      type="button"
+      data-filter="Cappelli"
+    >
+      CAPPELLI
+    </button>
 
-  <footer>
+    <button
+      type="button"
+      data-filter="Abbigliamento"
+    >
+      ABBIGLIAMENTO
+    </button>
 
-    <strong>
-      LUKO LAB CUSTOM
-    </strong>
+  </div>
 
-    <br><br>
+</div>
 
-    Handmade pieces.
-    Jungle spirit.
 
-  </footer>
+<main
+  class="shop"
+  id="shop"
+>
 
-  <script>
+  <div class="shop-title">
 
-    let products = [];
+    <h2>
+      Esplora la collezione
+    </h2>
 
-    let cart = [];
+    <p>
+      Creazioni handmade Luko Lab Custom
+    </p>
+
+  </div>
+
+  <div id="products">
+
+    <div class="empty">
+      Caricamento collezione...
+    </div>
+
+  </div>
+
+</main>
+
+
+<button
+  id="cartToggle"
+  type="button"
+  onclick="toggleCart()"
+  aria-label="Apri carrello"
+>
+
+  🛒
+
+  <span id="cartCount">
+    0
+  </span>
+
+</button>
+
+
+<aside
+  id="cart"
+  class="hidden"
+>
+
+  <div class="cart-header">
+
+    <h2>
+      Il tuo carrello
+    </h2>
+
+    <button
+      class="cart-close"
+      type="button"
+      onclick="closeCart()"
+    >
+      ×
+    </button>
+
+  </div>
+
+
+  <div id="cartItems">
+
+    <div
+      style="
+        color:#999;
+        padding:20px 0;
+      "
+    >
+      Il carrello è vuoto.
+    </div>
+
+  </div>
+
+
+  <div id="shippingBox">
+
+    <label for="shippingZone">
+      Zona di spedizione
+    </label>
+
+    <select id="shippingZone">
+
+      <option value="">
+        Seleziona la zona
+      </option>
+
+      <option value="north">
+        Nord Italia — €5,00
+      </option>
+
+      <option value="center">
+        Centro Italia — €6,00
+      </option>
+
+      <option value="south">
+        Sud Italia — €7,00
+      </option>
+
+      <option value="islands">
+        Sicilia e Sardegna — €9,00
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="cart-total">
+
+    <span>
+      Totale prodotti
+    </span>
+
+    <span>
+      €<span id="total">0.00</span>
+    </span>
+
+  </div>
+
+
+  <button
+    id="checkoutBtn"
+    type="button"
+    onclick="checkout()"
+  >
+    PAGA CON CARTA
+  </button>
+
+</aside>
+
+
+<footer>
+
+  <strong>
+    LUKO LAB CUSTOM
+  </strong>
+
+  <br><br>
+
+  Handmade pieces.
+  Jungle spirit.
+
+</footer>
+
+
+<script>
+
+  let products = [];
+
+  let cart = [];
+
+
+  /*
+   * CARICA EVENTUALE CARRELLO SALVATO
+   */
+  try {
+
+    const savedCart =
+      localStorage.getItem("lukoCart");
+
+    if (savedCart) {
+
+      const parsed =
+        JSON.parse(savedCart);
+
+      if (Array.isArray(parsed)) {
+
+        cart = parsed.filter(item =>
+          item &&
+          typeof item.id === "string" &&
+          Number(item.quantity) > 0
+        );
+
+      }
+
+    }
+
+  } catch (error) {
+
+    cart = [];
+
+  }
+
+
+  function save() {
 
     try {
 
-      const savedCart =
-        localStorage.getItem(
-          "lukoCart"
+      localStorage.setItem(
+        "lukoCart",
+        JSON.stringify(cart)
+      );
+
+    } catch (error) {}
+
+  }
+
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+
+  /*
+   * CARICA I PRODOTTI DAL CATALOGO
+   */
+  async function loadProducts() {
+
+    const container =
+      document.getElementById("products");
+
+    try {
+
+      const response =
+        await fetch(
+          "/api/products",
+          {
+            cache: "no-store"
+          }
         );
 
-      if (savedCart) {
+      const data =
+        await response.json();
 
-        const parsed =
-          JSON.parse(savedCart);
+      if (
+        !response.ok ||
+        !Array.isArray(data.products)
+      ) {
 
-        if (Array.isArray(parsed)) {
+        throw new Error(
+          "Catalogo non disponibile"
+        );
 
-          cart =
-            parsed.filter(item =>
-              item &&
-              typeof item.id === "string" &&
-              Number(item.quantity) > 0
+      }
+
+      products =
+        data.products;
+
+
+      /*
+       * IMPORTANTE:
+       * aggiorniamo gli elementi del carrello
+       * con nome, prezzo e categoria.
+       *
+       * Questo risolve il problema del POST 400.
+       */
+      cart = cart
+        .map(item => {
+
+          const product =
+            products.find(
+              product =>
+                product.id === item.id
             );
 
-        }
-      }
+          if (!product) {
+            return null;
+          }
+
+          return {
+
+            id: product.id,
+
+            name: product.name,
+
+            price: Number(
+              product.price
+            ),
+
+            category:
+              product.category,
+
+            image:
+              product.image || null,
+
+            quantity:
+              Math.min(
+                10,
+                Math.max(
+                  1,
+                  Number(item.quantity) || 1
+                )
+              )
+
+          };
+
+        })
+        .filter(Boolean);
+
+
+      save();
+
+
+      renderProducts(
+        getCurrentFilter()
+      );
+
+      renderCart();
+
 
     } catch (error) {
 
-      cart = [];
+      console.error(error);
+
+      container.innerHTML = `
+
+        <div class="empty">
+
+          Impossibile caricare
+          la collezione.
+
+          <br><br>
+
+          Riprova tra poco.
+
+        </div>
+
+      `;
 
     }
 
-    function save() {
+  }
 
-      try {
 
-        localStorage.setItem(
-          "lukoCart",
-          JSON.stringify(cart)
+  function getCurrentFilter() {
+
+    const active =
+      document.querySelector(
+        ".filters button.active"
+      );
+
+    return active
+      ? active.dataset.filter
+      : "all";
+
+  }
+
+
+  function renderProducts(
+    filter = "all"
+  ) {
+
+    const container =
+      document.getElementById(
+        "products"
+      );
+
+    let list =
+      products;
+
+
+    if (filter !== "all") {
+
+      list =
+        products.filter(
+          product =>
+            product.category === filter
         );
-
-      } catch (error) {}
 
     }
 
-    function escapeHtml(value) {
 
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    if (!list.length) {
+
+      container.innerHTML = `
+
+        <div class="empty">
+
+          Nessun prodotto disponibile
+          in questa categoria.
+
+        </div>
+
+      `;
+
+      return;
 
     }
 
-    async function loadProducts() {
 
-      const container =
-        document.getElementById(
-          "products"
-        );
+    container.innerHTML =
+      list.map(product => {
 
-      try {
+        const image =
+          product.image
+            ? `
 
-        const response =
-          await fetch(
-            "/api/products",
-            {
-              cache: "no-store"
-            }
-          );
+              <img
+                src="${escapeHtml(
+                  product.image
+                )}"
+                alt="${escapeHtml(
+                  product.name
+                )}"
+                loading="lazy"
+              >
 
-        const data =
-          await response.json();
+            `
+            : `
 
-        if (
-          !response.ok ||
-          !Array.isArray(
-            data.products
-          )
-        ) {
+              <div style="
+                width:100%;
+                height:100%;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                color:#aaa;
+                font-size:14px;
+              ">
 
-          throw new Error(
-            "Catalogo non disponibile"
-          );
+                FOTO PRODOTTO
 
-        }
+              </div>
 
-        products =
-          data.products;
+            `;
 
-        renderProducts(
-          getCurrentFilter()
-        );
 
-        renderCart();
+        return `
 
-      } catch (error) {
+          <article class="card">
 
-        console.error(error);
+            <div class="photo">
 
-        container.innerHTML = `
-          <div class="empty">
-            Impossibile caricare
-            la collezione.
-            <br><br>
-            Riprova tra poco.
-          </div>
+              ${image}
+
+            </div>
+
+
+            <div class="card-body">
+
+              <h3>
+
+                ${escapeHtml(
+                  product.name
+                )}
+
+              </h3>
+
+
+              <div class="price">
+
+                €${Number(
+                  product.price
+                ).toFixed(2)}
+
+              </div>
+
+
+              <button
+                type="button"
+                onclick="addToCart('${product.id}')"
+              >
+
+                AGGIUNGI AL CARRELLO
+
+              </button>
+
+            </div>
+
+          </article>
+
         `;
 
-      }
+      }).join("");
+
+  }
+
+
+  /*
+   * AGGIUNGI AL CARRELLO
+   */
+  function addToCart(id) {
+
+    const product =
+      products.find(
+        product =>
+          product.id === id
+      );
+
+
+    if (!product) {
+
+      alert(
+        "Prodotto non trovato."
+      );
+
+      return;
 
     }
 
-    function getCurrentFilter() {
 
-      const active =
-        document.querySelector(
-          ".filters button.active"
+    const item =
+      cart.find(
+        item =>
+          item.id === id
+      );
+
+
+    if (item) {
+
+      item.quantity =
+        Math.min(
+          10,
+          Number(item.quantity) + 1
         );
 
-      return active
-        ? active.dataset.filter
-        : "all";
+    } else {
+
+      /*
+       * QUI SALVIAMO TUTTI I DATI
+       * NECESSARI AL CHECKOUT
+       */
+
+      cart.push({
+
+        id: product.id,
+
+        name: product.name,
+
+        price: Number(
+          product.price
+        ),
+
+        category:
+          product.category,
+
+        image:
+          product.image || null,
+
+        quantity: 1
+
+      });
 
     }
 
-    function renderProducts(
-      filter = "all"
-    ) {
 
-      const container =
-        document.getElementById(
-          "products"
+    save();
+
+    renderCart();
+
+    openCart();
+
+  }
+
+
+  function changeQuantity(
+    id,
+    amount
+  ) {
+
+    const item =
+      cart.find(
+        item =>
+          item.id === id
+      );
+
+
+    if (!item) {
+      return;
+    }
+
+
+    item.quantity =
+      Number(item.quantity) +
+      Number(amount);
+
+
+    if (item.quantity <= 0) {
+
+      cart =
+        cart.filter(
+          item =>
+            item.id !== id
         );
 
-      let list =
-        products;
+    }
 
-      if (filter !== "all") {
 
-        list =
-          products.filter(
-            product =>
-              product.category === filter
-          );
+    if (item.quantity > 10) {
 
-      }
+      item.quantity = 10;
 
-      if (!list.length) {
+    }
 
-        container.innerHTML = `
-          <div class="empty">
-            Nessun prodotto disponibile
-            in questa categoria.
-          </div>
-        `;
 
-        return;
+    save();
 
-      }
+    renderCart();
 
-      container.innerHTML =
-        list.map(product => {
+  }
 
-          const image =
-            product.image
-              ? `
-                <img
-                  src="${escapeHtml(
-                    product.image
-                  )}"
-                  alt="${escapeHtml(
-                    product.name
-                  )}"
-                  loading="lazy"
-                >
-              `
-              : `
-                <div style="
-                  width:100%;
-                  height:100%;
-                  display:flex;
-                  align-items:center;
-                  justify-content:center;
-                  color:#aaa;
-                  font-size:14px;
-                ">
-                  FOTO PRODOTTO
-                </div>
-              `;
+
+  /*
+   * RENDER CARRELLO
+   */
+  function renderCart() {
+
+    const box =
+      document.getElementById(
+        "cartItems"
+      );
+
+
+    /*
+     * Elimina dal carrello prodotti
+     * che non esistono più nel catalogo.
+     */
+    cart =
+      cart.filter(item =>
+        products.length === 0 ||
+        products.some(
+          product =>
+            product.id === item.id
+        )
+      );
+
+
+    if (cart.length === 0) {
+
+      box.innerHTML = `
+
+        <div
+          style="
+            color:#999;
+            padding:20px 0;
+          "
+        >
+
+          Il carrello è vuoto.
+
+        </div>
+
+      `;
+
+    } else {
+
+      box.innerHTML =
+        cart.map(item => {
+
+          const product =
+            products.find(
+              product =>
+                product.id === item.id
+            );
+
+
+          /*
+           * Se i prodotti non sono ancora
+           * caricati, saltiamo temporaneamente.
+           */
+          if (!product) {
+            return "";
+          }
+
 
           return `
 
-            <article class="card">
+            <div class="cart-item">
 
-              <div class="photo">
-                ${image}
-              </div>
+              <div>
 
-              <div class="card-body">
+                <strong>
 
-                <h3>
                   ${escapeHtml(
                     product.name
                   )}
-                </h3>
 
-                <div class="price">
-                  €${Number(
-                    product.price
-                  ).toFixed(2)}
-                </div>
+                </strong>
+
+                <br>
+
+                €${Number(
+                  product.price
+                ).toFixed(2)}
+
+                × ${item.quantity}
+
+              </div>
+
+
+              <div class="qty">
 
                 <button
                   type="button"
-                  onclick="addToCart('${escapeHtml(
-                    product.id
-                  )}')"
+                  onclick="changeQuantity(
+                    '${product.id}',
+                    -1
+                  )"
                 >
-                  AGGIUNGI AL CARRELLO
+                  −
+                </button>
+
+
+                <span>
+
+                  ${item.quantity}
+
+                </span>
+
+
+                <button
+                  type="button"
+                  onclick="changeQuantity(
+                    '${product.id}',
+                    1
+                  )"
+                >
+                  +
                 </button>
 
               </div>
 
-            </article>
+            </div>
 
           `;
 
@@ -1275,433 +1379,347 @@
 
     }
 
-    function addToCart(id) {
 
-      const product =
-        products.find(
-          product =>
-            product.id === id
-        );
+    const total =
+      cart.reduce(
+        (sum, item) => {
 
-      if (!product) {
+          const product =
+            products.find(
+              product =>
+                product.id === item.id
+            );
 
-        alert(
-          "Prodotto non trovato."
-        );
 
-        return;
+          if (!product) {
+            return sum;
+          }
 
-      }
 
-      let item =
-        cart.find(
-          item =>
-            item.id === id
-        );
+          return sum +
+            (
+              Number(
+                product.price
+              ) *
+              Number(
+                item.quantity
+              )
+            );
 
-      if (item) {
+        },
+        0
+      );
 
-        item.quantity =
-          Math.min(
-            10,
-            Number(item.quantity) + 1
-          );
 
-      } else {
+    const count =
+      cart.reduce(
+        (sum, item) =>
+          sum +
+          Number(
+            item.quantity
+          ),
+        0
+      );
 
-        cart.push({
-          id: id,
-          quantity: 1
-        });
 
-      }
+    document.getElementById(
+      "total"
+    ).textContent =
+      total.toFixed(2);
 
-      save();
 
-      renderCart();
+    document.getElementById(
+      "cartCount"
+    ).textContent =
+      count;
+
+
+    save();
+
+  }
+
+
+  function openCart() {
+
+    document
+      .getElementById("cart")
+      .classList.remove(
+        "hidden"
+      );
+
+
+    document
+      .getElementById("cartToggle")
+      .classList.add(
+        "hidden"
+      );
+
+  }
+
+
+  function closeCart() {
+
+    document
+      .getElementById("cart")
+      .classList.add(
+        "hidden"
+      );
+
+
+    document
+      .getElementById("cartToggle")
+      .classList.remove(
+        "hidden"
+      );
+
+  }
+
+
+  function toggleCart() {
+
+    const cartBox =
+      document.getElementById(
+        "cart"
+      );
+
+
+    if (
+      cartBox.classList.contains(
+        "hidden"
+      )
+    ) {
 
       openCart();
 
-    }
+    } else {
 
-    function changeQuantity(
-      id,
-      amount
-    ) {
-
-      const item =
-        cart.find(
-          item =>
-            item.id === id
-        );
-
-      if (!item) {
-        return;
-      }
-
-      item.quantity =
-        Number(item.quantity) +
-        Number(amount);
-
-      if (item.quantity <= 0) {
-
-        cart =
-          cart.filter(
-            item =>
-              item.id !== id
-          );
-
-      }
-
-      if (item.quantity > 10) {
-
-        item.quantity = 10;
-
-      }
-
-      save();
-
-      renderCart();
+      closeCart();
 
     }
 
-    function renderCart() {
+  }
 
-      const box =
-        document.getElementById(
-          "cartItems"
-        );
 
-      cart =
-        cart.filter(item =>
-          products.some(
-            product =>
-              product.id === item.id
-          )
-        );
+  /*
+   * CHECKOUT STRIPE
+   */
+  async function checkout() {
 
-      if (cart.length === 0) {
+    if (cart.length === 0) {
 
-        box.innerHTML = `
-          <div
-            style="
-              color:#999;
-              padding:20px 0;
-            "
-          >
-            Il carrello è vuoto.
-          </div>
-        `;
+      alert(
+        "Il carrello è vuoto."
+      );
 
-      } else {
+      return;
 
-        box.innerHTML =
-          cart.map(item => {
+    }
 
-            const product =
-              products.find(
-                product =>
-                  product.id === item.id
-              );
 
-            return `
-
-              <div class="cart-item">
-
-                <div>
-
-                  <strong>
-                    ${escapeHtml(
-                      product.name
-                    )}
-                  </strong>
-
-                  <br>
-
-                  €${Number(
-                    product.price
-                  ).toFixed(2)}
-
-                  × ${item.quantity}
-
-                </div>
-
-                <div class="qty">
-
-                  <button
-                    type="button"
-                    onclick="changeQuantity(
-                      '${escapeHtml(
-                        product.id
-                      )}',
-                      -1
-                    )"
-                  >
-                    −
-                  </button>
-
-                  <span>
-                    ${item.quantity}
-                  </span>
-
-                  <button
-                    type="button"
-                    onclick="changeQuantity(
-                      '${escapeHtml(
-                        product.id
-                      )}',
-                      1
-                    )"
-                  >
-                    +
-                  </button>
-
-                </div>
-
-              </div>
-
-            `;
-
-          }).join("");
-
-      }
-
-      const total =
-        cart.reduce(
-          (sum, item) => {
-
-            const product =
-              products.find(
-                product =>
-                  product.id === item.id
-              );
-
-            return sum +
-              (
-                Number(
-                  product.price
-                ) *
-                Number(
-                  item.quantity
-                )
-              );
-
-          },
-          0
-        );
-
-      const count =
-        cart.reduce(
-          (sum, item) =>
-            sum +
-            Number(
-              item.quantity
-            ),
-          0
-        );
-
+    const shippingZone =
       document.getElementById(
-        "total"
-      ).textContent =
-        total.toFixed(2);
+        "shippingZone"
+      ).value;
 
+
+    if (!shippingZone) {
+
+      alert(
+        "Seleziona la zona di spedizione."
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * Controllo finale:
+     * ogni prodotto deve avere
+     * nome e prezzo.
+     */
+    const validCart =
+      cart.every(item =>
+        item &&
+        item.id &&
+        item.name &&
+        Number.isFinite(
+          Number(item.price)
+        ) &&
+        Number(item.price) > 0 &&
+        Number.isInteger(
+          Number(item.quantity)
+        ) &&
+        Number(item.quantity) > 0
+      );
+
+
+    if (!validCart) {
+
+      alert(
+        "Il carrello contiene un prodotto non valido. Ricarica la pagina e riprova."
+      );
+
+      return;
+
+    }
+
+
+    const button =
       document.getElementById(
-        "cartCount"
-      ).textContent =
-        count;
+        "checkoutBtn"
+      );
 
-    }
 
-    function openCart() {
+    button.disabled = true;
 
-      document
-        .getElementById("cart")
-        .classList.remove(
-          "hidden"
-        );
+    button.textContent =
+      "APERTURA PAGAMENTO…";
 
-      document
-        .getElementById("cartToggle")
-        .classList.add(
-          "hidden"
-        );
 
-    }
+    try {
 
-    function closeCart() {
+      const response =
+        await fetch(
+          "/api/checkout",
+          {
 
-      document
-        .getElementById("cart")
-        .classList.add(
-          "hidden"
-        );
+            method: "POST",
 
-      document
-        .getElementById("cartToggle")
-        .classList.remove(
-          "hidden"
-        );
+            headers: {
 
-    }
+              "Content-Type":
+                "application/json"
 
-    function toggleCart() {
+            },
 
-      const cartBox =
-        document.getElementById(
-          "cart"
-        );
+            body:
+              JSON.stringify({
 
-      if (
-        cartBox.classList.contains(
-          "hidden"
-        )
-      ) {
+                items: cart.map(item => ({
 
-        openCart();
+                  id: item.id,
 
-      } else {
+                  name: item.name,
 
-        closeCart();
+                  price:
+                    Number(item.price),
 
-      }
+                  quantity:
+                    Number(item.quantity)
 
-    }
+                })),
 
-    async function checkout() {
+                shippingZone
 
-      if (cart.length === 0) {
-
-        alert(
-          "Il carrello è vuoto."
-        );
-
-        return;
-
-      }
-
-      const shippingZone =
-        document.getElementById(
-          "shippingZone"
-        ).value;
-
-      if (!shippingZone) {
-
-        alert(
-          "Seleziona la zona di spedizione."
-        );
-
-        return;
-
-      }
-
-      const button =
-        document.getElementById(
-          "checkoutBtn"
-        );
-
-      button.disabled = true;
-
-      button.textContent =
-        "APERTURA PAGAMENTO…";
-
-      try {
-
-        const response =
-          await fetch(
-            "/api/checkout",
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body:
-                JSON.stringify({
-                  items: cart,
-                  shippingZone
-                })
-            }
-          );
-
-        const data =
-          await response
-            .json()
-            .catch(
-              () => ({})
-            );
-
-        if (
-          !response.ok ||
-          !data.url
-        ) {
-
-          throw new Error(
-            data.error ||
-            "Errore nel pagamento"
-          );
-
-        }
-
-        window.location.href =
-          data.url;
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "Non è stato possibile aprire il pagamento. Riprova tra poco."
-        );
-
-        button.disabled = false;
-
-        button.textContent =
-          "PAGA CON CARTA";
-
-      }
-
-    }
-
-    document
-      .querySelectorAll(
-        ".filters button"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            document
-              .querySelectorAll(
-                ".filters button"
-              )
-              .forEach(btn =>
-                btn.classList.remove(
-                  "active"
-                )
-              );
-
-            button.classList.add(
-              "active"
-            );
-
-            renderProducts(
-              button.dataset.filter
-            );
+              })
 
           }
         );
 
-      });
 
-    renderCart();
+      const data =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
 
-    loadProducts();
 
-  </script>
+      if (
+        !response.ok ||
+        !data.url
+      ) {
+
+        console.error(
+          "Checkout error:",
+          data
+        );
+
+
+        throw new Error(
+          data.error ||
+          "Errore nel pagamento"
+        );
+
+      }
+
+
+      window.location.href =
+        data.url;
+
+
+    } catch (error) {
+
+      console.error(
+        "CHECKOUT:",
+        error
+      );
+
+
+      alert(
+        error.message ||
+        "Non è stato possibile aprire il pagamento. Riprova tra poco."
+      );
+
+
+      button.disabled = false;
+
+      button.textContent =
+        "PAGA CON CARTA";
+
+    }
+
+  }
+
+
+  /*
+   * FILTRI
+   */
+  document
+    .querySelectorAll(
+      ".filters button"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          document
+            .querySelectorAll(
+              ".filters button"
+            )
+            .forEach(btn =>
+              btn.classList.remove(
+                "active"
+              )
+            );
+
+
+          button.classList.add(
+            "active"
+          );
+
+
+          renderProducts(
+            button.dataset.filter
+          );
+
+        }
+      );
+
+    });
+
+
+  /*
+   * AVVIO
+   */
+  renderCart();
+
+  loadProducts();
+
+</script>
 
 </body>
 
