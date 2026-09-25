@@ -1,8 +1,4 @@
-const Stripe = require("stripe");
-
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY, {
-  httpClient: Stripe.createNodeHttpClient()
-});
+const https = require("https");
 
 const shippingOptions = {
   north: {
@@ -23,7 +19,72 @@ const shippingOptions = {
   }
 };
 
+function stripeRequest(data) {
+  return new Promise((resolve, reject) => {
+    const body = new URLSearchParams(data).toString();
+
+    const request = https.request(
+      {
+        hostname: "api.stripe.com",
+        path: "/v1/checkout/sessions",
+        method: "POST",
+        headers: {
+          "Authorization":
+            "Basic " +
+            Buffer.from(
+              process.env.STRIPE_SECRET_KEY + ":"
+            ).toString("base64"),
+
+          "Content-Type":
+            "application/x-www-form-urlencoded",
+
+          "Content-Length":
+            Buffer.byteLength(body)
+        }
+      },
+      response => {
+        let result = "";
+
+        response.on("data", chunk => {
+          result += chunk;
+        });
+
+        response.on("end", () => {
+          try {
+            const json = JSON.parse(result);
+
+            if (response.statusCode >= 400) {
+              return reject(
+                new Error(
+                  json.error?.message ||
+                  "Errore Stripe"
+                )
+              );
+            }
+
+            resolve(json);
+
+          } catch (error) {
+            reject(
+              new Error(
+                "Risposta non valida da Stripe: " +
+                result.substring(0, 200)
+              )
+            );
+          }
+        });
+      }
+    );
+
+    request.on("error", reject);
+
+    request.write(body);
+    request.end();
+  });
+}
+
 module.exports = async (req, res) => {
+
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Metodo non consentito"
@@ -31,30 +92,47 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { items, shippingZone } = req.body || {};
 
-    if (!Array.isArray(items) || items.length === 0) {
+    const { items, shippingZone } =
+      req.body || {};
+
+    if (
+      !Array.isArray(items) ||
+      items.length === 0
+    ) {
       return res.status(400).json({
         error: "Carrello vuoto"
       });
     }
 
-    const shipping = shippingOptions[shippingZone];
+    const shipping =
+      shippingOptions[shippingZone];
 
     if (!shipping) {
       return res.status(400).json({
-        error: "Zona di spedizione non valida"
+        error:
+          "Zona di spedizione non valida"
       });
     }
 
-    const line_items = [];
+    const params = [];
+
+    let index = 0;
 
     for (const item of items) {
-      const name = String(item.name || "").trim();
-      const price = Number(item.price);
-      const quantity = Number(
-        item.quantity ?? item.qty ?? 1
-      );
+
+      const name =
+        String(item.name || "").trim();
+
+      const price =
+        Number(item.price);
+
+      const quantity =
+        Number(
+          item.quantity ??
+          item.qty ??
+          1
+        );
 
       if (
         !name ||
@@ -68,66 +146,111 @@ module.exports = async (req, res) => {
         });
       }
 
-      line_items.push({
-        price_data: {
-          currency: "eur",
-          product_data: {
-            name
-          },
-          unit_amount: Math.round(price * 100)
-        },
-        quantity
-      });
+      params.push([
+        `line_items[${index}][price_data][currency]`,
+        "eur"
+      ]);
+
+      params.push([
+        `line_items[${index}][price_data][product_data][name]`,
+        name
+      ]);
+
+      params.push([
+        `line_items[${index}][price_data][unit_amount]`,
+        String(Math.round(price * 100))
+      ]);
+
+      params.push([
+        `line_items[${index}][quantity]`,
+        String(quantity)
+      ]);
+
+      index++;
     }
 
-    line_items.push({
-      price_data: {
-        currency: "eur",
-        product_data: {
-          name: shipping.name
-        },
-        unit_amount: shipping.amount
-      },
-      quantity: 1
-    });
+    params.push([
+      `line_items[${index}][price_data][currency]`,
+      "eur"
+    ]);
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      payment_method_types: ["card"],
-      line_items,
+    params.push([
+      `line_items[${index}][price_data][product_data][name]`,
+      shipping.name
+    ]);
 
-      shipping_address_collection: {
-        allowed_countries: ["IT"]
-      },
+    params.push([
+      `line_items[${index}][price_data][unit_amount]`,
+      String(shipping.amount)
+    ]);
 
-      phone_number_collection: {
-        enabled: true
-      },
+    params.push([
+      `line_items[${index}][quantity]`,
+      "1"
+    ]);
 
-      billing_address_collection: "auto",
+    params.push([
+      "mode",
+      "payment"
+    ]);
 
-      customer_creation: "always",
+    params.push([
+      "payment_method_types[0]",
+      "card"
+    ]);
 
-      metadata: {
-        shippingZone
-      },
+    params.push([
+      "shipping_address_collection[allowed_countries][0]",
+      "IT"
+    ]);
 
-      success_url:
-        `${process.env.PUBLIC_URL}/?success=1`,
+    params.push([
+      "phone_number_collection[enabled]",
+      "true"
+    ]);
 
-      cancel_url:
-        `${process.env.PUBLIC_URL}/?cancel=1`
-    });
+    params.push([
+      "billing_address_collection",
+      "auto"
+    ]);
+
+    params.push([
+      "customer_creation",
+      "always"
+    ]);
+
+    params.push([
+      "metadata[shippingZone]",
+      shippingZone
+    ]);
+
+    params.push([
+      "success_url",
+      `${process.env.PUBLIC_URL}/?success=1`
+    ]);
+
+    params.push([
+      "cancel_url",
+      `${process.env.PUBLIC_URL}/?cancel=1`
+    ]);
+
+    const session =
+      await stripeRequest(params);
 
     return res.status(200).json({
       url: session.url
     });
 
   } catch (error) {
-    console.error("CHECKOUT ERROR:", error);
+
+    console.error(
+      "CHECKOUT ERROR:",
+      error
+    );
 
     return res.status(500).json({
-      error: "Impossibile creare il pagamento"
+      error:
+        "Impossibile creare il pagamento"
     });
   }
 };
