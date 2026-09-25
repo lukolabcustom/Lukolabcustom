@@ -184,8 +184,6 @@
     ← Torna allo shop
   </a>
 
-  <!-- LOGIN -->
-
   <div id="loginSection">
 
     <h1>IL LAB</h1>
@@ -207,7 +205,10 @@
         placeholder="Inserisci password"
       >
 
-      <button onclick="login()">
+      <button
+        type="button"
+        id="loginButton"
+      >
         ENTRA NEL LAB
       </button>
 
@@ -221,8 +222,6 @@
   </div>
 
 
-  <!-- LAB -->
-
   <div
     id="labSection"
     style="display:none;"
@@ -235,15 +234,11 @@
     </div>
 
 
-    <!-- AGGIUNGI PRODOTTO -->
-
     <div class="card">
 
       <h2>Aggiungi prodotto</h2>
 
-      <label>
-        Nome prodotto
-      </label>
+      <label>Nome prodotto</label>
 
       <input
         id="name"
@@ -251,10 +246,7 @@
         placeholder="Es. Cappello Jungle"
       >
 
-
-      <label>
-        Prezzo €
-      </label>
+      <label>Prezzo €</label>
 
       <input
         id="price"
@@ -264,35 +256,20 @@
         step="0.01"
       >
 
-
-      <label>
-        Categoria
-      </label>
+      <label>Categoria</label>
 
       <select id="category">
-
-        <option value="Cappelli">
-          Cappelli
-        </option>
-
-        <option value="Abbigliamento">
-          Abbigliamento
-        </option>
-
+        <option value="Cappelli">Cappelli</option>
+        <option value="Abbigliamento">Abbigliamento</option>
       </select>
 
-
-      <label>
-        Foto
-      </label>
+      <label>Foto</label>
 
       <input
         id="photo"
         type="file"
         accept="image/jpeg,image/png,image/webp,image/heic"
-        onchange="previewPhoto()"
       >
-
 
       <img
         id="preview"
@@ -300,14 +277,12 @@
         alt="Anteprima"
       >
 
-
       <button
+        type="button"
         id="publishButton"
-        onclick="publishProduct()"
       >
         PUBBLICA PRODOTTO
       </button>
-
 
       <div
         id="publishMessage"
@@ -316,8 +291,6 @@
 
     </div>
 
-
-    <!-- LISTA PRODOTTI -->
 
     <div class="card">
 
@@ -334,33 +307,64 @@
 </div>
 
 
-<script type="module">
+<script>
 
-  import { upload } from
-    "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm";
+  const loginButton =
+    document.getElementById("loginButton");
+
+  const passwordInput =
+    document.getElementById("password");
+
+  const loginMessage =
+    document.getElementById("loginMessage");
 
 
   // LOGIN
 
-  window.login = async function () {
+  loginButton.addEventListener(
+    "click",
+    login
+  );
+
+
+  passwordInput.addEventListener(
+    "keydown",
+    function(event) {
+
+      if (event.key === "Enter") {
+        login();
+      }
+
+    }
+  );
+
+
+  async function login() {
 
     const password =
-      document.getElementById("password").value;
+      passwordInput.value.trim();
 
-    const message =
-      document.getElementById("loginMessage");
+
+    loginMessage.style.display =
+      "none";
 
 
     if (!password) {
 
-      message.textContent =
+      loginMessage.textContent =
         "Inserisci la password.";
 
-      message.style.display =
+      loginMessage.style.display =
         "block";
 
       return;
     }
+
+
+    loginButton.disabled = true;
+
+    loginButton.textContent =
+      "ACCESSO...";
 
 
     try {
@@ -389,14 +393,10 @@
 
       if (!response.ok) {
 
-        message.textContent =
+        throw new Error(
           data.error ||
-          "Password non corretta.";
-
-        message.style.display =
-          "block";
-
-        return;
+          "Password non corretta."
+        );
       }
 
 
@@ -412,55 +412,74 @@
 
       loadProducts();
 
+
     } catch (error) {
 
-      message.textContent =
+      loginMessage.textContent =
+        error.message ||
         "Errore di connessione.";
 
-      message.style.display =
+      loginMessage.style.display =
         "block";
+
+    } finally {
+
+      loginButton.disabled = false;
+
+      loginButton.textContent =
+        "ENTRA NEL LAB";
     }
 
-  };
+  }
 
 
   // ANTEPRIMA FOTO
 
-  window.previewPhoto = function () {
+  document
+    .getElementById("photo")
+    .addEventListener(
+      "change",
+      function() {
 
-    const file =
-      document.getElementById(
-        "photo"
-      ).files[0];
+        const file =
+          this.files[0];
 
-
-    const preview =
-      document.getElementById(
-        "preview"
-      );
-
-
-    if (!file) {
-
-      preview.style.display =
-        "none";
-
-      return;
-    }
+        const preview =
+          document.getElementById(
+            "preview"
+          );
 
 
-    preview.src =
-      URL.createObjectURL(file);
+        if (!file) {
+
+          preview.style.display =
+            "none";
+
+          return;
+        }
 
 
-    preview.style.display =
-      "block";
-  };
+        preview.src =
+          URL.createObjectURL(file);
+
+        preview.style.display =
+          "block";
+
+      }
+    );
 
 
   // PUBBLICA PRODOTTO
 
-  window.publishProduct = async function () {
+  document
+    .getElementById("publishButton")
+    .addEventListener(
+      "click",
+      publishProduct
+    );
+
+
+  async function publishProduct() {
 
     const button =
       document.getElementById(
@@ -529,8 +548,15 @@
 
     try {
 
+      // Carica la libreria SOLO quando serve
+      const module =
+        await import(
+          "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm"
+        );
+
+
       const blob =
-        await upload(
+        await module.upload(
           file.name,
           file,
           {
@@ -614,11 +640,10 @@
 
       message.textContent =
         error.message ||
-        "Errore durante la pubblicazione.";
+        "Errore durante il caricamento.";
 
       message.style.display =
         "block";
-
 
     } finally {
 
@@ -628,12 +653,12 @@
         "PUBBLICA PRODOTTO";
     }
 
-  };
+  }
 
 
   // CARICA PRODOTTI
 
-  window.loadProducts = async function () {
+  async function loadProducts() {
 
     const container =
       document.getElementById(
@@ -649,10 +674,8 @@
 
       const response =
         await fetch(
-          "/api/products",
-          {
-            cache: "no-store"
-          }
+          "/api/products?refresh=" +
+          Date.now()
         );
 
 
@@ -676,8 +699,8 @@
 
 
       container.innerHTML =
-        products.map(
-          product => {
+        products
+          .map(function(product) {
 
             const image =
               product.image
@@ -707,8 +730,9 @@
                 </div>
 
                 <button
+                  type="button"
                   class="delete-button"
-                  onclick="deleteProduct('${escapeHtml(product.id)}')"
+                  data-id="${escapeHtml(product.id)}"
                 >
                   ELIMINA PRODOTTO
                 </button>
@@ -717,22 +741,45 @@
 
             `;
 
-          }
-        ).join("");
+          })
+          .join("");
+
+
+      // Collega i pulsanti elimina
+
+      container
+        .querySelectorAll(
+          ".delete-button"
+        )
+        .forEach(function(button) {
+
+          button.addEventListener(
+            "click",
+            function() {
+
+              deleteProduct(
+                button.dataset.id
+              );
+
+            }
+          );
+
+        });
 
 
     } catch (error) {
 
       container.innerHTML =
         "<p>Impossibile caricare i prodotti.</p>";
+
     }
 
-  };
+  }
 
 
   // ELIMINA PRODOTTO
 
-  window.deleteProduct = async function (id) {
+  async function deleteProduct(id) {
 
     const conferma =
       confirm(
@@ -796,7 +843,7 @@
 
     }
 
-  };
+  }
 
 
   // SICUREZZA TESTO
