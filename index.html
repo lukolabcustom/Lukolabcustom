@@ -37,11 +37,6 @@
       text-decoration: none;
     }
 
-
-    /* =========================
-       HEADER
-    ========================= */
-
     header {
       position: sticky;
       top: 0;
@@ -85,13 +80,7 @@
       opacity: 1;
     }
 
-
-    /* =========================
-       HERO
-    ========================= */
-
     .hero {
-
       min-height: 650px;
 
       display: flex;
@@ -127,7 +116,6 @@
         #062015;
     }
 
-
     .hero::before {
       content: "";
 
@@ -146,7 +134,6 @@
 
       filter: blur(4px);
     }
-
 
     .hero::after {
       content: "";
@@ -167,14 +154,12 @@
       filter: blur(3px);
     }
 
-
     .hero-content {
       position: relative;
       z-index: 2;
 
       max-width: 760px;
     }
-
 
     .hero h1 {
       margin: 0;
@@ -189,7 +174,6 @@
       letter-spacing: -3px;
     }
 
-
     .hero-subtitle {
 
       margin-top: 32px;
@@ -201,7 +185,6 @@
 
       letter-spacing: 1px;
     }
-
 
     .hero-text {
 
@@ -216,11 +199,6 @@
 
       color: #d6dfda;
     }
-
-
-    /* =========================
-       FILTERS
-    ========================= */
 
     .filters-bar {
 
@@ -249,7 +227,6 @@
       backdrop-filter: blur(12px);
     }
 
-
     .filters button {
 
       border: 1px solid
@@ -276,12 +253,10 @@
       transition: .2s;
     }
 
-
     .filters button:hover {
       background:
         rgba(255,255,255,.1);
     }
-
 
     .filters button.active {
 
@@ -294,11 +269,6 @@
         #35e17c;
     }
 
-
-    /* =========================
-       SHOP
-    ========================= */
-
     .shop {
 
       max-width: 1400px;
@@ -309,14 +279,12 @@
         80px 24px 120px;
     }
 
-
     .shop-title {
 
       text-align: center;
 
       margin-bottom: 60px;
     }
-
 
     .shop-title h2 {
 
@@ -328,7 +296,6 @@
       letter-spacing: -2px;
     }
 
-
     .shop-title p {
 
       margin-top: 20px;
@@ -337,11 +304,6 @@
 
       color: #aebdb5;
     }
-
-
-    /* =========================
-       PRODUCTS
-    ========================= */
 
     #products {
 
@@ -352,7 +314,6 @@
 
       gap: 28px;
     }
-
 
     .card {
 
@@ -380,7 +341,6 @@
         border-color .25s ease;
     }
 
-
     .card:hover {
 
       transform:
@@ -389,7 +349,6 @@
       border-color:
         rgba(53,225,124,.35);
     }
-
 
     .photo {
 
@@ -407,7 +366,6 @@
         );
     }
 
-
     .photo img {
 
       width: 100%;
@@ -418,12 +376,10 @@
       display: block;
     }
 
-
     .card-body {
 
       padding: 24px;
     }
-
 
     .card-body h3 {
 
@@ -435,7 +391,6 @@
       line-height: 1.3;
     }
 
-
     .price {
 
       font-size: 21px;
@@ -444,7 +399,6 @@
 
       margin-bottom: 20px;
     }
-
 
     .card-body button {
 
@@ -471,7 +425,6 @@
       transition: .2s;
     }
 
-
     .card-body button:hover {
 
       transform:
@@ -480,7 +433,6 @@
       filter:
         brightness(1.08);
     }
-
 
     .empty {
 
@@ -494,11 +446,6 @@
 
       font-size: 18px;
     }
-
-
-    /* =========================
-       CART BUTTON
-    ========================= */
 
     #cartToggle {
 
@@ -532,7 +479,6 @@
       font-size: 25px;
     }
 
-
     #cartCount {
 
       position: absolute;
@@ -559,11 +505,6 @@
 
       font-weight: 900;
     }
-
-
-    /* =========================
-       CART
-    ========================= */
 
     #cart {
 
@@ -598,11 +539,9 @@
       padding: 24px;
     }
 
-
     #cart.hidden {
       display: none;
     }
-
 
     .cart-header {
 
@@ -615,14 +554,12 @@
       margin-bottom: 20px;
     }
 
-
     .cart-header h2 {
 
       margin: 0;
 
       font-size: 25px;
     }
-
 
     .cart-close {
 
@@ -636,7 +573,6 @@
 
       cursor: pointer;
     }
-
 
     .cart-item {
 
@@ -656,11 +592,9 @@
         rgba(255,255,255,.08);
     }
 
-
     .cart-item strong {
       font-size: 15px;
     }
-
 
     .qty {
 
@@ -670,7 +604,6 @@
 
       gap: 10px;
     }
-
 
     .qty button {
 
@@ -691,7 +624,6 @@
       font-size: 18px;
     }
 
-
     .cart-total {
 
       display: flex;
@@ -705,6 +637,52 @@
       font-weight: 900;
     }
 
+    #shippingBox {
+
+      margin-top: 20px;
+
+      padding: 16px;
+
+      border-radius: 14px;
+
+      background:
+        rgba(255,255,255,.05);
+
+      border:
+        1px solid
+        rgba(255,255,255,.08);
+    }
+
+    #shippingBox label {
+
+      display: block;
+
+      margin-bottom: 10px;
+
+      font-weight: 800;
+
+      font-size: 14px;
+    }
+
+    #shippingZone {
+
+      width: 100%;
+
+      padding: 14px;
+
+      border-radius: 10px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.18);
+
+      background:
+        #071b12;
+
+      color: white;
+
+      font-size: 15px;
+    }
 
     #checkoutBtn {
 
@@ -731,18 +709,12 @@
       cursor: pointer;
     }
 
-
     #checkoutBtn:disabled {
 
       opacity: .5;
 
       cursor: wait;
     }
-
-
-    /* =========================
-       FOOTER
-    ========================= */
 
     footer {
 
@@ -758,15 +730,9 @@
       color: #91a39a;
     }
 
-
     footer strong {
       color: white;
     }
-
-
-    /* =========================
-       MOBILE
-    ========================= */
 
     @media (max-width: 800px) {
 
@@ -826,7 +792,6 @@
       }
     }
 
-
     @media (max-width: 480px) {
 
       #products {
@@ -854,11 +819,7 @@
 
 </head>
 
-
 <body>
-
-
-  <!-- HEADER -->
 
   <header>
 
@@ -879,9 +840,6 @@
     </nav>
 
   </header>
-
-
-  <!-- HERO -->
 
   <section class="hero">
 
@@ -905,9 +863,6 @@
     </div>
 
   </section>
-
-
-  <!-- FILTERS -->
 
   <div class="filters-bar">
 
@@ -939,9 +894,6 @@
 
   </div>
 
-
-  <!-- SHOP -->
-
   <main
     class="shop"
     id="shop"
@@ -959,7 +911,6 @@
 
     </div>
 
-
     <div id="products">
 
       <div class="empty">
@@ -969,9 +920,6 @@
     </div>
 
   </main>
-
-
-  <!-- CART BUTTON -->
 
   <button
     id="cartToggle"
@@ -987,9 +935,6 @@
     </span>
 
   </button>
-
-
-  <!-- CART -->
 
   <aside
     id="cart"
@@ -1012,7 +957,6 @@
 
     </div>
 
-
     <div id="cartItems">
 
       <div
@@ -1026,11 +970,42 @@
 
     </div>
 
+    <div id="shippingBox">
+
+      <label for="shippingZone">
+        Zona di spedizione
+      </label>
+
+      <select id="shippingZone">
+
+        <option value="">
+          Seleziona la zona
+        </option>
+
+        <option value="north">
+          Nord Italia — €5,00
+        </option>
+
+        <option value="center">
+          Centro Italia — €6,00
+        </option>
+
+        <option value="south">
+          Sud Italia — €7,00
+        </option>
+
+        <option value="islands">
+          Sicilia e Sardegna — €9,00
+        </option>
+
+      </select>
+
+    </div>
 
     <div class="cart-total">
 
       <span>
-        Totale
+        Totale prodotti
       </span>
 
       <span>
@@ -1038,7 +1013,6 @@
       </span>
 
     </div>
-
 
     <button
       id="checkoutBtn"
@@ -1049,9 +1023,6 @@
     </button>
 
   </aside>
-
-
-  <!-- FOOTER -->
 
   <footer>
 
@@ -1066,19 +1037,11 @@
 
   </footer>
 
-
-  <!-- JAVASCRIPT -->
-
   <script>
 
     let products = [];
 
     let cart = [];
-
-
-    /* =========================
-       CARRELLO SALVATO
-    ========================= */
 
     try {
 
@@ -1110,7 +1073,6 @@
 
     }
 
-
     function save() {
 
       try {
@@ -1124,11 +1086,6 @@
 
     }
 
-
-    /* =========================
-       SICUREZZA TESTO
-    ========================= */
-
     function escapeHtml(value) {
 
       return String(value)
@@ -1140,18 +1097,12 @@
 
     }
 
-
-    /* =========================
-       CARICA CATALOGO
-    ========================= */
-
     async function loadProducts() {
 
       const container =
         document.getElementById(
           "products"
         );
-
 
       try {
 
@@ -1163,11 +1114,8 @@
             }
           );
 
-
         const data =
-          await response
-            .json();
-
+          await response.json();
 
         if (
           !response.ok ||
@@ -1182,17 +1130,14 @@
 
         }
 
-
         products =
           data.products;
-
 
         renderProducts(
           getCurrentFilter()
         );
 
         renderCart();
-
 
       } catch (error) {
 
@@ -1211,11 +1156,6 @@
 
     }
 
-
-    /* =========================
-       FILTRO ATTIVO
-    ========================= */
-
     function getCurrentFilter() {
 
       const active =
@@ -1229,11 +1169,6 @@
 
     }
 
-
-    /* =========================
-       RENDER PRODOTTI
-    ========================= */
-
     function renderProducts(
       filter = "all"
     ) {
@@ -1243,10 +1178,8 @@
           "products"
         );
 
-
       let list =
         products;
-
 
       if (filter !== "all") {
 
@@ -1257,7 +1190,6 @@
           );
 
       }
-
 
       if (!list.length) {
 
@@ -1271,7 +1203,6 @@
         return;
 
       }
-
 
       container.innerHTML =
         list.map(product => {
@@ -1302,7 +1233,6 @@
                   FOTO PRODOTTO
                 </div>
               `;
-
 
           return `
 
@@ -1345,11 +1275,6 @@
 
     }
 
-
-    /* =========================
-       AGGIUNGI AL CARRELLO
-    ========================= */
-
     function addToCart(id) {
 
       const product =
@@ -1357,7 +1282,6 @@
           product =>
             product.id === id
         );
-
 
       if (!product) {
 
@@ -1369,13 +1293,11 @@
 
       }
 
-
       let item =
         cart.find(
           item =>
             item.id === id
         );
-
 
       if (item) {
 
@@ -1394,7 +1316,6 @@
 
       }
 
-
       save();
 
       renderCart();
@@ -1402,11 +1323,6 @@
       openCart();
 
     }
-
-
-    /* =========================
-       QUANTITÀ
-    ========================= */
 
     function changeQuantity(
       id,
@@ -1419,16 +1335,13 @@
             item.id === id
         );
 
-
       if (!item) {
         return;
       }
 
-
       item.quantity =
         Number(item.quantity) +
         Number(amount);
-
 
       if (item.quantity <= 0) {
 
@@ -1440,24 +1353,17 @@
 
       }
 
-
       if (item.quantity > 10) {
 
         item.quantity = 10;
 
       }
 
-
       save();
 
       renderCart();
 
     }
-
-
-    /* =========================
-       RENDER CARRELLO
-    ========================= */
 
     function renderCart() {
 
@@ -1466,7 +1372,6 @@
           "cartItems"
         );
 
-
       cart =
         cart.filter(item =>
           products.some(
@@ -1474,7 +1379,6 @@
               product.id === item.id
           )
         );
-
 
       if (cart.length === 0) {
 
@@ -1500,7 +1404,6 @@
                   product.id === item.id
               );
 
-
             return `
 
               <div class="cart-item">
@@ -1522,7 +1425,6 @@
                   × ${item.quantity}
 
                 </div>
-
 
                 <div class="qty">
 
@@ -1564,7 +1466,6 @@
 
       }
 
-
       const total =
         cart.reduce(
           (sum, item) => {
@@ -1574,7 +1475,6 @@
                 product =>
                   product.id === item.id
               );
-
 
             return sum +
               (
@@ -1590,7 +1490,6 @@
           0
         );
 
-
       const count =
         cart.reduce(
           (sum, item) =>
@@ -1601,12 +1500,10 @@
           0
         );
 
-
       document.getElementById(
         "total"
       ).textContent =
         total.toFixed(2);
-
 
       document.getElementById(
         "cartCount"
@@ -1614,11 +1511,6 @@
         count;
 
     }
-
-
-    /* =========================
-       APERTURA CARRELLO
-    ========================= */
 
     function openCart() {
 
@@ -1628,7 +1520,6 @@
           "hidden"
         );
 
-
       document
         .getElementById("cartToggle")
         .classList.add(
@@ -1636,7 +1527,6 @@
         );
 
     }
-
 
     function closeCart() {
 
@@ -1646,7 +1536,6 @@
           "hidden"
         );
 
-
       document
         .getElementById("cartToggle")
         .classList.remove(
@@ -1655,14 +1544,12 @@
 
     }
 
-
     function toggleCart() {
 
       const cartBox =
         document.getElementById(
           "cart"
         );
-
 
       if (
         cartBox.classList.contains(
@@ -1680,11 +1567,6 @@
 
     }
 
-
-    /* =========================
-       CHECKOUT STRIPE
-    ========================= */
-
     async function checkout() {
 
       if (cart.length === 0) {
@@ -1697,18 +1579,30 @@
 
       }
 
+      const shippingZone =
+        document.getElementById(
+          "shippingZone"
+        ).value;
+
+      if (!shippingZone) {
+
+        alert(
+          "Seleziona la zona di spedizione."
+        );
+
+        return;
+
+      }
 
       const button =
         document.getElementById(
           "checkoutBtn"
         );
 
-
       button.disabled = true;
 
       button.textContent =
         "APERTURA PAGAMENTO…";
-
 
       try {
 
@@ -1725,11 +1619,11 @@
 
               body:
                 JSON.stringify({
-                  items: cart
+                  items: cart,
+                  shippingZone
                 })
             }
           );
-
 
         const data =
           await response
@@ -1737,7 +1631,6 @@
             .catch(
               () => ({})
             );
-
 
         if (
           !response.ok ||
@@ -1751,10 +1644,8 @@
 
         }
 
-
         window.location.href =
           data.url;
-
 
       } catch (error) {
 
@@ -1764,7 +1655,6 @@
           "Non è stato possibile aprire il pagamento. Riprova tra poco."
         );
 
-
         button.disabled = false;
 
         button.textContent =
@@ -1773,11 +1663,6 @@
       }
 
     }
-
-
-    /* =========================
-       FILTRI
-    ========================= */
 
     document
       .querySelectorAll(
@@ -1799,11 +1684,9 @@
                 )
               );
 
-
             button.classList.add(
               "active"
             );
-
 
             renderProducts(
               button.dataset.filter
@@ -1814,17 +1697,11 @@
 
       });
 
-
-    /* =========================
-       AVVIO
-    ========================= */
-
     renderCart();
 
     loadProducts();
 
   </script>
-
 
 </body>
 
