@@ -226,12 +226,12 @@ module.exports = async (req, res) => {
 
     params.push([
       "success_url",
-      `${process.env.PUBLIC_URL}/?success=1`
+      "https://lukolabcustom.vercel.app/?success=1"
     ]);
 
     params.push([
       "cancel_url",
-      `${process.env.PUBLIC_URL}/?cancel=1`
+      "https://lukolabcustom.vercel.app/?cancel=1"
     ]);
 
     const session =
