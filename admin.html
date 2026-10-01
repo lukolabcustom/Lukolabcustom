@@ -150,6 +150,7 @@
 <div id="loginArea" class="box">
 
   <h1>🔐 Luko Lab Custom</h1>
+
   <div class="subtitle">
     Accesso area amministratore
   </div>
@@ -188,10 +189,6 @@
     Aggiungi o elimina i prodotti del tuo negozio.
   </div>
 
-
-  <!-- =========================
-       AGGIUNGI PRODOTTO
-  ========================== -->
 
   <div class="box">
 
@@ -258,10 +255,6 @@
   </div>
 
 
-  <!-- =========================
-       PRODOTTI
-  ========================== -->
-
   <div class="box">
 
     <h2>📦 Prodotti presenti</h2>
@@ -283,16 +276,16 @@
 </div>
 
 
-<script>
+<script type="module">
 
-let loggedIn = false;
+import { upload } from "https://esm.sh/@vercel/blob/client";
 
 
 /* =========================
    LOGIN
 ========================= */
 
-async function login() {
+window.login = async function() {
 
   const password =
     document
@@ -332,8 +325,6 @@ async function login() {
       );
     }
 
-    loggedIn = true;
-
     document
       .getElementById("loginArea")
       .style.display = "none";
@@ -352,7 +343,7 @@ async function login() {
     message.style.display =
       "block";
   }
-}
+};
 
 
 /* =========================
@@ -407,40 +398,71 @@ async function loadProducts() {
       div.className =
         "product";
 
-      let imageHTML = "";
-
       if (product.image) {
 
-        imageHTML =
-          `<img
-            src="${escapeHtml(product.image)}"
-            alt="${escapeHtml(product.name)}"
-          >`;
+        const img =
+          document.createElement("img");
+
+        img.src =
+          product.image;
+
+        img.alt =
+          product.name;
+
+        div.appendChild(img);
       }
 
-      div.innerHTML = `
+      const name =
+        document.createElement("div");
 
-        ${imageHTML}
+      name.className =
+        "product-name";
 
-        <div class="product-name">
-          ${escapeHtml(product.name)}
-        </div>
+      name.textContent =
+        product.name;
 
-        <div class="product-info">
-          €${Number(product.price).toFixed(2)}
-        </div>
+      div.appendChild(name);
 
-        <div class="product-info">
-          ${escapeHtml(product.category)}
-        </div>
 
-        <button
-          class="delete"
-          onclick="deleteProduct('${escapeHtml(product.id)}')"
-        >
-          🗑 Elimina prodotto
-        </button>
-      `;
+      const price =
+        document.createElement("div");
+
+      price.className =
+        "product-info";
+
+      price.textContent =
+        "€" +
+        Number(product.price)
+          .toFixed(2);
+
+      div.appendChild(price);
+
+
+      const category =
+        document.createElement("div");
+
+      category.className =
+        "product-info";
+
+      category.textContent =
+        product.category;
+
+      div.appendChild(category);
+
+
+      const button =
+        document.createElement("button");
+
+      button.className =
+        "delete";
+
+      button.textContent =
+        "🗑 Elimina prodotto";
+
+      button.onclick =
+        () => deleteProduct(product.id);
+
+      div.appendChild(button);
 
       list.appendChild(div);
 
@@ -450,7 +472,7 @@ async function loadProducts() {
 
     list.innerHTML =
       `<div class="message error" style="display:block">
-        ${escapeHtml(error.message)}
+        ${error.message}
       </div>`;
   }
 }
@@ -460,7 +482,7 @@ async function loadProducts() {
    AGGIUNGI PRODOTTO
 ========================= */
 
-async function addProduct() {
+window.addProduct = async function() {
 
   const button =
     document
@@ -491,7 +513,9 @@ async function addProduct() {
       .getElementById("productImage")
       .files[0];
 
+
   message.style.display = "none";
+
 
   if (!name) {
 
@@ -504,6 +528,7 @@ async function addProduct() {
     return;
   }
 
+
   if (!price || Number(price) <= 0) {
 
     showMessage(
@@ -514,6 +539,7 @@ async function addProduct() {
 
     return;
   }
+
 
   if (!file) {
 
@@ -536,83 +562,25 @@ async function addProduct() {
   try {
 
     /*
-      Carica la foto su Vercel Blob
+      UN SOLO CARICAMENTO VERCEL BLOB.
+      Questo è il passaggio importante.
     */
 
-    const uploadResponse =
-      await fetch(
-        "/api/upload",
+    const blob =
+      await upload(
+        file.name,
+        file,
         {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-          body: JSON.stringify({
-            type: "blob.generate-client-token",
-            payload: {
-              pathname: file.name,
-              callbackUrl:
-                "/api/upload"
-            }
-          })
+          access: "public",
+
+          handleUploadUrl:
+            "/api/upload"
         }
       );
 
 
-    /*
-      Usiamo il sistema Blob
-      tramite la libreria client.
-    */
-
-    let blob;
-
-    if (
-      uploadResponse.ok &&
-      uploadResponse.headers
-        .get("content-type")
-        ?.includes("application/json")
-    ) {
-
-      const uploadData =
-        await uploadResponse.json();
-
-      if (uploadData.url) {
-        blob = uploadData;
-      }
-    }
-
-
-    /*
-      Se il metodo precedente non produce
-      direttamente il blob, usiamo il client
-      Vercel Blob.
-    */
-
-    if (!blob) {
-
-      button.textContent =
-        "Caricamento foto...";
-
-      const module =
-        await import(
-          "https://esm.sh/@vercel/blob/client"
-        );
-
-      blob =
-        await module.upload(
-          file.name,
-          file,
-          {
-            access: "public",
-            handleUploadUrl:
-              "/api/upload"
-          }
-        );
-    }
-
-
     if (!blob || !blob.url) {
+
       throw new Error(
         "La foto non è stata caricata."
       );
@@ -623,27 +591,25 @@ async function addProduct() {
       "Salvataggio prodotto...";
 
 
-    /*
-      Salva il prodotto nel catalogo.
-    */
-
     const response =
       await fetch(
         "/api/products",
         {
           method: "POST",
+
           headers: {
             "Content-Type":
               "application/json"
           },
+
           body: JSON.stringify({
 
-            name,
+            name: name,
 
             price:
               Number(price),
 
-            category,
+            category: category,
 
             image:
               blob.url
@@ -658,6 +624,7 @@ async function addProduct() {
 
 
     if (!response.ok) {
+
       throw new Error(
         data.error ||
         "Impossibile salvare il prodotto."
@@ -672,10 +639,6 @@ async function addProduct() {
     );
 
 
-    /*
-      Pulisce il modulo.
-    */
-
     document
       .getElementById("productName")
       .value = "";
@@ -688,10 +651,6 @@ async function addProduct() {
       .getElementById("productImage")
       .value = "";
 
-
-    /*
-      Aggiorna la lista.
-    */
 
     await loadProducts();
 
@@ -711,14 +670,15 @@ async function addProduct() {
     button.textContent =
       "Pubblica prodotto";
   }
-}
+};
 
 
 /* =========================
    ELIMINA PRODOTTO
 ========================= */
 
-async function deleteProduct(id) {
+window.deleteProduct =
+async function(id) {
 
   const conferma =
     confirm(
@@ -729,6 +689,7 @@ async function deleteProduct(id) {
     return;
   }
 
+
   try {
 
     const response =
@@ -736,10 +697,12 @@ async function deleteProduct(id) {
         "/api/products",
         {
           method: "DELETE",
+
           headers: {
             "Content-Type":
               "application/json"
           },
+
           body: JSON.stringify({
             id
           })
@@ -752,6 +715,7 @@ async function deleteProduct(id) {
 
 
     if (!response.ok) {
+
       throw new Error(
         data.error ||
         "Impossibile eliminare il prodotto."
@@ -769,19 +733,16 @@ async function deleteProduct(id) {
       error.message
     );
   }
-}
+};
 
 
 /* =========================
    LOGOUT
 ========================= */
 
-function logout() {
-
-  loggedIn = false;
-
+window.logout = function() {
   location.reload();
-}
+};
 
 
 /* =========================
@@ -799,27 +760,14 @@ function showMessage(
 
   element.className =
     "message " +
-    (isError
-      ? "error"
-      : "success");
+    (
+      isError
+        ? "error"
+        : "success"
+    );
 
   element.style.display =
     "block";
-}
-
-
-/* =========================
-   SICUREZZA HTML
-========================= */
-
-function escapeHtml(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
 }
 
 
@@ -834,7 +782,7 @@ document
     function(event) {
 
       if (event.key === "Enter") {
-        login();
+        window.login();
       }
 
     }
