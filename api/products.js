@@ -1,7 +1,13 @@
 const { put, list, del } = require("@vercel/blob");
 const crypto = require("crypto");
 
-const CATALOG_PATH = "catalog/products.json";
+const CATALOG_PREFIX = "catalog/";
+
+/*
+  Catalogo iniziale.
+  Verrà usato solo se non esiste ancora
+  nessun catalogo salvato.
+*/
 
 const defaultProducts = Array.from(
   { length: 14 },
@@ -19,13 +25,20 @@ const defaultProducts = Array.from(
 );
 
 
+/* =========================
+   TOKEN ADMIN
+========================= */
+
 function createToken() {
+
   return crypto
     .createHmac(
       "sha256",
       process.env.ADMIN_PASSWORD
     )
-    .update("luko-lab-admin-session")
+    .update(
+      "luko-lab-admin-session"
+    )
     .digest("hex");
 }
 
@@ -54,6 +67,46 @@ function isAdmin(req) {
 
 
 /* =========================
+   TROVA ULTIMO CATALOGO
+========================= */
+
+async function findLatestCatalog() {
+
+  const result =
+    await list({
+      prefix: CATALOG_PREFIX,
+      limit: 100
+    });
+
+  if (
+    !result.blobs ||
+    result.blobs.length === 0
+  ) {
+    return null;
+  }
+
+  /*
+    Prendiamo il catalogo più recente
+    in base alla data di caricamento.
+  */
+
+  const sorted =
+    [...result.blobs].sort(
+      function(a, b) {
+
+        return (
+          new Date(b.uploadedAt).getTime() -
+          new Date(a.uploadedAt).getTime()
+        );
+
+      }
+    );
+
+  return sorted[0];
+}
+
+
+/* =========================
    LEGGI CATALOGO
 ========================= */
 
@@ -61,39 +114,30 @@ async function getCatalog() {
 
   try {
 
-    const result =
-      await list({
-        prefix: CATALOG_PATH,
-        limit: 1
-      });
+    const latest =
+      await findLatestCatalog();
 
 
-    if (
-      !result.blobs ||
-      result.blobs.length === 0
-    ) {
+    if (!latest) {
+
       return defaultProducts;
     }
 
 
-    const blob =
-      result.blobs[0];
-
-
     /*
       cache=0 evita di leggere
-      una versione vecchia del catalogo
+      una versione precedente.
     */
 
     const separator =
-      blob.url.includes("?")
+      latest.url.includes("?")
         ? "&"
         : "?";
 
 
     const response =
       await fetch(
-        blob.url +
+        latest.url +
         separator +
         "cache=0"
       );
@@ -114,6 +158,7 @@ async function getCatalog() {
     if (
       !Array.isArray(data)
     ) {
+
       return defaultProducts;
     }
 
@@ -134,34 +179,46 @@ async function getCatalog() {
 
 
 /* =========================
-   SALVA CATALOGO
+   SALVA NUOVO CATALOGO
 ========================= */
 
-async function saveCatalog(products) {
+async function saveCatalog(
+  products
+) {
 
-  try {
+  /*
+    Creiamo sempre un nuovo file.
 
+    Questo evita problemi di cache
+    e di sovrascrittura del Blob.
+  */
+
+  const pathname =
+    CATALOG_PREFIX +
+    "products-" +
+    Date.now() +
+    "-" +
+    crypto
+      .randomBytes(6)
+      .toString("hex") +
+    ".json";
+
+
+  const blob =
     await put(
-      CATALOG_PATH,
+      pathname,
       JSON.stringify(products),
       {
         access: "public",
         addRandomSuffix: false,
-        allowOverwrite: true,
-        contentType: "application/json"
+        contentType:
+          "application/json",
+        cacheControlMaxAge: 60
       }
     );
 
 
-  } catch (error) {
-
-    console.error(
-      "SAVE CATALOG ERROR:",
-      error
-    );
-
-    throw error;
-  }
+  return blob;
 }
 
 
@@ -170,7 +227,10 @@ async function saveCatalog(products) {
 ========================= */
 
 module.exports =
-  async function handler(req, res) {
+  async function handler(
+    req,
+    res
+  ) {
 
     try {
 
@@ -201,7 +261,6 @@ module.exports =
       if (
         req.method === "POST"
       ) {
-
 
         if (!isAdmin(req)) {
 
@@ -323,7 +382,6 @@ module.exports =
         req.method === "DELETE"
       ) {
 
-
         if (!isAdmin(req)) {
 
           return res.status(401).json({
@@ -370,6 +428,11 @@ module.exports =
         }
 
 
+        /*
+          Creiamo il nuovo catalogo
+          SENZA il prodotto eliminato.
+        */
+
         const updatedProducts =
           products.filter(
             function(item) {
@@ -381,8 +444,8 @@ module.exports =
 
 
         /*
-          IMPORTANTE:
-          prima aggiorniamo il catalogo
+          Salviamo una nuova versione
+          del catalogo.
         */
 
         await saveCatalog(
@@ -391,8 +454,10 @@ module.exports =
 
 
         /*
-          Solo dopo aver salvato
-          eliminiamo la vecchia foto
+          Eliminiamo la foto del prodotto.
+          Se la foto non può essere eliminata,
+          il prodotto rimane comunque eliminato
+          dal catalogo.
         */
 
         if (
@@ -405,19 +470,13 @@ module.exports =
               product.image
             );
 
-
           } catch (imageError) {
 
             console.error(
-              "ERRORE ELIMINAZIONE FOTO:",
+              "ERRORE FOTO:",
               imageError
             );
 
-            /*
-              Se la foto non viene eliminata,
-              il prodotto viene comunque
-              rimosso dal catalogo.
-            */
           }
         }
 
@@ -460,5 +519,7 @@ module.exports =
           "Errore durante la gestione del catalogo"
 
       });
+
     }
+
   };
