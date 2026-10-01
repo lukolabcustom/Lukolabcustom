@@ -36,14 +36,13 @@ function isAdmin(req) {
     return false;
   }
 
-  const receivedToken = match[1];
-  const validToken = createToken();
-
-  return receivedToken === validToken;
+  return match[1] === createToken();
 }
+
 
 async function getCatalog() {
   try {
+
     const result = await list({
       prefix: CATALOG_PATH,
       limit: 1
@@ -53,7 +52,12 @@ async function getCatalog() {
       return defaultProducts;
     }
 
-    const response = await fetch(result.blobs[0].url);
+    const blob = result.blobs[0];
+
+    const response = await fetch(
+      blob.url + "&cache=0"
+    );
+
     const data = await response.json();
 
     if (!Array.isArray(data)) {
@@ -63,31 +67,51 @@ async function getCatalog() {
     return data;
 
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "GET CATALOG ERROR:",
+      error
+    );
+
     return defaultProducts;
   }
 }
 
+
 async function saveCatalog(products) {
+
   await put(
     CATALOG_PATH,
     JSON.stringify(products),
     {
       access: "public",
+
+      /*
+        IMPORTANTE:
+        permette di sovrascrivere
+        catalog/products.json
+      */
       addRandomSuffix: false,
+      allowOverwrite: true,
+
       contentType: "application/json"
     }
   );
 }
 
+
 module.exports = async (req, res) => {
 
   try {
 
-    // MOSTRA PRODOTTI
+    /*
+      GET
+    */
+
     if (req.method === "GET") {
 
-      const products = await getCatalog();
+      const products =
+        await getCatalog();
 
       return res.status(200).json({
         products
@@ -95,14 +119,19 @@ module.exports = async (req, res) => {
     }
 
 
-    // AGGIUNGE PRODOTTO
+    /*
+      AGGIUNGI PRODOTTO
+    */
+
     if (req.method === "POST") {
 
       if (!isAdmin(req)) {
+
         return res.status(401).json({
           error: "Non autorizzato"
         });
       }
+
 
       const {
         name,
@@ -111,45 +140,63 @@ module.exports = async (req, res) => {
         image
       } = req.body || {};
 
+
       if (!name || !image) {
+
         return res.status(400).json({
-          error: "Nome e foto sono obbligatori"
+          error:
+            "Nome e foto sono obbligatori"
         });
       }
 
-      const numericPrice = Number(price);
+
+      const numericPrice =
+        Number(price);
+
 
       if (
         !Number.isFinite(numericPrice) ||
         numericPrice <= 0
       ) {
+
         return res.status(400).json({
           error: "Prezzo non valido"
         });
       }
 
+
       if (
         category !== "Cappelli" &&
         category !== "Abbigliamento"
       ) {
+
         return res.status(400).json({
           error: "Categoria non valida"
         });
       }
 
-      const products = await getCatalog();
+
+      const products =
+        await getCatalog();
+
 
       const product = {
+
         id:
           "product-" +
           Date.now() +
           "-" +
-          crypto.randomBytes(4).toString("hex"),
+          crypto
+            .randomBytes(4)
+            .toString("hex"),
 
-        name: String(name).trim(),
+        name:
+          String(name).trim(),
 
         price:
-          Math.round(numericPrice * 100) / 100,
+          Math.round(
+            numericPrice * 100
+          ) / 100,
 
         category,
 
@@ -159,9 +206,14 @@ module.exports = async (req, res) => {
           new Date().toISOString()
       };
 
+
       products.push(product);
 
-      await saveCatalog(products);
+
+      await saveCatalog(
+        products
+      );
+
 
       return res.status(200).json({
         ok: true,
@@ -170,52 +222,89 @@ module.exports = async (req, res) => {
     }
 
 
-    // ELIMINA PRODOTTO
+    /*
+      ELIMINA PRODOTTO
+    */
+
     if (req.method === "DELETE") {
 
       if (!isAdmin(req)) {
+
         return res.status(401).json({
           error: "Non autorizzato"
         });
       }
 
-      const { id } = req.body || {};
+
+      const { id } =
+        req.body || {};
+
 
       if (!id) {
+
         return res.status(400).json({
-          error: "ID prodotto mancante"
+          error:
+            "ID prodotto mancante"
         });
       }
 
-      const products = await getCatalog();
 
-      const product = products.find(
-        item => item.id === id
-      );
+      const products =
+        await getCatalog();
+
+
+      const product =
+        products.find(
+          item => item.id === id
+        );
+
 
       if (!product) {
+
         return res.status(404).json({
-          error: "Prodotto non trovato"
+          error:
+            "Prodotto non trovato"
         });
       }
 
-      const updatedProducts = products.filter(
-        item => item.id !== id
+
+      const updatedProducts =
+        products.filter(
+          item => item.id !== id
+        );
+
+
+      /*
+        Salva prima il nuovo catalogo
+      */
+
+      await saveCatalog(
+        updatedProducts
       );
 
-      await saveCatalog(updatedProducts);
 
-      // Prova anche a eliminare la foto dal Blob
+      /*
+        Poi elimina la foto
+      */
+
       if (product.image) {
+
         try {
-          await del(product.image);
+
+          await del(
+            product.image
+          );
+
         } catch (imageError) {
+
           console.error(
             "Impossibile eliminare la foto:",
             imageError
           );
+
         }
       }
+
 
       return res.status(200).json({
         ok: true
@@ -224,15 +313,21 @@ module.exports = async (req, res) => {
 
 
     return res.status(405).json({
-      error: "Metodo non consentito"
+      error:
+        "Metodo non consentito"
     });
+
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "CATALOG ERROR:",
+      error
+    );
 
     return res.status(500).json({
-      error: "Errore durante la gestione del catalogo"
+      error:
+        "Errore durante la gestione del catalogo"
     });
   }
 };
