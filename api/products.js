@@ -1,13 +1,7 @@
 const { put, list, del } = require("@vercel/blob");
 const crypto = require("crypto");
 
-const CATALOG_PREFIX = "catalog/";
-
-/*
-  Catalogo iniziale.
-  Verrà usato solo se non esiste ancora
-  nessun catalogo salvato.
-*/
+const CATALOG_PREFIX = "catalog/current-";
 
 const defaultProducts = Array.from(
   { length: 14 },
@@ -30,15 +24,12 @@ const defaultProducts = Array.from(
 ========================= */
 
 function createToken() {
-
   return crypto
     .createHmac(
       "sha256",
       process.env.ADMIN_PASSWORD
     )
-    .update(
-      "luko-lab-admin-session"
-    )
+    .update("luko-lab-admin-session")
     .digest("hex");
 }
 
@@ -60,74 +51,110 @@ function isAdmin(req) {
     return false;
   }
 
-  return (
-    match[1] === createToken()
-  );
+  return match[1] === createToken();
 }
 
 
 /* =========================
-   TROVA ULTIMO CATALOGO
-========================= */
-
-async function findLatestCatalog() {
-
-  const result =
-    await list({
-      prefix: CATALOG_PREFIX,
-      limit: 100
-    });
-
-  if (
-    !result.blobs ||
-    result.blobs.length === 0
-  ) {
-    return null;
-  }
-
-  /*
-    Prendiamo il catalogo più recente
-    in base alla data di caricamento.
-  */
-
-  const sorted =
-    [...result.blobs].sort(
-      function(a, b) {
-
-        return (
-          new Date(b.uploadedAt).getTime() -
-          new Date(a.uploadedAt).getTime()
-        );
-
-      }
-    );
-
-  return sorted[0];
-}
-
-
-/* =========================
-   LEGGI CATALOGO
+   LEGGI ULTIMO CATALOGO
 ========================= */
 
 async function getCatalog() {
 
   try {
 
-    const latest =
-      await findLatestCatalog();
+    /*
+      Cerchiamo solo le versioni
+      nuove del catalogo.
+    */
+
+    const result =
+      await list({
+        prefix: CATALOG_PREFIX,
+        limit: 100
+      });
 
 
-    if (!latest) {
+    if (
+      !result.blobs ||
+      result.blobs.length === 0
+    ) {
 
-      return defaultProducts;
+      /*
+        Compatibilità con il vecchio
+        catalogo eventualmente esistente.
+      */
+
+      const oldResult =
+        await list({
+          prefix: "catalog/products",
+          limit: 100
+        });
+
+
+      if (
+        !oldResult.blobs ||
+        oldResult.blobs.length === 0
+      ) {
+        return defaultProducts;
+      }
+
+
+      const oldBlob =
+        oldResult.blobs
+          .sort(function(a, b) {
+
+            return a.pathname.localeCompare(
+              b.pathname
+            );
+
+          })
+          .at(-1);
+
+
+      const oldResponse =
+        await fetch(
+          oldBlob.url +
+          (oldBlob.url.includes("?")
+            ? "&cache=0"
+            : "?cache=0")
+        );
+
+
+      const oldData =
+        await oldResponse.json();
+
+
+      return Array.isArray(oldData)
+        ? oldData
+        : defaultProducts;
     }
 
 
     /*
-      cache=0 evita di leggere
-      una versione precedente.
+      I nomi sono:
+
+      current-0000000000000-xxxxx.json
+
+      quindi possiamo ordinare
+      direttamente per pathname.
     */
+
+    const sorted =
+      result.blobs.sort(
+        function(a, b) {
+
+          return a.pathname.localeCompare(
+            b.pathname
+          );
+
+        }
+      );
+
+
+    const latest =
+      sorted[sorted.length - 1];
+
 
     const separator =
       latest.url.includes("?")
@@ -158,7 +185,6 @@ async function getCatalog() {
     if (
       !Array.isArray(data)
     ) {
-
       return defaultProducts;
     }
 
@@ -179,46 +205,40 @@ async function getCatalog() {
 
 
 /* =========================
-   SALVA NUOVO CATALOGO
+   SALVA CATALOGO
 ========================= */
 
-async function saveCatalog(
-  products
-) {
+async function saveCatalog(products) {
 
-  /*
-    Creiamo sempre un nuovo file.
+  const timestamp =
+    Date.now()
+      .toString()
+      .padStart(15, "0");
 
-    Questo evita problemi di cache
-    e di sovrascrittura del Blob.
-  */
+
+  const random =
+    crypto
+      .randomBytes(6)
+      .toString("hex");
+
 
   const pathname =
     CATALOG_PREFIX +
-    "products-" +
-    Date.now() +
+    timestamp +
     "-" +
-    crypto
-      .randomBytes(6)
-      .toString("hex") +
+    random +
     ".json";
 
 
-  const blob =
-    await put(
-      pathname,
-      JSON.stringify(products),
-      {
-        access: "public",
-        addRandomSuffix: false,
-        contentType:
-          "application/json",
-        cacheControlMaxAge: 60
-      }
-    );
-
-
-  return blob;
+  await put(
+    pathname,
+    JSON.stringify(products),
+    {
+      access: "public",
+      addRandomSuffix: false,
+      contentType: "application/json"
+    }
+  );
 }
 
 
@@ -227,10 +247,7 @@ async function saveCatalog(
 ========================= */
 
 module.exports =
-  async function handler(
-    req,
-    res
-  ) {
+  async function handler(req, res) {
 
     try {
 
@@ -353,9 +370,7 @@ module.exports =
         };
 
 
-        products.push(
-          product
-        );
+        products.push(product);
 
 
         await saveCatalog(
@@ -412,9 +427,7 @@ module.exports =
         const product =
           products.find(
             function(item) {
-
               return item.id === id;
-
             }
           );
 
@@ -428,23 +441,16 @@ module.exports =
         }
 
 
-        /*
-          Creiamo il nuovo catalogo
-          SENZA il prodotto eliminato.
-        */
-
         const updatedProducts =
           products.filter(
             function(item) {
-
               return item.id !== id;
-
             }
           );
 
 
         /*
-          Salviamo una nuova versione
+          Salviamo una NUOVA versione
           del catalogo.
         */
 
@@ -454,15 +460,11 @@ module.exports =
 
 
         /*
-          Eliminiamo la foto del prodotto.
-          Se la foto non può essere eliminata,
-          il prodotto rimane comunque eliminato
-          dal catalogo.
+          La foto può essere eliminata
+          senza influire sul catalogo.
         */
 
-        if (
-          product.image
-        ) {
+        if (product.image) {
 
           try {
 
@@ -473,7 +475,7 @@ module.exports =
           } catch (imageError) {
 
             console.error(
-              "ERRORE FOTO:",
+              "Errore eliminazione foto:",
               imageError
             );
 
@@ -491,10 +493,6 @@ module.exports =
         });
       }
 
-
-      /* =====================
-         METODO NON CONSENTITO
-      ===================== */
 
       return res.status(405).json({
 
@@ -519,7 +517,5 @@ module.exports =
           "Errore durante la gestione del catalogo"
 
       });
-
     }
-
   };
