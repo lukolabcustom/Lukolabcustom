@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Il Lab — Luko Lab Custom</title>
+  <title>Admin — Luko Lab Custom</title>
 
   <style>
     * {
@@ -13,380 +12,298 @@
 
     body {
       margin: 0;
-      background: #111;
-      color: #fff;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Arial, sans-serif;
+      background: #071b12;
+      color: white;
+      padding: 20px;
     }
 
-    .page {
+    .container {
       max-width: 900px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-    }
-
-    .back {
-      display: inline-block;
-      margin-bottom: 50px;
-      color: #fff;
-      text-decoration: none;
-      font-size: 18px;
+      margin: auto;
     }
 
     h1 {
-      font-size: 56px;
-      margin: 0 0 10px;
+      margin-bottom: 8px;
     }
 
     .subtitle {
-      color: #aaa;
-      font-size: 28px;
-      margin-bottom: 55px;
+      color: #b9c9bf;
+      margin-bottom: 25px;
     }
 
-    .card {
-      background: #1d1d1d;
-      border-radius: 32px;
-      padding: 38px;
-      margin-bottom: 35px;
-    }
-
-    h2 {
-      font-size: 42px;
-      margin-top: 0;
-    }
-
-    label {
-      display: block;
-      font-size: 20px;
-      font-weight: bold;
-      margin: 25px 0 10px;
+    .box {
+      background: #10271b;
+      border: 1px solid #244833;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
     }
 
     input,
     select {
       width: 100%;
-      padding: 20px;
-      border-radius: 18px;
-      border: 2px solid #555;
-      background: #111;
-      color: #fff;
-      font-size: 19px;
+      padding: 14px;
+      margin-top: 8px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: 1px solid #41624b;
+      background: #071b12;
+      color: white;
+      font-size: 16px;
     }
 
     input[type="file"] {
-      padding: 15px;
+      padding: 10px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
     }
 
     button {
-      width: 100%;
-      padding: 22px;
       border: 0;
-      border-radius: 20px;
-      background: #fff;
-      color: #111;
-      font-size: 20px;
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: 16px;
       font-weight: bold;
-      margin-top: 30px;
       cursor: pointer;
     }
 
-    button:disabled {
-      opacity: .5;
+    .primary {
+      background: #d7ff52;
+      color: #102000;
+      width: 100%;
     }
 
-    .login-card {
-      max-width: 600px;
-      margin: 80px auto;
+    .delete {
+      background: #c93636;
+      color: white;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .logout {
+      background: #304b39;
+      color: white;
+      margin-top: 10px;
     }
 
     .product {
-      border-top: 1px solid #444;
-      padding: 30px 0;
-    }
-
-    .product:first-child {
-      border-top: 0;
+      border: 1px solid #31563d;
+      border-radius: 14px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #0b2115;
     }
 
     .product img {
       width: 100%;
-      max-height: 350px;
-      object-fit: cover;
-      border-radius: 18px;
-      margin-bottom: 18px;
+      max-width: 220px;
+      display: block;
+      border-radius: 12px;
+      margin-bottom: 12px;
     }
 
     .product-name {
-      font-size: 25px;
+      font-size: 18px;
       font-weight: bold;
-      margin-bottom: 8px;
     }
 
     .product-info {
-      color: #aaa;
-      font-size: 17px;
-      margin-bottom: 15px;
-    }
-
-    .delete-button {
-      display: block;
-      width: 100%;
-      background: #d93636;
-      color: #fff;
-      margin-top: 15px;
+      color: #b9c9bf;
+      margin-top: 5px;
     }
 
     .message {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 14px;
-      background: #292929;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
       display: none;
     }
 
-    .preview {
-      width: 100%;
-      border-radius: 18px;
-      margin-top: 15px;
+    .success {
+      background: #164b2b;
+      color: #baffc9;
+    }
+
+    .error {
+      background: #571f1f;
+      color: #ffc1c1;
+    }
+
+    #adminArea {
       display: none;
-      max-height: 400px;
-      object-fit: cover;
     }
 
-    .status {
-      margin-top: 15px;
-      color: #aaa;
-      font-size: 16px;
-    }
-
-    @media(max-width:600px) {
-      .page {
-        padding: 25px 18px 60px;
-      }
-
-      h1 {
-        font-size: 42px;
-      }
-
-      .subtitle {
-        font-size: 23px;
-      }
-
-      .card {
-        padding: 28px 22px;
-        border-radius: 26px;
-      }
-
-      h2 {
-        font-size: 34px;
-      }
+    #loginArea {
+      max-width: 500px;
+      margin: 80px auto;
     }
   </style>
 </head>
 
 <body>
 
-<div class="page">
+<div id="loginArea" class="box">
 
-  <a class="back" href="/">
-    ← Torna allo shop
-  </a>
-
-  <div id="loginSection">
-
-    <h1>IL LAB</h1>
-
-    <div class="subtitle">
-      Area privata Luko Lab Custom
-    </div>
-
-    <div class="card login-card">
-
-      <h2>Accesso</h2>
-
-      <label>Password</label>
-
-      <input
-        id="password"
-        type="password"
-        autocomplete="current-password"
-        placeholder="Inserisci password"
-      >
-
-      <button
-        type="button"
-        id="loginButton"
-      >
-        ENTRA NEL LAB
-      </button>
-
-      <div
-        id="loginMessage"
-        class="message"
-      ></div>
-
-    </div>
-
+  <h1>🔐 Luko Lab Custom</h1>
+  <div class="subtitle">
+    Accesso area amministratore
   </div>
 
+  <label>Password</label>
 
-  <div
-    id="labSection"
-    style="display:none;"
+  <input
+    type="password"
+    id="loginPassword"
+    placeholder="Inserisci password"
   >
 
-    <h1>IL LAB</h1>
+  <button
+    class="primary"
+    onclick="login()"
+  >
+    Accedi
+  </button>
 
-    <div class="subtitle">
-      Gestisci i tuoi prodotti
-    </div>
+  <div
+    id="loginMessage"
+    class="message error"
+  ></div>
 
-
-    <div class="card">
-
-      <h2>Aggiungi prodotto</h2>
-
-      <label>Nome prodotto</label>
-
-      <input
-        id="name"
-        type="text"
-        placeholder="Es. Cappello Jungle"
-      >
-
-      <label>Prezzo €</label>
-
-      <input
-        id="price"
-        type="number"
-        value="35"
-        min="1"
-        step="0.01"
-      >
-
-      <label>Categoria</label>
-
-      <select id="category">
-
-        <option value="Cappelli">
-          Cappelli
-        </option>
-
-        <option value="Abbigliamento">
-          Abbigliamento
-        </option>
-
-      </select>
+</div>
 
 
-      <label>Foto</label>
+<div
+  id="adminArea"
+  class="container"
+>
 
-      <input
-        id="photo"
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/heic"
-      >
+  <h1>🌴 Gestione prodotti</h1>
 
-      <img
-        id="preview"
-        class="preview"
-        alt="Anteprima"
-      >
+  <div class="subtitle">
+    Aggiungi o elimina i prodotti del tuo negozio.
+  </div>
 
 
-      <button
-        type="button"
-        id="publishButton"
-      >
-        PUBBLICA PRODOTTO
-      </button>
+  <!-- =========================
+       AGGIUNGI PRODOTTO
+  ========================== -->
 
-      <div
-        id="publishMessage"
-        class="message"
-      ></div>
+  <div class="box">
 
-      <div
-        id="uploadStatus"
-        class="status"
-      ></div>
+    <h2>➕ Aggiungi prodotto</h2>
 
-    </div>
+    <label>Nome prodotto</label>
+
+    <input
+      type="text"
+      id="productName"
+      placeholder="Es. Cappello Tropical"
+    >
 
 
-    <div class="card">
+    <label>Prezzo (€)</label>
 
-      <h2>Prodotti</h2>
+    <input
+      type="number"
+      id="productPrice"
+      value="35"
+      min="0.01"
+      step="0.01"
+    >
 
-      <div id="products">
-        Caricamento prodotti...
-      </div>
 
+    <label>Categoria</label>
+
+    <select id="productCategory">
+
+      <option value="Cappelli">
+        Cappelli
+      </option>
+
+      <option value="Abbigliamento">
+        Abbigliamento
+      </option>
+
+    </select>
+
+
+    <label>Foto prodotto</label>
+
+    <input
+      type="file"
+      id="productImage"
+      accept="image/jpeg,image/png,image/webp,image/heic"
+    >
+
+
+    <button
+      class="primary"
+      id="publishButton"
+      onclick="addProduct()"
+    >
+      Pubblica prodotto
+    </button>
+
+
+    <div
+      id="addMessage"
+      class="message"
+    ></div>
+
+  </div>
+
+
+  <!-- =========================
+       PRODOTTI
+  ========================== -->
+
+  <div class="box">
+
+    <h2>📦 Prodotti presenti</h2>
+
+    <div id="productsList">
+      Caricamento...
     </div>
 
   </div>
+
+
+  <button
+    class="logout"
+    onclick="logout()"
+  >
+    Esci
+  </button>
 
 </div>
 
 
 <script>
 
-const loginButton =
-  document.getElementById("loginButton");
-
-const passwordInput =
-  document.getElementById("password");
-
-const loginMessage =
-  document.getElementById("loginMessage");
+let loggedIn = false;
 
 
 /* =========================
    LOGIN
 ========================= */
 
-loginButton.addEventListener(
-  "click",
-  login
-);
-
-
-passwordInput.addEventListener(
-  "keydown",
-  function(event) {
-
-    if (event.key === "Enter") {
-      login();
-    }
-
-  }
-);
-
-
 async function login() {
 
   const password =
-    passwordInput.value.trim();
+    document
+      .getElementById("loginPassword")
+      .value;
 
-  loginMessage.style.display =
-    "none";
+  const message =
+    document
+      .getElementById("loginMessage");
 
-  if (!password) {
-
-    loginMessage.textContent =
-      "Inserisci la password.";
-
-    loginMessage.style.display =
-      "block";
-
-    return;
-  }
-
-  loginButton.disabled = true;
-
-  loginButton.textContent =
-    "ACCESSO...";
-
+  message.style.display = "none";
 
   try {
 
@@ -395,345 +312,46 @@ async function login() {
         "/api/admin-login",
         {
           method: "POST",
-
           headers: {
             "Content-Type":
               "application/json"
           },
-
           body: JSON.stringify({
-            password: password
+            password
           })
         }
       );
 
-
     const data =
-      await readJson(response);
-
+      await response.json();
 
     if (!response.ok) {
-
       throw new Error(
         data.error ||
-        "Password non corretta."
+        "Password non corretta"
       );
-
     }
 
+    loggedIn = true;
 
-    document.getElementById(
-      "loginSection"
-    ).style.display = "none";
+    document
+      .getElementById("loginArea")
+      .style.display = "none";
 
-
-    document.getElementById(
-      "labSection"
-    ).style.display = "block";
-
+    document
+      .getElementById("adminArea")
+      .style.display = "block";
 
     loadProducts();
 
-
-  } catch (error) {
-
-    loginMessage.textContent =
-      error.message ||
-      "Errore di connessione.";
-
-    loginMessage.style.display =
-      "block";
-
-  } finally {
-
-    loginButton.disabled = false;
-
-    loginButton.textContent =
-      "ENTRA NEL LAB";
-
-  }
-
-}
-
-
-/* =========================
-   ANTEPRIMA FOTO
-========================= */
-
-document
-  .getElementById("photo")
-  .addEventListener(
-    "change",
-    function() {
-
-      const file =
-        this.files[0];
-
-      const preview =
-        document.getElementById(
-          "preview"
-        );
-
-
-      if (!file) {
-
-        preview.style.display =
-          "none";
-
-        return;
-      }
-
-
-      preview.src =
-        URL.createObjectURL(file);
-
-      preview.style.display =
-        "block";
-
-    }
-  );
-
-
-/* =========================
-   PUBBLICA PRODOTTO
-========================= */
-
-document
-  .getElementById("publishButton")
-  .addEventListener(
-    "click",
-    publishProduct
-  );
-
-
-async function publishProduct() {
-
-  const button =
-    document.getElementById(
-      "publishButton"
-    );
-
-  const message =
-    document.getElementById(
-      "publishMessage"
-    );
-
-  const status =
-    document.getElementById(
-      "uploadStatus"
-    );
-
-
-  const name =
-    document.getElementById(
-      "name"
-    ).value.trim();
-
-
-  const price =
-    document.getElementById(
-      "price"
-    ).value;
-
-
-  const category =
-    document.getElementById(
-      "category"
-    ).value;
-
-
-  const file =
-    document.getElementById(
-      "photo"
-    ).files[0];
-
-
-  message.style.display =
-    "none";
-
-  status.textContent =
-    "";
-
-
-  if (!name) {
-
-    message.textContent =
-      "Inserisci il nome del prodotto.";
-
-    message.style.display =
-      "block";
-
-    return;
-  }
-
-
-  if (!file) {
-
-    message.textContent =
-      "Seleziona una foto.";
-
-    message.style.display =
-      "block";
-
-    return;
-  }
-
-
-  if (file.size > 10 * 1024 * 1024) {
-
-    message.textContent =
-      "La foto è troppo grande. Massimo 10 MB.";
-
-    message.style.display =
-      "block";
-
-    return;
-  }
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "CARICAMENTO FOTO...";
-
-
-  try {
-
-    const module =
-      await import(
-        "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm"
-      );
-
-
-    status.textContent =
-      "Caricamento foto...";
-
-
-    const blob =
-      await module.upload(
-        file.name,
-        file,
-        {
-          access: "public",
-          handleUploadUrl:
-            "/api/upload"
-        }
-      );
-
-
-    if (!blob || !blob.url) {
-
-      throw new Error(
-        "La foto non è stata caricata."
-      );
-
-    }
-
-
-    status.textContent =
-      "Pubblicazione prodotto...";
-
-
-    button.textContent =
-      "PUBBLICAZIONE...";
-
-
-    const response =
-      await fetch(
-        "/api/products",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-
-            name: name,
-
-            price: price,
-
-            category: category,
-
-            image: blob.url
-
-          })
-        }
-      );
-
-
-    const data =
-      await readJson(response);
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.error ||
-        "Impossibile pubblicare il prodotto."
-      );
-
-    }
-
-
-    message.textContent =
-      "Prodotto pubblicato con successo.";
-
-    message.style.display =
-      "block";
-
-
-    document.getElementById(
-      "name"
-    ).value = "";
-
-
-    document.getElementById(
-      "price"
-    ).value = "35";
-
-
-    document.getElementById(
-      "photo"
-    ).value = "";
-
-
-    document.getElementById(
-      "preview"
-    ).style.display =
-      "none";
-
-
-    status.textContent =
-      "";
-
-
-    await loadProducts();
-
-
   } catch (error) {
 
     message.textContent =
-      error.message ||
-      "Errore durante il caricamento.";
+      error.message;
 
     message.style.display =
       "block";
-
-    status.textContent =
-      "";
-
-  } finally {
-
-    button.disabled = false;
-
-    button.textContent =
-      "PUBBLICA PRODOTTO";
-
   }
-
 }
 
 
@@ -743,129 +361,356 @@ async function publishProduct() {
 
 async function loadProducts() {
 
-  const container =
-    document.getElementById(
-      "products"
-    );
+  const list =
+    document
+      .getElementById("productsList");
 
-
-  container.innerHTML =
-    "Caricamento prodotti...";
-
+  list.innerHTML =
+    "Caricamento...";
 
   try {
 
     const response =
       await fetch(
-        "/api/products?refresh=" +
-        Date.now(),
+        "/api/products?cache=" +
+        Date.now()
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Errore caricamento prodotti"
+      );
+    }
+
+    const products =
+      data.products || [];
+
+    if (products.length === 0) {
+
+      list.innerHTML =
+        "<p>Nessun prodotto presente.</p>";
+
+      return;
+    }
+
+    list.innerHTML = "";
+
+    products.forEach(product => {
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "product";
+
+      let imageHTML = "";
+
+      if (product.image) {
+
+        imageHTML =
+          `<img
+            src="${escapeHtml(product.image)}"
+            alt="${escapeHtml(product.name)}"
+          >`;
+      }
+
+      div.innerHTML = `
+
+        ${imageHTML}
+
+        <div class="product-name">
+          ${escapeHtml(product.name)}
+        </div>
+
+        <div class="product-info">
+          €${Number(product.price).toFixed(2)}
+        </div>
+
+        <div class="product-info">
+          ${escapeHtml(product.category)}
+        </div>
+
+        <button
+          class="delete"
+          onclick="deleteProduct('${escapeHtml(product.id)}')"
+        >
+          🗑 Elimina prodotto
+        </button>
+      `;
+
+      list.appendChild(div);
+
+    });
+
+  } catch (error) {
+
+    list.innerHTML =
+      `<div class="message error" style="display:block">
+        ${escapeHtml(error.message)}
+      </div>`;
+  }
+}
+
+
+/* =========================
+   AGGIUNGI PRODOTTO
+========================= */
+
+async function addProduct() {
+
+  const button =
+    document
+      .getElementById("publishButton");
+
+  const message =
+    document
+      .getElementById("addMessage");
+
+  const name =
+    document
+      .getElementById("productName")
+      .value
+      .trim();
+
+  const price =
+    document
+      .getElementById("productPrice")
+      .value;
+
+  const category =
+    document
+      .getElementById("productCategory")
+      .value;
+
+  const file =
+    document
+      .getElementById("productImage")
+      .files[0];
+
+  message.style.display = "none";
+
+  if (!name) {
+
+    showMessage(
+      message,
+      "Inserisci il nome del prodotto.",
+      true
+    );
+
+    return;
+  }
+
+  if (!price || Number(price) <= 0) {
+
+    showMessage(
+      message,
+      "Inserisci un prezzo valido.",
+      true
+    );
+
+    return;
+  }
+
+  if (!file) {
+
+    showMessage(
+      message,
+      "Seleziona una foto del prodotto.",
+      true
+    );
+
+    return;
+  }
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Caricamento foto...";
+
+
+  try {
+
+    /*
+      Carica la foto su Vercel Blob
+    */
+
+    const uploadResponse =
+      await fetch(
+        "/api/upload",
         {
-          cache: "no-store"
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            type: "blob.generate-client-token",
+            payload: {
+              pathname: file.name,
+              callbackUrl:
+                "/api/upload"
+            }
+          })
+        }
+      );
+
+
+    /*
+      Usiamo il sistema Blob
+      tramite la libreria client.
+    */
+
+    let blob;
+
+    if (
+      uploadResponse.ok &&
+      uploadResponse.headers
+        .get("content-type")
+        ?.includes("application/json")
+    ) {
+
+      const uploadData =
+        await uploadResponse.json();
+
+      if (uploadData.url) {
+        blob = uploadData;
+      }
+    }
+
+
+    /*
+      Se il metodo precedente non produce
+      direttamente il blob, usiamo il client
+      Vercel Blob.
+    */
+
+    if (!blob) {
+
+      button.textContent =
+        "Caricamento foto...";
+
+      const module =
+        await import(
+          "https://esm.sh/@vercel/blob/client"
+        );
+
+      blob =
+        await module.upload(
+          file.name,
+          file,
+          {
+            access: "public",
+            handleUploadUrl:
+              "/api/upload"
+          }
+        );
+    }
+
+
+    if (!blob || !blob.url) {
+      throw new Error(
+        "La foto non è stata caricata."
+      );
+    }
+
+
+    button.textContent =
+      "Salvataggio prodotto...";
+
+
+    /*
+      Salva il prodotto nel catalogo.
+    */
+
+    const response =
+      await fetch(
+        "/api/products",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+
+            name,
+
+            price:
+              Number(price),
+
+            category,
+
+            image:
+              blob.url
+
+          })
         }
       );
 
 
     const data =
-      await readJson(response);
+      await response.json();
 
 
     if (!response.ok) {
-
       throw new Error(
         data.error ||
-        "Errore durante il caricamento."
+        "Impossibile salvare il prodotto."
       );
-
     }
 
 
-    const products =
-      Array.isArray(data.products)
-        ? data.products
-        : [];
+    showMessage(
+      message,
+      "✅ Prodotto aggiunto correttamente!",
+      false
+    );
 
 
-    if (products.length === 0) {
+    /*
+      Pulisce il modulo.
+    */
 
-      container.innerHTML =
-        "<p>Nessun prodotto.</p>";
+    document
+      .getElementById("productName")
+      .value = "";
 
-      return;
-    }
+    document
+      .getElementById("productPrice")
+      .value = "35";
 
-
-    container.innerHTML =
-      products.map(function(product) {
-
-        const image =
-          product.image
-            ? `
-              <img
-                src="${escapeHtml(product.image)}"
-                alt=""
-              >
-            `
-            : "";
+    document
+      .getElementById("productImage")
+      .value = "";
 
 
-        return `
-          <div class="product">
+    /*
+      Aggiorna la lista.
+    */
 
-            ${image}
-
-            <div class="product-name">
-              ${escapeHtml(product.name)}
-            </div>
-
-            <div class="product-info">
-              € ${Number(product.price).toFixed(2)}
-              ·
-              ${escapeHtml(product.category)}
-            </div>
-
-            <button
-              type="button"
-              class="delete-button"
-              data-id="${escapeHtml(product.id)}"
-            >
-              ELIMINA PRODOTTO
-            </button>
-
-          </div>
-        `;
-
-      }).join("");
-
-
-    container
-      .querySelectorAll(
-        ".delete-button"
-      )
-      .forEach(function(button) {
-
-        button.addEventListener(
-          "click",
-          function() {
-
-            deleteProduct(
-              button.dataset.id
-            );
-
-          }
-        );
-
-      });
+    await loadProducts();
 
 
   } catch (error) {
 
-    console.error(error);
+    showMessage(
+      message,
+      "❌ " + error.message,
+      true
+    );
 
-    container.innerHTML =
-      "<p>Impossibile caricare i prodotti.</p>";
+  } finally {
 
+    button.disabled = false;
+
+    button.textContent =
+      "Pubblica prodotto";
   }
-
 }
 
 
@@ -880,11 +725,9 @@ async function deleteProduct(id) {
       "Vuoi davvero eliminare questo prodotto?"
     );
 
-
   if (!conferma) {
     return;
   }
-
 
   try {
 
@@ -893,30 +736,26 @@ async function deleteProduct(id) {
         "/api/products",
         {
           method: "DELETE",
-
           headers: {
             "Content-Type":
               "application/json"
           },
-
           body: JSON.stringify({
-            id: id
+            id
           })
         }
       );
 
 
     const data =
-      await readJson(response);
+      await response.json();
 
 
     if (!response.ok) {
-
       throw new Error(
         data.error ||
         "Impossibile eliminare il prodotto."
       );
-
     }
 
 
@@ -926,76 +765,80 @@ async function deleteProduct(id) {
   } catch (error) {
 
     alert(
-      error.message ||
-      "Errore durante l'eliminazione."
+      "Errore: " +
+      error.message
     );
-
   }
-
 }
 
 
 /* =========================
-   LETTURA JSON
+   LOGOUT
 ========================= */
 
-async function readJson(response) {
+function logout() {
 
-  const text =
-    await response.text();
+  loggedIn = false;
 
-
-  try {
-
-    return text
-      ? JSON.parse(text)
-      : {};
-
-  } catch (error) {
-
-    throw new Error(
-      "Risposta non valida dal server."
-    );
-
-  }
-
+  location.reload();
 }
 
 
 /* =========================
-   SICUREZZA TESTO
+   MESSAGGI
+========================= */
+
+function showMessage(
+  element,
+  text,
+  isError
+) {
+
+  element.textContent =
+    text;
+
+  element.className =
+    "message " +
+    (isError
+      ? "error"
+      : "success");
+
+  element.style.display =
+    "block";
+}
+
+
+/* =========================
+   SICUREZZA HTML
 ========================= */
 
 function escapeHtml(value) {
 
   return String(value)
-
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
+
+
+/* =========================
+   ENTER LOGIN
+========================= */
+
+document
+  .getElementById("loginPassword")
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (event.key === "Enter") {
+        login();
+      }
+
+    }
+  );
 
 </script>
 
