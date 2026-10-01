@@ -18,51 +18,111 @@ const defaultProducts = Array.from(
   }
 );
 
+
 function createToken() {
   return crypto
-    .createHmac("sha256", process.env.ADMIN_PASSWORD)
+    .createHmac(
+      "sha256",
+      process.env.ADMIN_PASSWORD
+    )
     .update("luko-lab-admin-session")
     .digest("hex");
 }
 
+
 function isAdmin(req) {
-  const cookie = req.headers.cookie || "";
 
-  const match = cookie.match(
-    /(?:^|;\s*)luko_admin=([^;]+)/
-  );
+  const cookie =
+    req.headers.cookie || "";
 
-  if (!match || !process.env.ADMIN_PASSWORD) {
+  const match =
+    cookie.match(
+      /(?:^|;\s*)luko_admin=([^;]+)/
+    );
+
+  if (
+    !match ||
+    !process.env.ADMIN_PASSWORD
+  ) {
     return false;
   }
 
-  return match[1] === createToken();
+  return (
+    match[1] === createToken()
+  );
 }
 
+
+/* =========================
+   LEGGI CATALOGO
+========================= */
+
 async function getCatalog() {
+
   try {
-    const result = await list({
-      prefix: CATALOG_PATH,
-      limit: 1
-    });
 
-    if (!result.blobs || result.blobs.length === 0) {
+    const result =
+      await list({
+        prefix: CATALOG_PATH,
+        limit: 1
+      });
+
+
+    if (
+      !result.blobs ||
+      result.blobs.length === 0
+    ) {
       return defaultProducts;
     }
 
-    const response = await fetch(
-      result.blobs[0].url
-    );
 
-    const data = await response.json();
+    const blob =
+      result.blobs[0];
 
-    if (!Array.isArray(data)) {
+
+    /*
+      cache=0 evita di leggere
+      una versione vecchia del catalogo
+    */
+
+    const separator =
+      blob.url.includes("?")
+        ? "&"
+        : "?";
+
+
+    const response =
+      await fetch(
+        blob.url +
+        separator +
+        "cache=0"
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Impossibile leggere il catalogo"
+      );
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !Array.isArray(data)
+    ) {
       return defaultProducts;
     }
+
 
     return data;
 
+
   } catch (error) {
+
     console.error(
       "GET CATALOG ERROR:",
       error
@@ -72,225 +132,333 @@ async function getCatalog() {
   }
 }
 
-async function saveCatalog(products) {
-  await put(
-    CATALOG_PATH,
-    JSON.stringify(products),
-    {
-      access: "public",
-      addRandomSuffix: false,
-      allowOverwrite: true,
-      contentType: "application/json"
-    }
-  );
-}
 
-module.exports = async (req, res) => {
+/* =========================
+   SALVA CATALOGO
+========================= */
+
+async function saveCatalog(products) {
 
   try {
 
-    /* =========================
-       GET PRODOTTI
-    ========================= */
-
-    if (req.method === "GET") {
-
-      const products =
-        await getCatalog();
-
-      return res.status(200).json({
-        products
-      });
-    }
-
-
-    /* =========================
-       AGGIUNGI PRODOTTO
-    ========================= */
-
-    if (req.method === "POST") {
-
-      if (!isAdmin(req)) {
-        return res.status(401).json({
-          error: "Non autorizzato"
-        });
+    await put(
+      CATALOG_PATH,
+      JSON.stringify(products),
+      {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: "application/json"
       }
-
-      const {
-        name,
-        price,
-        category,
-        image
-      } = req.body || {};
-
-      if (!name || !image) {
-        return res.status(400).json({
-          error:
-            "Nome e foto sono obbligatori"
-        });
-      }
-
-      const numericPrice =
-        Number(price);
-
-      if (
-        !Number.isFinite(numericPrice) ||
-        numericPrice <= 0
-      ) {
-        return res.status(400).json({
-          error: "Prezzo non valido"
-        });
-      }
-
-      if (
-        category !== "Cappelli" &&
-        category !== "Abbigliamento"
-      ) {
-        return res.status(400).json({
-          error: "Categoria non valida"
-        });
-      }
-
-      const products =
-        await getCatalog();
-
-      const product = {
-        id:
-          "product-" +
-          Date.now() +
-          "-" +
-          crypto
-            .randomBytes(4)
-            .toString("hex"),
-
-        name:
-          String(name).trim(),
-
-        price:
-          Math.round(
-            numericPrice * 100
-          ) / 100,
-
-        category,
-
-        image,
-
-        createdAt:
-          new Date().toISOString()
-      };
-
-      products.push(product);
-
-      await saveCatalog(products);
-
-      return res.status(200).json({
-        ok: true,
-        product
-      });
-    }
-
-
-    /* =========================
-       ELIMINA PRODOTTO
-    ========================= */
-
-    if (req.method === "DELETE") {
-
-      if (!isAdmin(req)) {
-        return res.status(401).json({
-          error: "Non autorizzato"
-        });
-      }
-
-      const { id } =
-        req.body || {};
-
-      if (!id) {
-        return res.status(400).json({
-          error:
-            "ID prodotto mancante"
-        });
-      }
-
-      const products =
-        await getCatalog();
-
-      const product =
-        products.find(
-          item => item.id === id
-        );
-
-      if (!product) {
-        return res.status(404).json({
-          error:
-            "Prodotto non trovato"
-        });
-      }
-
-      const updatedProducts =
-        products.filter(
-          item => item.id !== id
-        );
-
-      /*
-        Aggiorna il catalogo.
-        allowOverwrite: true permette
-        di sostituire products.json.
-      */
-
-      await saveCatalog(
-        updatedProducts
-      );
-
-      /*
-        Elimina anche la foto
-        associata al prodotto.
-      */
-
-      if (product.image) {
-
-        try {
-
-          await del(
-            product.image
-          );
-
-        } catch (imageError) {
-
-          console.error(
-            "Impossibile eliminare la foto:",
-            imageError
-          );
-
-        }
-      }
-
-      return res.status(200).json({
-        ok: true
-      });
-    }
-
-
-    /* =========================
-       METODO NON CONSENTITO
-    ========================= */
-
-    return res.status(405).json({
-      error:
-        "Metodo non consentito"
-    });
+    );
 
 
   } catch (error) {
 
     console.error(
-      "CATALOG ERROR:",
+      "SAVE CATALOG ERROR:",
       error
     );
 
-    return res.status(500).json({
-      error:
-        "Errore durante la gestione del catalogo"
-    });
+    throw error;
   }
-};
+}
+
+
+/* =========================
+   API
+========================= */
+
+module.exports =
+  async function handler(req, res) {
+
+    try {
+
+
+      /* =====================
+         GET
+      ===================== */
+
+      if (
+        req.method === "GET"
+      ) {
+
+        const products =
+          await getCatalog();
+
+
+        return res.status(200).json({
+          products
+        });
+      }
+
+
+      /* =====================
+         POST
+         AGGIUNGI PRODOTTO
+      ===================== */
+
+      if (
+        req.method === "POST"
+      ) {
+
+
+        if (!isAdmin(req)) {
+
+          return res.status(401).json({
+            error:
+              "Non autorizzato"
+          });
+        }
+
+
+        const {
+          name,
+          price,
+          category,
+          image
+        } = req.body || {};
+
+
+        if (
+          !name ||
+          !image
+        ) {
+
+          return res.status(400).json({
+            error:
+              "Nome e foto sono obbligatori"
+          });
+        }
+
+
+        const numericPrice =
+          Number(price);
+
+
+        if (
+          !Number.isFinite(
+            numericPrice
+          ) ||
+          numericPrice <= 0
+        ) {
+
+          return res.status(400).json({
+            error:
+              "Prezzo non valido"
+          });
+        }
+
+
+        if (
+          category !== "Cappelli" &&
+          category !== "Abbigliamento"
+        ) {
+
+          return res.status(400).json({
+            error:
+              "Categoria non valida"
+          });
+        }
+
+
+        const products =
+          await getCatalog();
+
+
+        const product = {
+
+          id:
+            "product-" +
+            Date.now() +
+            "-" +
+            crypto
+              .randomBytes(4)
+              .toString("hex"),
+
+          name:
+            String(name).trim(),
+
+          price:
+            Math.round(
+              numericPrice * 100
+            ) / 100,
+
+          category,
+
+          image,
+
+          createdAt:
+            new Date().toISOString()
+
+        };
+
+
+        products.push(
+          product
+        );
+
+
+        await saveCatalog(
+          products
+        );
+
+
+        return res.status(200).json({
+
+          ok: true,
+
+          product
+
+        });
+      }
+
+
+      /* =====================
+         DELETE
+         ELIMINA PRODOTTO
+      ===================== */
+
+      if (
+        req.method === "DELETE"
+      ) {
+
+
+        if (!isAdmin(req)) {
+
+          return res.status(401).json({
+            error:
+              "Non autorizzato"
+          });
+        }
+
+
+        const {
+          id
+        } = req.body || {};
+
+
+        if (!id) {
+
+          return res.status(400).json({
+            error:
+              "ID prodotto mancante"
+          });
+        }
+
+
+        const products =
+          await getCatalog();
+
+
+        const product =
+          products.find(
+            function(item) {
+
+              return item.id === id;
+
+            }
+          );
+
+
+        if (!product) {
+
+          return res.status(404).json({
+            error:
+              "Prodotto non trovato"
+          });
+        }
+
+
+        const updatedProducts =
+          products.filter(
+            function(item) {
+
+              return item.id !== id;
+
+            }
+          );
+
+
+        /*
+          IMPORTANTE:
+          prima aggiorniamo il catalogo
+        */
+
+        await saveCatalog(
+          updatedProducts
+        );
+
+
+        /*
+          Solo dopo aver salvato
+          eliminiamo la vecchia foto
+        */
+
+        if (
+          product.image
+        ) {
+
+          try {
+
+            await del(
+              product.image
+            );
+
+
+          } catch (imageError) {
+
+            console.error(
+              "ERRORE ELIMINAZIONE FOTO:",
+              imageError
+            );
+
+            /*
+              Se la foto non viene eliminata,
+              il prodotto viene comunque
+              rimosso dal catalogo.
+            */
+          }
+        }
+
+
+        return res.status(200).json({
+
+          ok: true,
+
+          message:
+            "Prodotto eliminato"
+
+        });
+      }
+
+
+      /* =====================
+         METODO NON CONSENTITO
+      ===================== */
+
+      return res.status(405).json({
+
+        error:
+          "Metodo non consentito"
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "CATALOG ERROR:",
+        error
+      );
+
+
+      return res.status(500).json({
+
+        error:
+          error.message ||
+          "Errore durante la gestione del catalogo"
+
+      });
+    }
+  };
