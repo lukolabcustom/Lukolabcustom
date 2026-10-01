@@ -91,7 +91,7 @@
     }
 
     button:disabled {
-      opacity: .5;
+      opacity: 0.5;
     }
 
     .login-card {
@@ -151,6 +151,12 @@
       object-fit: cover;
     }
 
+    .status {
+      margin-top: 15px;
+      color: #aaa;
+      font-size: 16px;
+    }
+
     @media(max-width:600px) {
       .page {
         padding: 25px 18px 60px;
@@ -183,6 +189,8 @@
   <a class="back" href="/">
     ← Torna allo shop
   </a>
+
+  <!-- LOGIN -->
 
   <div id="loginSection">
 
@@ -222,6 +230,8 @@
   </div>
 
 
+  <!-- AREA ADMIN -->
+
   <div
     id="labSection"
     style="display:none;"
@@ -233,6 +243,8 @@
       Gestisci i tuoi prodotti
     </div>
 
+
+    <!-- AGGIUNGI PRODOTTO -->
 
     <div class="card">
 
@@ -259,9 +271,17 @@
       <label>Categoria</label>
 
       <select id="category">
-        <option value="Cappelli">Cappelli</option>
-        <option value="Abbigliamento">Abbigliamento</option>
+
+        <option value="Cappelli">
+          Cappelli
+        </option>
+
+        <option value="Abbigliamento">
+          Abbigliamento
+        </option>
+
       </select>
+
 
       <label>Foto</label>
 
@@ -271,11 +291,13 @@
         accept="image/jpeg,image/png,image/webp,image/heic"
       >
 
+
       <img
         id="preview"
         class="preview"
         alt="Anteprima"
       >
+
 
       <button
         type="button"
@@ -284,13 +306,22 @@
         PUBBLICA PRODOTTO
       </button>
 
+
       <div
         id="publishMessage"
         class="message"
       ></div>
 
+
+      <div
+        id="uploadStatus"
+        class="status"
+      ></div>
+
     </div>
 
+
+    <!-- LISTA PRODOTTI -->
 
     <div class="card">
 
@@ -319,7 +350,9 @@
     document.getElementById("loginMessage");
 
 
-  // LOGIN
+  /*
+    LOGIN
+  */
 
   loginButton.addEventListener(
     "click",
@@ -388,7 +421,7 @@
 
 
       const data =
-        await response.json();
+        await readJson(response);
 
 
       if (!response.ok) {
@@ -397,6 +430,7 @@
           data.error ||
           "Password non corretta."
         );
+
       }
 
 
@@ -428,12 +462,15 @@
 
       loginButton.textContent =
         "ENTRA NEL LAB";
+
     }
 
   }
 
 
-  // ANTEPRIMA FOTO
+  /*
+    ANTEPRIMA FOTO
+  */
 
   document
     .getElementById("photo")
@@ -469,7 +506,9 @@
     );
 
 
-  // PUBBLICA PRODOTTO
+  /*
+    PUBBLICA PRODOTTO
+  */
 
   document
     .getElementById("publishButton")
@@ -489,6 +528,11 @@
     const message =
       document.getElementById(
         "publishMessage"
+      );
+
+    const status =
+      document.getElementById(
+        "uploadStatus"
       );
 
 
@@ -516,6 +560,13 @@
       ).files[0];
 
 
+    message.style.display =
+      "none";
+
+    status.textContent =
+      "";
+
+
     if (!name) {
 
       message.textContent =
@@ -540,19 +591,38 @@
     }
 
 
+    if (file.size > 10 * 1024 * 1024) {
+
+      message.textContent =
+        "La foto è troppo grande. Massimo 10 MB.";
+
+      message.style.display =
+        "block";
+
+      return;
+    }
+
+
     button.disabled = true;
 
     button.textContent =
-      "CARICAMENTO...";
+      "CARICAMENTO FOTO...";
 
 
     try {
 
-      // Carica la libreria SOLO quando serve
+      /*
+        LIBRERIA VERCEL BLOB
+      */
+
       const module =
         await import(
           "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm"
         );
+
+
+      status.textContent =
+        "Caricamento foto...";
 
 
       const blob =
@@ -565,6 +635,23 @@
               "/api/upload"
           }
         );
+
+
+      if (!blob || !blob.url) {
+
+        throw new Error(
+          "La foto non è stata caricata."
+        );
+
+      }
+
+
+      status.textContent =
+        "Pubblicazione prodotto...";
+
+
+      button.textContent =
+        "PUBBLICAZIONE...";
 
 
       const response =
@@ -580,13 +667,17 @@
 
             body: JSON.stringify({
 
-              name: name,
+              name:
+                name,
 
-              price: price,
+              price:
+                price,
 
-              category: category,
+              category:
+                category,
 
-              image: blob.url
+              image:
+                blob.url
 
             })
           }
@@ -594,7 +685,7 @@
 
 
       const data =
-        await response.json();
+        await readJson(response);
 
 
       if (!response.ok) {
@@ -603,6 +694,7 @@
           data.error ||
           "Impossibile pubblicare il prodotto."
         );
+
       }
 
 
@@ -630,10 +722,15 @@
 
       document.getElementById(
         "preview"
-      ).style.display = "none";
+      ).style.display =
+        "none";
 
 
-      loadProducts();
+      status.textContent =
+        "";
+
+
+      await loadProducts();
 
 
     } catch (error) {
@@ -645,18 +742,24 @@
       message.style.display =
         "block";
 
+      status.textContent =
+        "";
+
     } finally {
 
       button.disabled = false;
 
       button.textContent =
         "PUBBLICA PRODOTTO";
+
     }
 
   }
 
 
-  // CARICA PRODOTTI
+  /*
+    CARICA PRODOTTI
+  */
 
   async function loadProducts() {
 
@@ -675,12 +778,25 @@
       const response =
         await fetch(
           "/api/products?refresh=" +
-          Date.now()
+          Date.now(),
+          {
+            cache: "no-store"
+          }
         );
 
 
       const data =
-        await response.json();
+        await readJson(response);
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          "Errore durante il caricamento."
+        );
+
+      }
 
 
       const products =
@@ -745,8 +861,6 @@
           .join("");
 
 
-      // Collega i pulsanti elimina
-
       container
         .querySelectorAll(
           ".delete-button"
@@ -777,7 +891,9 @@
   }
 
 
-  // ELIMINA PRODOTTO
+  /*
+    ELIMINA PRODOTTO
+  */
 
   async function deleteProduct(id) {
 
@@ -813,31 +929,26 @@
 
 
       const data =
-        await response.json();
+        await readJson(response);
 
 
       if (!response.ok) {
 
-        alert(
+        throw new Error(
           data.error ||
           "Impossibile eliminare il prodotto."
         );
 
-        return;
       }
 
 
-      alert(
-        "Prodotto eliminato."
-      );
-
-
-      loadProducts();
+      await loadProducts();
 
 
     } catch (error) {
 
       alert(
+        error.message ||
         "Errore durante l'eliminazione."
       );
 
@@ -846,7 +957,36 @@
   }
 
 
-  // SICUREZZA TESTO
+  /*
+    LETTURA RISPOSTA
+  */
+
+  async function readJson(response) {
+
+    const text =
+      await response.text();
+
+
+    try {
+
+      return text
+        ? JSON.parse(text)
+        : {};
+
+    } catch (error) {
+
+      throw new Error(
+        "Risposta non valida dal server."
+      );
+
+    }
+
+  }
+
+
+  /*
+    SICUREZZA TESTO
+  */
 
   function escapeHtml(value) {
 
