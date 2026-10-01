@@ -39,10 +39,8 @@ function isAdmin(req) {
   return match[1] === createToken();
 }
 
-
 async function getCatalog() {
   try {
-
     const result = await list({
       prefix: CATALOG_PATH,
       limit: 1
@@ -52,10 +50,8 @@ async function getCatalog() {
       return defaultProducts;
     }
 
-    const blob = result.blobs[0];
-
     const response = await fetch(
-      blob.url + "&cache=0"
+      result.blobs[0].url
     );
 
     const data = await response.json();
@@ -67,7 +63,6 @@ async function getCatalog() {
     return data;
 
   } catch (error) {
-
     console.error(
       "GET CATALOG ERROR:",
       error
@@ -77,36 +72,26 @@ async function getCatalog() {
   }
 }
 
-
 async function saveCatalog(products) {
-
   await put(
     CATALOG_PATH,
     JSON.stringify(products),
     {
       access: "public",
-
-      /*
-        IMPORTANTE:
-        permette di sovrascrivere
-        catalog/products.json
-      */
       addRandomSuffix: false,
       allowOverwrite: true,
-
       contentType: "application/json"
     }
   );
 }
 
-
 module.exports = async (req, res) => {
 
   try {
 
-    /*
-      GET
-    */
+    /* =========================
+       GET PRODOTTI
+    ========================= */
 
     if (req.method === "GET") {
 
@@ -119,19 +104,17 @@ module.exports = async (req, res) => {
     }
 
 
-    /*
-      AGGIUNGI PRODOTTO
-    */
+    /* =========================
+       AGGIUNGI PRODOTTO
+    ========================= */
 
     if (req.method === "POST") {
 
       if (!isAdmin(req)) {
-
         return res.status(401).json({
           error: "Non autorizzato"
         });
       }
-
 
       const {
         name,
@@ -140,48 +123,38 @@ module.exports = async (req, res) => {
         image
       } = req.body || {};
 
-
       if (!name || !image) {
-
         return res.status(400).json({
           error:
             "Nome e foto sono obbligatori"
         });
       }
 
-
       const numericPrice =
         Number(price);
-
 
       if (
         !Number.isFinite(numericPrice) ||
         numericPrice <= 0
       ) {
-
         return res.status(400).json({
           error: "Prezzo non valido"
         });
       }
 
-
       if (
         category !== "Cappelli" &&
         category !== "Abbigliamento"
       ) {
-
         return res.status(400).json({
           error: "Categoria non valida"
         });
       }
 
-
       const products =
         await getCatalog();
 
-
       const product = {
-
         id:
           "product-" +
           Date.now() +
@@ -206,14 +179,9 @@ module.exports = async (req, res) => {
           new Date().toISOString()
       };
 
-
       products.push(product);
 
-
-      await saveCatalog(
-        products
-      );
-
+      await saveCatalog(products);
 
       return res.status(200).json({
         ok: true,
@@ -222,69 +190,61 @@ module.exports = async (req, res) => {
     }
 
 
-    /*
-      ELIMINA PRODOTTO
-    */
+    /* =========================
+       ELIMINA PRODOTTO
+    ========================= */
 
     if (req.method === "DELETE") {
 
       if (!isAdmin(req)) {
-
         return res.status(401).json({
           error: "Non autorizzato"
         });
       }
 
-
       const { id } =
         req.body || {};
 
-
       if (!id) {
-
         return res.status(400).json({
           error:
             "ID prodotto mancante"
         });
       }
 
-
       const products =
         await getCatalog();
-
 
       const product =
         products.find(
           item => item.id === id
         );
 
-
       if (!product) {
-
         return res.status(404).json({
           error:
             "Prodotto non trovato"
         });
       }
 
-
       const updatedProducts =
         products.filter(
           item => item.id !== id
         );
 
-
       /*
-        Salva prima il nuovo catalogo
+        Aggiorna il catalogo.
+        allowOverwrite: true permette
+        di sostituire products.json.
       */
 
       await saveCatalog(
         updatedProducts
       );
 
-
       /*
-        Poi elimina la foto
+        Elimina anche la foto
+        associata al prodotto.
       */
 
       if (product.image) {
@@ -305,12 +265,15 @@ module.exports = async (req, res) => {
         }
       }
 
-
       return res.status(200).json({
         ok: true
       });
     }
 
+
+    /* =========================
+       METODO NON CONSENTITO
+    ========================= */
 
     return res.status(405).json({
       error:
