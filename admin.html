@@ -91,7 +91,7 @@
     }
 
     button:disabled {
-      opacity: 0.5;
+      opacity: .5;
     }
 
     .login-card {
@@ -129,6 +129,8 @@
     }
 
     .delete-button {
+      display: block;
+      width: 100%;
       background: #d93636;
       color: #fff;
       margin-top: 15px;
@@ -190,8 +192,6 @@
     ← Torna allo shop
   </a>
 
-  <!-- LOGIN -->
-
   <div id="loginSection">
 
     <h1>IL LAB</h1>
@@ -230,8 +230,6 @@
   </div>
 
 
-  <!-- AREA ADMIN -->
-
   <div
     id="labSection"
     style="display:none;"
@@ -243,8 +241,6 @@
       Gestisci i tuoi prodotti
     </div>
 
-
-    <!-- AGGIUNGI PRODOTTO -->
 
     <div class="card">
 
@@ -291,7 +287,6 @@
         accept="image/jpeg,image/png,image/webp,image/heic"
       >
 
-
       <img
         id="preview"
         class="preview"
@@ -306,12 +301,10 @@
         PUBBLICA PRODOTTO
       </button>
 
-
       <div
         id="publishMessage"
         class="message"
       ></div>
-
 
       <div
         id="uploadStatus"
@@ -320,8 +313,6 @@
 
     </div>
 
-
-    <!-- LISTA PRODOTTI -->
 
     <div class="card">
 
@@ -340,684 +331,671 @@
 
 <script>
 
-  const loginButton =
-    document.getElementById("loginButton");
+const loginButton =
+  document.getElementById("loginButton");
 
-  const passwordInput =
-    document.getElementById("password");
+const passwordInput =
+  document.getElementById("password");
 
-  const loginMessage =
-    document.getElementById("loginMessage");
-
-
-  /*
-    LOGIN
-  */
-
-  loginButton.addEventListener(
-    "click",
-    login
-  );
+const loginMessage =
+  document.getElementById("loginMessage");
 
 
-  passwordInput.addEventListener(
-    "keydown",
-    function(event) {
+/* =========================
+   LOGIN
+========================= */
 
-      if (event.key === "Enter") {
-        login();
-      }
+loginButton.addEventListener(
+  "click",
+  login
+);
 
+
+passwordInput.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (event.key === "Enter") {
+      login();
     }
-  );
+
+  }
+);
 
 
-  async function login() {
+async function login() {
 
-    const password =
-      passwordInput.value.trim();
+  const password =
+    passwordInput.value.trim();
 
+  loginMessage.style.display =
+    "none";
+
+  if (!password) {
+
+    loginMessage.textContent =
+      "Inserisci la password.";
 
     loginMessage.style.display =
-      "none";
+      "block";
+
+    return;
+  }
+
+  loginButton.disabled = true;
+
+  loginButton.textContent =
+    "ACCESSO...";
 
 
-    if (!password) {
+  try {
 
-      loginMessage.textContent =
-        "Inserisci la password.";
+    const response =
+      await fetch(
+        "/api/admin-login",
+        {
+          method: "POST",
 
-      loginMessage.style.display =
-        "block";
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-      return;
+          body: JSON.stringify({
+            password: password
+          })
+        }
+      );
+
+
+    const data =
+      await readJson(response);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Password non corretta."
+      );
+
     }
 
 
-    loginButton.disabled = true;
+    document.getElementById(
+      "loginSection"
+    ).style.display = "none";
+
+
+    document.getElementById(
+      "labSection"
+    ).style.display = "block";
+
+
+    loadProducts();
+
+
+  } catch (error) {
+
+    loginMessage.textContent =
+      error.message ||
+      "Errore di connessione.";
+
+    loginMessage.style.display =
+      "block";
+
+  } finally {
+
+    loginButton.disabled = false;
 
     loginButton.textContent =
-      "ACCESSO...";
-
-
-    try {
-
-      const response =
-        await fetch(
-          "/api/admin-login",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-              password: password
-            })
-          }
-        );
-
-
-      const data =
-        await readJson(response);
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          "Password non corretta."
-        );
-
-      }
-
-
-      document.getElementById(
-        "loginSection"
-      ).style.display = "none";
-
-
-      document.getElementById(
-        "labSection"
-      ).style.display = "block";
-
-
-      loadProducts();
-
-
-    } catch (error) {
-
-      loginMessage.textContent =
-        error.message ||
-        "Errore di connessione.";
-
-      loginMessage.style.display =
-        "block";
-
-    } finally {
-
-      loginButton.disabled = false;
-
-      loginButton.textContent =
-        "ENTRA NEL LAB";
-
-    }
+      "ENTRA NEL LAB";
 
   }
 
-
-  /*
-    ANTEPRIMA FOTO
-  */
-
-  document
-    .getElementById("photo")
-    .addEventListener(
-      "change",
-      function() {
-
-        const file =
-          this.files[0];
-
-        const preview =
-          document.getElementById(
-            "preview"
-          );
+}
 
 
-        if (!file) {
+/* =========================
+   ANTEPRIMA FOTO
+========================= */
 
-          preview.style.display =
-            "none";
+document
+  .getElementById("photo")
+  .addEventListener(
+    "change",
+    function() {
 
-          return;
-        }
+      const file =
+        this.files[0];
+
+      const preview =
+        document.getElementById(
+          "preview"
+        );
 
 
-        preview.src =
-          URL.createObjectURL(file);
+      if (!file) {
 
         preview.style.display =
-          "block";
-
-      }
-    );
-
-
-  /*
-    PUBBLICA PRODOTTO
-  */
-
-  document
-    .getElementById("publishButton")
-    .addEventListener(
-      "click",
-      publishProduct
-    );
-
-
-  async function publishProduct() {
-
-    const button =
-      document.getElementById(
-        "publishButton"
-      );
-
-    const message =
-      document.getElementById(
-        "publishMessage"
-      );
-
-    const status =
-      document.getElementById(
-        "uploadStatus"
-      );
-
-
-    const name =
-      document.getElementById(
-        "name"
-      ).value.trim();
-
-
-    const price =
-      document.getElementById(
-        "price"
-      ).value;
-
-
-    const category =
-      document.getElementById(
-        "category"
-      ).value;
-
-
-    const file =
-      document.getElementById(
-        "photo"
-      ).files[0];
-
-
-    message.style.display =
-      "none";
-
-    status.textContent =
-      "";
-
-
-    if (!name) {
-
-      message.textContent =
-        "Inserisci il nome del prodotto.";
-
-      message.style.display =
-        "block";
-
-      return;
-    }
-
-
-    if (!file) {
-
-      message.textContent =
-        "Seleziona una foto.";
-
-      message.style.display =
-        "block";
-
-      return;
-    }
-
-
-    if (file.size > 10 * 1024 * 1024) {
-
-      message.textContent =
-        "La foto è troppo grande. Massimo 10 MB.";
-
-      message.style.display =
-        "block";
-
-      return;
-    }
-
-
-    button.disabled = true;
-
-    button.textContent =
-      "CARICAMENTO FOTO...";
-
-
-    try {
-
-      /*
-        LIBRERIA VERCEL BLOB
-      */
-
-      const module =
-        await import(
-          "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm"
-        );
-
-
-      status.textContent =
-        "Caricamento foto...";
-
-
-      const blob =
-        await module.upload(
-          file.name,
-          file,
-          {
-            access: "public",
-            handleUploadUrl:
-              "/api/upload"
-          }
-        );
-
-
-      if (!blob || !blob.url) {
-
-        throw new Error(
-          "La foto non è stata caricata."
-        );
-
-      }
-
-
-      status.textContent =
-        "Pubblicazione prodotto...";
-
-
-      button.textContent =
-        "PUBBLICAZIONE...";
-
-
-      const response =
-        await fetch(
-          "/api/products",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-
-              name:
-                name,
-
-              price:
-                price,
-
-              category:
-                category,
-
-              image:
-                blob.url
-
-            })
-          }
-        );
-
-
-      const data =
-        await readJson(response);
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          "Impossibile pubblicare il prodotto."
-        );
-
-      }
-
-
-      message.textContent =
-        "Prodotto pubblicato con successo.";
-
-      message.style.display =
-        "block";
-
-
-      document.getElementById(
-        "name"
-      ).value = "";
-
-
-      document.getElementById(
-        "price"
-      ).value = "35";
-
-
-      document.getElementById(
-        "photo"
-      ).value = "";
-
-
-      document.getElementById(
-        "preview"
-      ).style.display =
-        "none";
-
-
-      status.textContent =
-        "";
-
-
-      await loadProducts();
-
-
-    } catch (error) {
-
-      message.textContent =
-        error.message ||
-        "Errore durante il caricamento.";
-
-      message.style.display =
-        "block";
-
-      status.textContent =
-        "";
-
-    } finally {
-
-      button.disabled = false;
-
-      button.textContent =
-        "PUBBLICA PRODOTTO";
-
-    }
-
-  }
-
-
-  /*
-    CARICA PRODOTTI
-  */
-
-  async function loadProducts() {
-
-    const container =
-      document.getElementById(
-        "products"
-      );
-
-
-    container.innerHTML =
-      "Caricamento prodotti...";
-
-
-    try {
-
-      const response =
-        await fetch(
-          "/api/products?refresh=" +
-          Date.now(),
-          {
-            cache: "no-store"
-          }
-        );
-
-
-      const data =
-        await readJson(response);
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          "Errore durante il caricamento."
-        );
-
-      }
-
-
-      const products =
-        Array.isArray(data.products)
-          ? data.products
-          : [];
-
-
-      if (products.length === 0) {
-
-        container.innerHTML =
-          "<p>Nessun prodotto.</p>";
+          "none";
 
         return;
       }
 
 
-      container.innerHTML =
-        products
-          .map(function(product) {
+      preview.src =
+        URL.createObjectURL(file);
 
-            const image =
-              product.image
-                ? `
-                  <img
-                    src="${escapeHtml(product.image)}"
-                    alt=""
-                  >
-                `
-                : "";
-
-
-            return `
-
-              <div class="product">
-
-                ${image}
-
-                <div class="product-name">
-                  ${escapeHtml(product.name)}
-                </div>
-
-                <div class="product-info">
-                  € ${Number(product.price).toFixed(2)}
-                  ·
-                  ${escapeHtml(product.category)}
-                </div>
-
-                <button
-                  type="button"
-                  class="delete-button"
-                  data-id="${escapeHtml(product.id)}"
-                >
-                  ELIMINA PRODOTTO
-                </button>
-
-              </div>
-
-            `;
-
-          })
-          .join("");
-
-
-      container
-        .querySelectorAll(
-          ".delete-button"
-        )
-        .forEach(function(button) {
-
-          button.addEventListener(
-            "click",
-            function() {
-
-              deleteProduct(
-                button.dataset.id
-              );
-
-            }
-          );
-
-        });
-
-
-    } catch (error) {
-
-      container.innerHTML =
-        "<p>Impossibile caricare i prodotti.</p>";
+      preview.style.display =
+        "block";
 
     }
+  );
 
+
+/* =========================
+   PUBBLICA PRODOTTO
+========================= */
+
+document
+  .getElementById("publishButton")
+  .addEventListener(
+    "click",
+    publishProduct
+  );
+
+
+async function publishProduct() {
+
+  const button =
+    document.getElementById(
+      "publishButton"
+    );
+
+  const message =
+    document.getElementById(
+      "publishMessage"
+    );
+
+  const status =
+    document.getElementById(
+      "uploadStatus"
+    );
+
+
+  const name =
+    document.getElementById(
+      "name"
+    ).value.trim();
+
+
+  const price =
+    document.getElementById(
+      "price"
+    ).value;
+
+
+  const category =
+    document.getElementById(
+      "category"
+    ).value;
+
+
+  const file =
+    document.getElementById(
+      "photo"
+    ).files[0];
+
+
+  message.style.display =
+    "none";
+
+  status.textContent =
+    "";
+
+
+  if (!name) {
+
+    message.textContent =
+      "Inserisci il nome del prodotto.";
+
+    message.style.display =
+      "block";
+
+    return;
   }
 
 
-  /*
-    ELIMINA PRODOTTO
-  */
+  if (!file) {
 
-  async function deleteProduct(id) {
+    message.textContent =
+      "Seleziona una foto.";
 
-    const conferma =
-      confirm(
-        "Vuoi davvero eliminare questo prodotto?"
+    message.style.display =
+      "block";
+
+    return;
+  }
+
+
+  if (file.size > 10 * 1024 * 1024) {
+
+    message.textContent =
+      "La foto è troppo grande. Massimo 10 MB.";
+
+    message.style.display =
+      "block";
+
+    return;
+  }
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "CARICAMENTO FOTO...";
+
+
+  try {
+
+    const module =
+      await import(
+        "https://cdn.jsdelivr.net/npm/@vercel/blob@2.4.0/+esm"
       );
 
 
-    if (!conferma) {
+    status.textContent =
+      "Caricamento foto...";
+
+
+    const blob =
+      await module.upload(
+        file.name,
+        file,
+        {
+          access: "public",
+          handleUploadUrl:
+            "/api/upload"
+        }
+      );
+
+
+    if (!blob || !blob.url) {
+
+      throw new Error(
+        "La foto non è stata caricata."
+      );
+
+    }
+
+
+    status.textContent =
+      "Pubblicazione prodotto...";
+
+
+    button.textContent =
+      "PUBBLICAZIONE...";
+
+
+    const response =
+      await fetch(
+        "/api/products",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            name: name,
+
+            price: price,
+
+            category: category,
+
+            image: blob.url
+
+          })
+        }
+      );
+
+
+    const data =
+      await readJson(response);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Impossibile pubblicare il prodotto."
+      );
+
+    }
+
+
+    message.textContent =
+      "Prodotto pubblicato con successo.";
+
+    message.style.display =
+      "block";
+
+
+    document.getElementById(
+      "name"
+    ).value = "";
+
+
+    document.getElementById(
+      "price"
+    ).value = "35";
+
+
+    document.getElementById(
+      "photo"
+    ).value = "";
+
+
+    document.getElementById(
+      "preview"
+    ).style.display =
+      "none";
+
+
+    status.textContent =
+      "";
+
+
+    await loadProducts();
+
+
+  } catch (error) {
+
+    message.textContent =
+      error.message ||
+      "Errore durante il caricamento.";
+
+    message.style.display =
+      "block";
+
+    status.textContent =
+      "";
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "PUBBLICA PRODOTTO";
+
+  }
+
+}
+
+
+/* =========================
+   CARICA PRODOTTI
+========================= */
+
+async function loadProducts() {
+
+  const container =
+    document.getElementById(
+      "products"
+    );
+
+
+  container.innerHTML =
+    "Caricamento prodotti...";
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/products?refresh=" +
+        Date.now(),
+        {
+          cache: "no-store"
+        }
+      );
+
+
+    const data =
+      await readJson(response);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Errore durante il caricamento."
+      );
+
+    }
+
+
+    const products =
+      Array.isArray(data.products)
+        ? data.products
+        : [];
+
+
+    if (products.length === 0) {
+
+      container.innerHTML =
+        "<p>Nessun prodotto.</p>";
+
       return;
     }
 
 
-    try {
+    container.innerHTML =
+      products.map(function(product) {
 
-      const response =
-        await fetch(
-          "/api/products",
-          {
-            method: "DELETE",
+        const image =
+          product.image
+            ? `
+              <img
+                src="${escapeHtml(product.image)}"
+                alt=""
+              >
+            `
+            : "";
 
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
 
-            body: JSON.stringify({
-              id: id
-            })
+        return `
+          <div class="product">
+
+            ${image}
+
+            <div class="product-name">
+              ${escapeHtml(product.name)}
+            </div>
+
+            <div class="product-info">
+              € ${Number(product.price).toFixed(2)}
+              ·
+              ${escapeHtml(product.category)}
+            </div>
+
+            <button
+              type="button"
+              class="delete-button"
+              data-id="${escapeHtml(product.id)}"
+            >
+              ELIMINA PRODOTTO
+            </button>
+
+          </div>
+        `;
+
+      }).join("");
+
+
+    container
+      .querySelectorAll(
+        ".delete-button"
+      )
+      .forEach(function(button) {
+
+        button.addEventListener(
+          "click",
+          function() {
+
+            deleteProduct(
+              button.dataset.id
+            );
+
           }
         );
 
-
-      const data =
-        await readJson(response);
+      });
 
 
-      if (!response.ok) {
+  } catch (error) {
 
-        throw new Error(
-          data.error ||
-          "Impossibile eliminare il prodotto."
-        );
+    console.error(error);
 
-      }
-
-
-      await loadProducts();
-
-
-    } catch (error) {
-
-      alert(
-        error.message ||
-        "Errore durante l'eliminazione."
-      );
-
-    }
+    container.innerHTML =
+      "<p>Impossibile caricare i prodotti.</p>";
 
   }
 
-
-  /*
-    LETTURA RISPOSTA
-  */
-
-  async function readJson(response) {
-
-    const text =
-      await response.text();
+}
 
 
-    try {
+/* =========================
+   ELIMINA PRODOTTO
+========================= */
 
-      return text
-        ? JSON.parse(text)
-        : {};
+async function deleteProduct(id) {
 
-    } catch (error) {
+  const conferma =
+    confirm(
+      "Vuoi davvero eliminare questo prodotto?"
+    );
+
+
+  if (!conferma) {
+    return;
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/products",
+        {
+          method: "DELETE",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            id: id
+          })
+        }
+      );
+
+
+    const data =
+      await readJson(response);
+
+
+    if (!response.ok) {
 
       throw new Error(
-        "Risposta non valida dal server."
+        data.error ||
+        "Impossibile eliminare il prodotto."
       );
 
     }
 
-  }
+
+    await loadProducts();
 
 
-  /*
-    SICUREZZA TESTO
-  */
+  } catch (error) {
 
-  function escapeHtml(value) {
-
-    return String(value)
-
-      .replaceAll(
-        "&",
-        "&amp;"
-      )
-
-      .replaceAll(
-        "<",
-        "&lt;"
-      )
-
-      .replaceAll(
-        ">",
-        "&gt;"
-      )
-
-      .replaceAll(
-        '"',
-        "&quot;"
-      )
-
-      .replaceAll(
-        "'",
-        "&#039;"
-      );
+    alert(
+      error.message ||
+      "Errore durante l'eliminazione."
+    );
 
   }
+
+}
+
+
+/* =========================
+   LETTURA JSON
+========================= */
+
+async function readJson(response) {
+
+  const text =
+    await response.text();
+
+
+  try {
+
+    return text
+      ? JSON.parse(text)
+      : {};
+
+  } catch (error) {
+
+    throw new Error(
+      "Risposta non valida dal server."
+    );
+
+  }
+
+}
+
+
+/* =========================
+   SICUREZZA TESTO
+========================= */
+
+function escapeHtml(value) {
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
 
 </script>
 
