@@ -2,10 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — Luko Lab Custom</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Admin — Luko Lab Custom
+  </title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -142,20 +149,28 @@
       max-width: 500px;
       margin: 80px auto;
     }
+
   </style>
 </head>
 
 <body>
 
-<div id="loginArea" class="box">
+<div
+  id="loginArea"
+  class="box"
+>
 
-  <h1>🔐 Luko Lab Custom</h1>
+  <h1>
+    🔐 Luko Lab Custom
+  </h1>
 
   <div class="subtitle">
     Accesso area amministratore
   </div>
 
-  <label>Password</label>
+  <label>
+    Password
+  </label>
 
   <input
     type="password"
@@ -183,7 +198,9 @@
   class="container"
 >
 
-  <h1>🌴 Gestione prodotti</h1>
+  <h1>
+    🌴 Gestione prodotti
+  </h1>
 
   <div class="subtitle">
     Aggiungi o elimina i prodotti del tuo negozio.
@@ -192,9 +209,13 @@
 
   <div class="box">
 
-    <h2>➕ Aggiungi prodotto</h2>
+    <h2>
+      ➕ Aggiungi prodotto
+    </h2>
 
-    <label>Nome prodotto</label>
+    <label>
+      Nome prodotto
+    </label>
 
     <input
       type="text"
@@ -203,7 +224,9 @@
     >
 
 
-    <label>Prezzo (€)</label>
+    <label>
+      Prezzo (€)
+    </label>
 
     <input
       type="number"
@@ -214,7 +237,9 @@
     >
 
 
-    <label>Categoria</label>
+    <label>
+      Categoria
+    </label>
 
     <select id="productCategory">
 
@@ -229,12 +254,14 @@
     </select>
 
 
-    <label>Foto prodotto</label>
+    <label>
+      Foto prodotto
+    </label>
 
     <input
       type="file"
       id="productImage"
-      accept="image/jpeg,image/png,image/webp,image/heic"
+      accept="image/jpeg,image/png,image/webp"
     >
 
 
@@ -257,7 +284,9 @@
 
   <div class="box">
 
-    <h2>📦 Prodotti presenti</h2>
+    <h2>
+      📦 Prodotti presenti
+    </h2>
 
     <div id="productsList">
       Caricamento...
@@ -276,27 +305,29 @@
 </div>
 
 
-<script type="module">
-
-import { upload } from "https://esm.sh/@vercel/blob/client";
-
+<script>
 
 /* =========================
    LOGIN
 ========================= */
 
-window.login = async function() {
+async function login() {
 
   const password =
     document
-      .getElementById("loginPassword")
+      .getElementById(
+        "loginPassword"
+      )
       .value;
 
   const message =
     document
-      .getElementById("loginMessage");
+      .getElementById(
+        "loginMessage"
+      );
 
-  message.style.display = "none";
+  message.style.display =
+    "none";
 
   try {
 
@@ -305,10 +336,12 @@ window.login = async function() {
         "/api/admin-login",
         {
           method: "POST",
+
           headers: {
             "Content-Type":
               "application/json"
           },
+
           body: JSON.stringify({
             password
           })
@@ -326,12 +359,18 @@ window.login = async function() {
     }
 
     document
-      .getElementById("loginArea")
-      .style.display = "none";
+      .getElementById(
+        "loginArea"
+      )
+      .style.display =
+        "none";
 
     document
-      .getElementById("adminArea")
-      .style.display = "block";
+      .getElementById(
+        "adminArea"
+      )
+      .style.display =
+        "block";
 
     loadProducts();
 
@@ -343,7 +382,7 @@ window.login = async function() {
     message.style.display =
       "block";
   }
-};
+}
 
 
 /* =========================
@@ -354,7 +393,9 @@ async function loadProducts() {
 
   const list =
     document
-      .getElementById("productsList");
+      .getElementById(
+        "productsList"
+      );
 
   list.innerHTML =
     "Caricamento...";
@@ -390,88 +431,110 @@ async function loadProducts() {
 
     list.innerHTML = "";
 
-    products.forEach(product => {
+    products.forEach(
+      product => {
 
-      const div =
-        document.createElement("div");
+        const div =
+          document.createElement(
+            "div"
+          );
 
-      div.className =
-        "product";
+        div.className =
+          "product";
 
-      if (product.image) {
 
-        const img =
-          document.createElement("img");
+        if (product.image) {
 
-        img.src =
-          product.image;
+          const img =
+            document.createElement(
+              "img"
+            );
 
-        img.alt =
+          img.src =
+            product.image;
+
+          img.alt =
+            product.name;
+
+          div.appendChild(img);
+        }
+
+
+        const name =
+          document.createElement(
+            "div"
+          );
+
+        name.className =
+          "product-name";
+
+        name.textContent =
           product.name;
 
-        div.appendChild(img);
+        div.appendChild(name);
+
+
+        const price =
+          document.createElement(
+            "div"
+          );
+
+        price.className =
+          "product-info";
+
+        price.textContent =
+          "€" +
+          Number(
+            product.price
+          ).toFixed(2);
+
+        div.appendChild(price);
+
+
+        const category =
+          document.createElement(
+            "div"
+          );
+
+        category.className =
+          "product-info";
+
+        category.textContent =
+          product.category;
+
+        div.appendChild(category);
+
+
+        const button =
+          document.createElement(
+            "button"
+          );
+
+        button.className =
+          "delete";
+
+        button.textContent =
+          "🗑 Elimina prodotto";
+
+        button.onclick =
+          () =>
+            deleteProduct(
+              product.id
+            );
+
+        div.appendChild(button);
+
+        list.appendChild(div);
       }
-
-      const name =
-        document.createElement("div");
-
-      name.className =
-        "product-name";
-
-      name.textContent =
-        product.name;
-
-      div.appendChild(name);
-
-
-      const price =
-        document.createElement("div");
-
-      price.className =
-        "product-info";
-
-      price.textContent =
-        "€" +
-        Number(product.price)
-          .toFixed(2);
-
-      div.appendChild(price);
-
-
-      const category =
-        document.createElement("div");
-
-      category.className =
-        "product-info";
-
-      category.textContent =
-        product.category;
-
-      div.appendChild(category);
-
-
-      const button =
-        document.createElement("button");
-
-      button.className =
-        "delete";
-
-      button.textContent =
-        "🗑 Elimina prodotto";
-
-      button.onclick =
-        () => deleteProduct(product.id);
-
-      div.appendChild(button);
-
-      list.appendChild(div);
-
-    });
+    );
 
   } catch (error) {
 
     list.innerHTML =
-      `<div class="message error" style="display:block">
+      `<div
+        class="message error"
+        style="display:block"
+      >
         ${error.message}
       </div>`;
   }
@@ -479,42 +542,232 @@ async function loadProducts() {
 
 
 /* =========================
+   RIDUCI FOTO
+========================= */
+
+function compressImage(file) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const reader =
+        new FileReader();
+
+      reader.onload =
+        function(event) {
+
+          const image =
+            new Image();
+
+          image.onload =
+            function() {
+
+              const maxSize =
+                1600;
+
+              let width =
+                image.width;
+
+              let height =
+                image.height;
+
+
+              if (
+                width > maxSize ||
+                height > maxSize
+              ) {
+
+                if (
+                  width > height
+                ) {
+
+                  height =
+                    Math.round(
+                      height *
+                      maxSize /
+                      width
+                    );
+
+                  width =
+                    maxSize;
+
+                } else {
+
+                  width =
+                    Math.round(
+                      width *
+                      maxSize /
+                      height
+                    );
+
+                  height =
+                    maxSize;
+                }
+              }
+
+
+              const canvas =
+                document.createElement(
+                  "canvas"
+                );
+
+              canvas.width =
+                width;
+
+              canvas.height =
+                height;
+
+
+              const context =
+                canvas.getContext(
+                  "2d"
+                );
+
+              context.drawImage(
+                image,
+                0,
+                0,
+                width,
+                height
+              );
+
+
+              canvas.toBlob(
+                blob => {
+
+                  if (!blob) {
+
+                    reject(
+                      new Error(
+                        "Impossibile preparare la foto."
+                      )
+                    );
+
+                    return;
+                  }
+
+                  resolve(blob);
+
+                },
+                "image/jpeg",
+                0.82
+              );
+            };
+
+
+          image.onerror =
+            function() {
+
+              reject(
+                new Error(
+                  "Impossibile leggere la foto."
+                )
+              );
+            };
+
+
+          image.src =
+            event.target.result;
+        };
+
+
+      reader.onerror =
+        function() {
+
+          reject(
+            new Error(
+              "Impossibile leggere il file."
+            )
+          );
+        };
+
+
+      reader.readAsDataURL(file);
+    }
+  );
+}
+
+
+/* =========================
+   BLOB IN BASE64
+========================= */
+
+function blobToBase64(blob) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const reader =
+        new FileReader();
+
+      reader.onload =
+        () => resolve(
+          reader.result
+        );
+
+      reader.onerror =
+        () => reject(
+          new Error(
+            "Errore lettura foto."
+          )
+        );
+
+      reader.readAsDataURL(blob);
+    }
+  );
+}
+
+
+/* =========================
    AGGIUNGI PRODOTTO
 ========================= */
 
-window.addProduct = async function() {
+async function addProduct() {
 
   const button =
     document
-      .getElementById("publishButton");
+      .getElementById(
+        "publishButton"
+      );
 
   const message =
     document
-      .getElementById("addMessage");
+      .getElementById(
+        "addMessage"
+      );
 
   const name =
     document
-      .getElementById("productName")
+      .getElementById(
+        "productName"
+      )
       .value
       .trim();
 
   const price =
     document
-      .getElementById("productPrice")
+      .getElementById(
+        "productPrice"
+      )
       .value;
 
   const category =
     document
-      .getElementById("productCategory")
+      .getElementById(
+        "productCategory"
+      )
       .value;
 
   const file =
     document
-      .getElementById("productImage")
+      .getElementById(
+        "productImage"
+      )
       .files[0];
 
 
-  message.style.display = "none";
+  message.style.display =
+    "none";
 
 
   if (!name) {
@@ -529,7 +782,10 @@ window.addProduct = async function() {
   }
 
 
-  if (!price || Number(price) <= 0) {
+  if (
+    !price ||
+    Number(price) <= 0
+  ) {
 
     showMessage(
       message,
@@ -553,36 +809,85 @@ window.addProduct = async function() {
   }
 
 
-  button.disabled = true;
+  button.disabled =
+    true;
 
   button.textContent =
-    "Caricamento foto...";
+    "Preparazione foto...";
 
 
   try {
 
     /*
-      UN SOLO CARICAMENTO VERCEL BLOB.
-      Questo è il passaggio importante.
+      Riduciamo la foto
+      direttamente sull'iPhone.
     */
 
-    const blob =
-      await upload(
-        file.name,
-        file,
-        {
-          access: "public",
+    const compressed =
+      await compressImage(
+        file
+      );
 
-          handleUploadUrl:
-            "/api/upload"
+
+    const base64 =
+      await blobToBase64(
+        compressed
+      );
+
+
+    button.textContent =
+      "Caricamento foto...";
+
+
+    /*
+      Invia la foto al nostro
+      endpoint server.
+    */
+
+    const uploadResponse =
+      await fetch(
+        "/api/upload",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            filename:
+              file.name,
+
+            contentType:
+              "image/jpeg",
+
+            data:
+              base64
+
+          })
         }
       );
 
 
-    if (!blob || !blob.url) {
+    const uploadData =
+      await uploadResponse.json();
+
+
+    if (!uploadResponse.ok) {
 
       throw new Error(
-        "La foto non è stata caricata."
+        uploadData.error ||
+        "Impossibile caricare la foto."
+      );
+    }
+
+
+    if (!uploadData.url) {
+
+      throw new Error(
+        "Vercel non ha restituito la foto."
       );
     }
 
@@ -590,6 +895,10 @@ window.addProduct = async function() {
     button.textContent =
       "Salvataggio prodotto...";
 
+
+    /*
+      Salva il prodotto nel catalogo.
+    */
 
     const response =
       await fetch(
@@ -604,15 +913,21 @@ window.addProduct = async function() {
 
           body: JSON.stringify({
 
-            name: name,
+            name:
+
+              name,
 
             price:
+
               Number(price),
 
-            category: category,
+            category:
+
+              category,
 
             image:
-              blob.url
+
+              uploadData.url
 
           })
         }
@@ -640,15 +955,23 @@ window.addProduct = async function() {
 
 
     document
-      .getElementById("productName")
+      .getElementById(
+        "productName"
+      )
       .value = "";
 
-    document
-      .getElementById("productPrice")
-      .value = "35";
 
     document
-      .getElementById("productImage")
+      .getElementById(
+        "productPrice"
+      )
+      .value = "35";
+
+
+    document
+      .getElementById(
+        "productImage"
+      )
       .value = "";
 
 
@@ -659,26 +982,29 @@ window.addProduct = async function() {
 
     showMessage(
       message,
-      "❌ " + error.message,
+      "❌ " +
+      error.message,
       true
     );
 
   } finally {
 
-    button.disabled = false;
+    button.disabled =
+      false;
 
     button.textContent =
       "Pubblica prodotto";
   }
-};
+}
 
 
 /* =========================
    ELIMINA PRODOTTO
 ========================= */
 
-window.deleteProduct =
-async function(id) {
+async function deleteProduct(
+  id
+) {
 
   const conferma =
     confirm(
@@ -725,7 +1051,6 @@ async function(id) {
 
     await loadProducts();
 
-
   } catch (error) {
 
     alert(
@@ -733,16 +1058,16 @@ async function(id) {
       error.message
     );
   }
-};
+}
 
 
 /* =========================
    LOGOUT
 ========================= */
 
-window.logout = function() {
+function logout() {
   location.reload();
-};
+}
 
 
 /* =========================
@@ -772,17 +1097,21 @@ function showMessage(
 
 
 /* =========================
-   ENTER LOGIN
+   INVIO PASSWORD CON INVIO
 ========================= */
 
 document
-  .getElementById("loginPassword")
+  .getElementById(
+    "loginPassword"
+  )
   .addEventListener(
     "keydown",
     function(event) {
 
-      if (event.key === "Enter") {
-        window.login();
+      if (
+        event.key === "Enter"
+      ) {
+        login();
       }
 
     }
