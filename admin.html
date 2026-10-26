@@ -2,21 +2,10 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>
-    Admin — Luko Lab Custom
-  </title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Luko Lab Custom</title>
   <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -24,21 +13,15 @@
       color: white;
       padding: 20px;
     }
-
     .container {
       max-width: 900px;
       margin: auto;
     }
-
-    h1 {
-      margin-bottom: 8px;
-    }
-
+    h1 { margin-bottom: 8px; }
     .subtitle {
       color: #b9c9bf;
       margin-bottom: 25px;
     }
-
     .box {
       background: #10271b;
       border: 1px solid #244833;
@@ -46,9 +29,8 @@
       padding: 20px;
       margin-bottom: 20px;
     }
-
-    input,
-    select {
+    input, select {
+      display: block;
       width: 100%;
       padding: 14px;
       margin-top: 8px;
@@ -59,17 +41,12 @@
       color: white;
       font-size: 16px;
     }
-
-    input[type="file"] {
-      padding: 10px;
-    }
-
+    input[type="file"] { padding: 10px; }
     label {
       display: block;
       font-weight: bold;
       margin-top: 10px;
     }
-
     button {
       border: 0;
       border-radius: 10px;
@@ -78,26 +55,26 @@
       font-weight: bold;
       cursor: pointer;
     }
-
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
     .primary {
       background: #d7ff52;
       color: #102000;
       width: 100%;
     }
-
     .delete {
       background: #c93636;
       color: white;
       margin-top: 10px;
       width: 100%;
     }
-
     .logout {
       background: #304b39;
       color: white;
       margin-top: 10px;
     }
-
     .product {
       border: 1px solid #31563d;
       border-radius: 14px;
@@ -105,7 +82,6 @@
       margin-bottom: 15px;
       background: #0b2115;
     }
-
     .product img {
       width: 100%;
       max-width: 220px;
@@ -113,121 +89,72 @@
       border-radius: 12px;
       margin-bottom: 12px;
     }
-
     .product-name {
       font-size: 18px;
       font-weight: bold;
     }
-
     .product-info {
       color: #b9c9bf;
       margin-top: 5px;
     }
-
     .message {
       margin-top: 15px;
       padding: 12px;
       border-radius: 10px;
       display: none;
+      overflow-wrap: anywhere;
     }
-
     .success {
       background: #164b2b;
       color: #baffc9;
     }
-
     .error {
       background: #571f1f;
       color: #ffc1c1;
     }
-
-    #adminArea {
-      display: none;
+    .stock-note {
+      color: #b9c9bf;
+      font-size: 14px;
+      margin-top: -5px;
+      margin-bottom: 15px;
     }
-
+    #adminArea { display: none; }
     #loginArea {
       max-width: 500px;
       margin: 80px auto;
     }
-
   </style>
 </head>
-
 <body>
-
-<div
-  id="loginArea"
-  class="box"
->
-
-  <h1>
-    🔐 Luko Lab Custom
-  </h1>
-
-  <div class="subtitle">
-    Accesso area amministratore
-  </div>
-
-  <label>
-    Password
-  </label>
-
+<div id="loginArea" class="box">
+  <h1>🔐 Luko Lab Custom</h1>
+  <div class="subtitle">Accesso area amministratore</div>
+  <label for="loginPassword">Password</label>
   <input
     type="password"
     id="loginPassword"
     placeholder="Inserisci password"
+    autocomplete="current-password"
   >
-
-  <button
-    class="primary"
-    onclick="login()"
-  >
+  <button class="primary" id="loginButton" onclick="login()">
     Accedi
   </button>
-
-  <div
-    id="loginMessage"
-    class="message error"
-  ></div>
-
+  <div id="loginMessage" class="message error"></div>
 </div>
-
-
-<div
-  id="adminArea"
-  class="container"
->
-
-  <h1>
-    🌴 Gestione prodotti
-  </h1>
-
+<div id="adminArea" class="container">
+  <h1>🌴 Gestione prodotti</h1>
   <div class="subtitle">
     Aggiungi o elimina i prodotti del tuo negozio.
   </div>
-
-
   <div class="box">
-
-    <h2>
-      ➕ Aggiungi prodotto
-    </h2>
-
-    <label>
-      Nome prodotto
-    </label>
-
+    <h2>➕ Aggiungi prodotto</h2>
+    <label for="productName">Nome prodotto</label>
     <input
       type="text"
       id="productName"
-      placeholder="Es. Cappello Tropical"
+      placeholder="Es. Felpa Luko Lab"
     >
-
-
-    <label>
-      Prezzo (€)
-    </label>
-
+    <label for="productPrice">Prezzo (€)</label>
     <input
       type="number"
       id="productPrice"
@@ -235,36 +162,41 @@
       min="0.01"
       step="0.01"
     >
-
-
-    <label>
-      Categoria
-    </label>
-
-    <select id="productCategory">
-
-      <option value="Cappelli">
-        Cappelli
-      </option>
-
-      <option value="Abbigliamento">
-        Abbigliamento
-      </option>
-
+    <label for="productCategory">Categoria</label>
+    <select id="productCategory" onchange="updateStockFields()">
+      <option value="Cappelli">Cappelli</option>
+      <option value="Abbigliamento">Abbigliamento</option>
     </select>
-
-
-    <label>
-      Foto prodotto
-    </label>
-
+    <div id="sizeStockFields">
+      <h3>📏 Disponibilità taglie</h3>
+      <div class="stock-note">
+        Inserisci quante unità hai disponibili per ogni taglia.
+      </div>
+      <label for="stockS">Quantità taglia S</label>
+      <input
+        type="number"
+        id="stockS"
+        value="0"
+        min="0"
+        step="1"
+        inputmode="numeric"
+      >
+      <label for="stockM">Quantità taglia M</label>
+      <input
+        type="number"
+        id="stockM"
+        value="0"
+        min="0"
+        step="1"
+        inputmode="numeric"
+      >
+    </div>
+    <label for="productImage">Foto prodotto</label>
     <input
       type="file"
       id="productImage"
       accept="image/jpeg,image/png,image/webp"
     >
-
-
     <button
       class="primary"
       id="publishButton"
@@ -272,852 +204,299 @@
     >
       Pubblica prodotto
     </button>
-
-
-    <div
-      id="addMessage"
-      class="message"
-    ></div>
-
+    <div id="addMessage" class="message"></div>
   </div>
-
-
   <div class="box">
-
-    <h2>
-      📦 Prodotti presenti
-    </h2>
-
-    <div id="productsList">
-      Caricamento...
-    </div>
-
+    <h2>📦 Prodotti presenti</h2>
+    <div id="productsList">Caricamento...</div>
   </div>
-
-
-  <button
-    class="logout"
-    onclick="logout()"
-  >
-    Esci
-  </button>
-
+  <button class="logout" onclick="logout()">Esci</button>
 </div>
-
-
 <script>
-
-/* =========================
-   LOGIN
-========================= */
-
+"use strict";
+/* LOGIN */
 async function login() {
-
-  const password =
-    document
-      .getElementById(
-        "loginPassword"
-      )
-      .value;
-
-  const message =
-    document
-      .getElementById(
-        "loginMessage"
-      );
-
-  message.style.display =
-    "none";
-
+  const password = document.getElementById("loginPassword").value;
+  const message = document.getElementById("loginMessage");
+  const button = document.getElementById("loginButton");
+  message.style.display = "none";
+  button.disabled = true;
   try {
-
-    const response =
-      await fetch(
-        "/api/admin-login",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-            password
-          })
-        }
-      );
-
-    const data =
-      await response.json();
-
+    const response = await fetch("/api/admin-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password })
+    });
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error(
-        data.error ||
-        "Password non corretta"
-      );
+      throw new Error(data.error || "Password non corretta.");
     }
-
-    document
-      .getElementById(
-        "loginArea"
-      )
-      .style.display =
-        "none";
-
-    document
-      .getElementById(
-        "adminArea"
-      )
-      .style.display =
-        "block";
-
-    loadProducts();
-
+    document.getElementById("loginArea").style.display = "none";
+    document.getElementById("adminArea").style.display = "block";
+    updateStockFields();
+    await loadProducts();
   } catch (error) {
-
-    message.textContent =
-      error.message;
-
-    message.style.display =
-      "block";
+    showMessage(message, error.message, true);
+  } finally {
+    button.disabled = false;
   }
 }
-
-
-/* =========================
-   CARICA PRODOTTI
-========================= */
-
+/* MOSTRA LE TAGLIE SOLO PER ABBIGLIAMENTO */
+function updateStockFields() {
+  const category = document.getElementById("productCategory").value;
+  const fields = document.getElementById("sizeStockFields");
+  fields.style.display =
+    category === "Abbigliamento" ? "block" : "none";
+}
+/* CARICA PRODOTTI */
 async function loadProducts() {
-
-  const list =
-    document
-      .getElementById(
-        "productsList"
-      );
-
-  list.innerHTML =
-    "Caricamento...";
-
+  const list = document.getElementById("productsList");
+  list.textContent = "Caricamento...";
   try {
-
-    const response =
-      await fetch(
-        "/api/products?cache=" +
-        Date.now()
-      );
-
-    const data =
-      await response.json();
-
+    const response = await fetch("/api/products?cache=" + Date.now(), {
+      cache: "no-store"
+    });
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error(
-        data.error ||
-        "Errore caricamento prodotti"
-      );
+      throw new Error(data.error || "Errore caricamento prodotti.");
     }
-
-    const products =
-      data.products || [];
-
+    const products = data.products || [];
     if (products.length === 0) {
-
-      list.innerHTML =
-        "<p>Nessun prodotto presente.</p>";
-
+      list.textContent = "Nessun prodotto presente.";
       return;
     }
-
-    list.innerHTML = "";
-
-    products.forEach(
-      product => {
-
-        const div =
-          document.createElement(
-            "div"
-          );
-
-        div.className =
-          "product";
-
-
-        if (product.image) {
-
-          const img =
-            document.createElement(
-              "img"
-            );
-
-          img.src =
-            product.image;
-
-          img.alt =
-            product.name;
-
-          div.appendChild(img);
-        }
-
-
-        const name =
-          document.createElement(
-            "div"
-          );
-
-        name.className =
-          "product-name";
-
-        name.textContent =
-          product.name;
-
-        div.appendChild(name);
-
-
-        const price =
-          document.createElement(
-            "div"
-          );
-
-        price.className =
-          "product-info";
-
-        price.textContent =
-          "€" +
-          Number(
-            product.price
-          ).toFixed(2);
-
-        div.appendChild(price);
-
-
-        const category =
-          document.createElement(
-            "div"
-          );
-
-        category.className =
-          "product-info";
-
-        category.textContent =
-          product.category;
-
-        div.appendChild(category);
-
-
-        const button =
-          document.createElement(
-            "button"
-          );
-
-        button.className =
-          "delete";
-
-        button.textContent =
-          "🗑 Elimina prodotto";
-
-        button.onclick =
-          () =>
-            deleteProduct(
-              product.id
-            );
-
-        div.appendChild(button);
-
-        list.appendChild(div);
+    list.replaceChildren();
+    products.forEach(product => {
+      const div = document.createElement("div");
+      div.className = "product";
+      if (product.image) {
+        const img = document.createElement("img");
+        img.src = product.image;
+        img.alt = product.name || "Foto prodotto";
+        img.loading = "lazy";
+        div.appendChild(img);
       }
-    );
-
+      const name = document.createElement("div");
+      name.className = "product-name";
+      name.textContent = product.name || "Prodotto";
+      div.appendChild(name);
+      const price = document.createElement("div");
+      price.className = "product-info";
+      price.textContent = "€" + Number(product.price || 0).toFixed(2);
+      div.appendChild(price);
+      const category = document.createElement("div");
+      category.className = "product-info";
+      category.textContent = "Categoria: " + (product.category || "—");
+      div.appendChild(category);
+      if (product.category === "Abbigliamento") {
+        const stock = product.stock || {};
+        const stockInfo = document.createElement("div");
+        stockInfo.className = "product-info";
+        stockInfo.textContent =
+          "Taglia S: " + Number(stock.S || 0) +
+          " · Taglia M: " + Number(stock.M || 0);
+        div.appendChild(stockInfo);
+      }
+      const button = document.createElement("button");
+      button.className = "delete";
+      button.textContent = "🗑 Elimina prodotto";
+      button.addEventListener("click", () => deleteProduct(product.id));
+      div.appendChild(button);
+      list.appendChild(div);
+    });
   } catch (error) {
-
-    list.innerHTML =
-      `<div
-        class="message error"
-        style="display:block"
-      >
-        ${error.message}
-      </div>`;
+    list.replaceChildren();
+    const message = document.createElement("div");
+    message.className = "message error";
+    message.style.display = "block";
+    message.textContent = error.message;
+    list.appendChild(message);
   }
 }
-
-
-/* =========================
-   RIDUCI FOTO
-========================= */
-
+/* COMPRIME LA FOTO */
 function compressImage(file) {
-
-  return new Promise(
-    (resolve, reject) => {
-
-      const reader =
-        new FileReader();
-
-      reader.onload =
-        function(event) {
-
-          const image =
-            new Image();
-
-          image.onload =
-            function() {
-
-              const maxSize =
-                1600;
-
-              let width =
-                image.width;
-
-              let height =
-                image.height;
-
-
-              if (
-                width > maxSize ||
-                height > maxSize
-              ) {
-
-                if (
-                  width > height
-                ) {
-
-                  height =
-                    Math.round(
-                      height *
-                      maxSize /
-                      width
-                    );
-
-                  width =
-                    maxSize;
-
-                } else {
-
-                  width =
-                    Math.round(
-                      width *
-                      maxSize /
-                      height
-                    );
-
-                  height =
-                    maxSize;
-                }
-              }
-
-
-              const canvas =
-                document.createElement(
-                  "canvas"
-                );
-
-              canvas.width =
-                width;
-
-              canvas.height =
-                height;
-
-
-              const context =
-                canvas.getContext(
-                  "2d"
-                );
-
-              context.drawImage(
-                image,
-                0,
-                0,
-                width,
-                height
-              );
-
-
-              canvas.toBlob(
-                blob => {
-
-                  if (!blob) {
-
-                    reject(
-                      new Error(
-                        "Impossibile preparare la foto."
-                      )
-                    );
-
-                    return;
-                  }
-
-                  resolve(blob);
-
-                },
-                "image/jpeg",
-                0.82
-              );
-            };
-
-
-          image.onerror =
-            function() {
-
-              reject(
-                new Error(
-                  "Impossibile leggere la foto."
-                )
-              );
-            };
-
-
-          image.src =
-            event.target.result;
-        };
-
-
-      reader.onerror =
-        function() {
-
-          reject(
-            new Error(
-              "Impossibile leggere il file."
-            )
-          );
-        };
-
-
-      reader.readAsDataURL(file);
-    }
-  );
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = event => {
+      const image = new Image();
+      image.onload = () => {
+        const maxSize = 1600;
+        let width = image.width;
+        let height = image.height;
+        if (width > maxSize || height > maxSize) {
+          if (width > height) {
+            height = Math.round(height * maxSize / width);
+            width = maxSize;
+          } else {
+            width = Math.round(width * maxSize / height);
+            height = maxSize;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        if (!context) {
+          reject(new Error("Impossibile preparare la foto."));
+          return;
+        }
+        context.drawImage(image, 0, 0, width, height);
+        canvas.toBlob(blob => {
+          if (!blob) {
+            reject(new Error("Impossibile preparare la foto."));
+            return;
+          }
+          resolve(blob);
+        }, "image/jpeg", 0.82);
+      };
+      image.onerror = () => reject(new Error("Impossibile leggere la foto."));
+      image.src = event.target.result;
+    };
+    reader.onerror = () => reject(new Error("Impossibile leggere il file."));
+    reader.readAsDataURL(file);
+  });
 }
-
-
-/* =========================
-   BLOB IN BASE64
-========================= */
-
+/* CONVERTE LA FOTO IN BASE64 */
 function blobToBase64(blob) {
-
-  return new Promise(
-    (resolve, reject) => {
-
-      const reader =
-        new FileReader();
-
-      reader.onload =
-        () => resolve(
-          reader.result
-        );
-
-      reader.onerror =
-        () => reject(
-          new Error(
-            "Errore lettura foto."
-          )
-        );
-
-      reader.readAsDataURL(blob);
-    }
-  );
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Errore lettura foto."));
+    reader.readAsDataURL(blob);
+  });
 }
-
-
-/* =========================
-   AGGIUNGI PRODOTTO
-========================= */
-
+/* AGGIUNGE UN PRODOTTO */
 async function addProduct() {
-
-  const button =
-    document
-      .getElementById(
-        "publishButton"
-      );
-
-  const message =
-    document
-      .getElementById(
-        "addMessage"
-      );
-
-  const name =
-    document
-      .getElementById(
-        "productName"
-      )
-      .value
-      .trim();
-
-  const price =
-    document
-      .getElementById(
-        "productPrice"
-      )
-      .value;
-
-  const category =
-    document
-      .getElementById(
-        "productCategory"
-      )
-      .value;
-
-  const file =
-    document
-      .getElementById(
-        "productImage"
-      )
-      .files[0];
-
-
-  message.style.display =
-    "none";
-
-
+  const button = document.getElementById("publishButton");
+  const message = document.getElementById("addMessage");
+  const name = document.getElementById("productName").value.trim();
+  const price = Number(document.getElementById("productPrice").value);
+  const category = document.getElementById("productCategory").value;
+  const file = document.getElementById("productImage").files[0];
+  const stockS = document.getElementById("stockS").value;
+  const stockM = document.getElementById("stockM").value;
+  message.style.display = "none";
   if (!name) {
-
-    showMessage(
-      message,
-      "Inserisci il nome del prodotto.",
-      true
-    );
-
+    showMessage(message, "Inserisci il nome del prodotto.", true);
     return;
   }
-
-
-  if (
-    !price ||
-    Number(price) <= 0
-  ) {
-
-    showMessage(
-      message,
-      "Inserisci un prezzo valido.",
-      true
-    );
-
+  if (!Number.isFinite(price) || price <= 0) {
+    showMessage(message, "Inserisci un prezzo valido.", true);
     return;
   }
-
-
+  if (category === "Abbigliamento") {
+    const validS = stockS.trim() !== "" &&
+      Number.isInteger(Number(stockS)) && Number(stockS) >= 0;
+    const validM = stockM.trim() !== "" &&
+      Number.isInteger(Number(stockM)) && Number(stockM) >= 0;
+    if (!validS || !validM) {
+      showMessage(message, "Inserisci quantità intere valide per S e M.", true);
+      return;
+    }
+  }
   if (!file) {
-
-    showMessage(
-      message,
-      "Seleziona una foto del prodotto.",
-      true
-    );
-
+    showMessage(message, "Seleziona una foto del prodotto.", true);
     return;
   }
-
-
-  button.disabled =
-    true;
-
-  button.textContent =
-    "Preparazione foto...";
-
-
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    showMessage(message, "Usa una foto JPG, PNG o WebP.", true);
+    return;
+  }
+  button.disabled = true;
   try {
-
-    /*
-      Riduciamo la foto
-      direttamente sull'iPhone.
-    */
-
-    const compressed =
-      await compressImage(
-        file
-      );
-
-
-    const base64 =
-      await blobToBase64(
-        compressed
-      );
-
-
-    button.textContent =
-      "Caricamento foto...";
-
-
-    /*
-      Invia la foto al nostro
-      endpoint server.
-    */
-
-    const uploadResponse =
-      await fetch(
-        "/api/upload",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-
-            filename:
-              file.name,
-
-            contentType:
-              "image/jpeg",
-
-            data:
-              base64
-
-          })
-        }
-      );
-
-
-    const uploadData =
-      await uploadResponse.json();
-
-
+    button.textContent = "Preparazione foto...";
+    const compressed = await compressImage(file);
+    const base64 = await blobToBase64(compressed);
+    button.textContent = "Caricamento foto...";
+    const uploadResponse = await fetch("/api/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: "image/jpeg",
+        data: base64
+      })
+    });
+    const uploadData = await uploadResponse.json();
     if (!uploadResponse.ok) {
-
-      throw new Error(
-        uploadData.error ||
-        "Impossibile caricare la foto."
-      );
+      throw new Error(uploadData.error || "Impossibile caricare la foto.");
     }
-
-
     if (!uploadData.url) {
-
-      throw new Error(
-        "Vercel non ha restituito la foto."
-      );
+      throw new Error("Il server non ha restituito l'indirizzo della foto.");
     }
-
-
-    button.textContent =
-      "Salvataggio prodotto...";
-
-
-    /*
-      Salva il prodotto nel catalogo.
-    */
-
-    const response =
-      await fetch(
-        "/api/products",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-
-            name:
-
-              name,
-
-            price:
-
-              Number(price),
-
-            category:
-
-              category,
-
-            image:
-
-              uploadData.url
-
-          })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
+    button.textContent = "Salvataggio prodotto...";
+    const productPayload = {
+      name,
+      price,
+      category,
+      image: uploadData.url
+    };
+    if (category === "Abbigliamento") {
+      productPayload.stock = {
+        S: Number(stockS),
+        M: Number(stockM)
+      };
+    }
+    const response = await fetch("/api/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(productPayload)
+    });
+    const data = await response.json();
     if (!response.ok) {
-
-      throw new Error(
-        data.error ||
-        "Impossibile salvare il prodotto."
-      );
+      throw new Error(data.error || "Impossibile salvare il prodotto.");
     }
-
-
-    showMessage(
-      message,
-      "✅ Prodotto aggiunto correttamente!",
-      false
-    );
-
-
-    document
-      .getElementById(
-        "productName"
-      )
-      .value = "";
-
-
-    document
-      .getElementById(
-        "productPrice"
-      )
-      .value = "35";
-
-
-    document
-      .getElementById(
-        "productImage"
-      )
-      .value = "";
-
-
+    showMessage(message, "✅ Prodotto aggiunto correttamente!", false);
+    document.getElementById("productName").value = "";
+    document.getElementById("productPrice").value = "35";
+    document.getElementById("productImage").value = "";
+    document.getElementById("stockS").value = "0";
+    document.getElementById("stockM").value = "0";
     await loadProducts();
-
-
   } catch (error) {
-
-    showMessage(
-      message,
-      "❌ " +
-      error.message,
-      true
-    );
-
+    showMessage(message, "❌ " + error.message, true);
   } finally {
-
-    button.disabled =
-      false;
-
-    button.textContent =
-      "Pubblica prodotto";
+    button.disabled = false;
+    button.textContent = "Pubblica prodotto";
   }
 }
-
-
-/* =========================
-   ELIMINA PRODOTTO
-========================= */
-
-async function deleteProduct(
-  id
-) {
-
-  const conferma =
-    confirm(
-      "Vuoi davvero eliminare questo prodotto?"
-    );
-
-  if (!conferma) {
+/* ELIMINA UN PRODOTTO */
+async function deleteProduct(id) {
+  if (!confirm("Vuoi davvero eliminare questo prodotto?")) {
     return;
   }
-
-
   try {
-
-    const response =
-      await fetch(
-        "/api/products",
-        {
-          method: "DELETE",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-            id
-          })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
+    const response = await fetch("/api/products", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    });
+    const data = await response.json();
     if (!response.ok) {
-
-      throw new Error(
-        data.error ||
-        "Impossibile eliminare il prodotto."
-      );
+      throw new Error(data.error || "Impossibile eliminare il prodotto.");
     }
-
-
     await loadProducts();
-
   } catch (error) {
-
-    alert(
-      "Errore: " +
-      error.message
-    );
+    alert("Errore: " + error.message);
   }
 }
-
-
-/* =========================
-   LOGOUT
-========================= */
-
+/* ESCI */
 function logout() {
   location.reload();
 }
-
-
-/* =========================
-   MESSAGGI
-========================= */
-
-function showMessage(
-  element,
-  text,
-  isError
-) {
-
-  element.textContent =
-    text;
-
-  element.className =
-    "message " +
-    (
-      isError
-        ? "error"
-        : "success"
-    );
-
-  element.style.display =
-    "block";
+/* MESSAGGI */
+function showMessage(element, text, isError) {
+  element.textContent = text;
+  element.className = "message " + (isError ? "error" : "success");
+  element.style.display = "block";
 }
-
-
-/* =========================
-   INVIO PASSWORD CON INVIO
-========================= */
-
-document
-  .getElementById(
-    "loginPassword"
-  )
-  .addEventListener(
-    "keydown",
-    function(event) {
-
-      if (
-        event.key === "Enter"
-      ) {
-        login();
-      }
-
-    }
-  );
-
+/* INVIO PASSWORD CON INVIO */
+document.getElementById("loginPassword").addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    login();
+  }
+});
+updateStockFields();
 </script>
-
 </body>
 </html>
