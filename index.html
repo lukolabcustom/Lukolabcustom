@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -28,14 +29,29 @@ button,select{font:inherit}
 }
 #intro.leaving{opacity:0;visibility:hidden;pointer-events:none}
 .intro-content{position:relative;z-index:1;width:min(100%,540px);text-align:center;animation:appear 1s ease both}
+
+/* LOGO BIANCO TRASPARENTE */
 .intro-logo-frame{
- width:clamp(190px,48vw,280px);height:clamp(190px,48vw,280px);
- margin:0 auto 30px;display:flex;align-items:center;justify-content:center;
- overflow:hidden;border-radius:50%;background:#fff;
- border:3px solid rgba(255,255,255,.75);
- box-shadow:0 0 45px rgba(53,225,124,.25);
+ width:clamp(190px,48vw,280px);
+ height:clamp(240px,58vw,340px);
+ margin:0 auto 25px;
+ display:flex;align-items:center;justify-content:center;
+ overflow:visible;
+ background:transparent;border:0;border-radius:0;
+ box-shadow:none;perspective:900px;
 }
-.intro-logo{width:100%;height:100%;object-fit:contain;display:block;animation:rotateLogo 18s linear infinite}
+.intro-logo{
+ width:100%;height:100%;object-fit:contain;display:block;
+ transform-style:preserve-3d;
+ backface-visibility:visible;
+ animation:rotateVertical 4s ease-in-out infinite;
+ filter:drop-shadow(0 0 18px rgba(53,225,124,.25));
+}
+@keyframes rotateVertical{
+ 0%{transform:rotateY(0deg)}
+ 50%{transform:rotateY(180deg)}
+ 100%{transform:rotateY(360deg)}
+}
 .intro-brand{margin:0;font-size:clamp(30px,8vw,48px);line-height:1;letter-spacing:3px;font-weight:900;text-shadow:0 4px 25px #0008}
 .intro-tagline{margin:18px 0 30px;color:#d4e2d9;font-size:13px;letter-spacing:3px;line-height:1.8}
 #enterSite{
@@ -46,7 +62,6 @@ button,select{font:inherit}
 }
 #enterSite:hover{transform:translateY(-2px);background:#62f39a}
 .intro-note{margin:22px 0 0;font-size:11px;letter-spacing:2px;color:#ffffffb3}
-@keyframes rotateLogo{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 @keyframes appear{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 
 /* TESTATA */
@@ -191,9 +206,9 @@ footer strong{color:white}
   <div class="intro-logo-frame">
    <img
     class="intro-logo"
-    src="/046C83D4-204D-4613-A430-9C578EEB787C.jpeg"
+    src="/lukolab-logo-bianco-trasparente.png"
     alt="Logo Luko Lab Custom"
-    onerror="this.style.display='none';this.parentElement.style.background='#071b12';this.parentElement.style.color='#35e17c';this.parentElement.textContent='LUKO LAB CUSTOM';"
+    onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;color:white;font-weight:900;text-align:center&quot;>LUKO LAB CUSTOM</div>';"
    >
   </div>
   <h1 class="intro-brand">LUKO LAB CUSTOM</h1>
