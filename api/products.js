@@ -1,4 +1,5 @@
 
+
 const { put, list, del } = require("@vercel/blob");
 const crypto = require("crypto");
 const { neon } = require("@neondatabase/serverless");
@@ -8,12 +9,14 @@ const OLD_CATALOG = "catalog/products.json";
 
 const defaultProducts = Array.from({ length: 14 }, (_, index) => {
   const number = String(index + 1).padStart(2, "0");
+
   return {
     id: "cap-" + number,
     name: "Cappello Luko Lab " + number,
     price: 35,
     category: "Cappelli",
-    image: null
+    image: null,
+    images: []
   };
 });
 
@@ -48,6 +51,7 @@ function isAdmin(req) {
 
 async function readBlob(blob) {
   const separator = blob.url.includes("?") ? "&" : "?";
+
   const response = await fetch(
     blob.url + separator + "cacheBust=" + Date.now()
   );
@@ -77,6 +81,7 @@ async function getCatalog() {
   }
 
   const old = await list({ prefix: OLD_CATALOG });
+
   const exactOld =
     old.blobs &&
     old.blobs.find(blob => blob.pathname === OLD_CATALOG);
@@ -89,6 +94,7 @@ async function getCatalog() {
 async function saveCatalog(products) {
   const timestamp = Date.now().toString().padStart(15, "0");
   const random = crypto.randomBytes(4).toString("hex");
+
   const pathname =
     CURRENT_PREFIX + timestamp + "-" + random + ".json";
 
@@ -101,22 +107,38 @@ async function saveCatalog(products) {
   return pathname;
 }
 
-function validStock(stock) {
-  if (!stock || typeof stock !== "object") return false;
-
-  return ["S", "M"].every(size => {
-    const quantity = stock[size];
-
-    return (
-      Number.isInteger(quantity) &&
-      quantity >= 0 &&
-      quantity <= 100000
-    );
-  });
+/* VALIDAZIONE SCORTE */
+function validQuantity(quantity) {
+  return (
+    Number.isInteger(quantity) &&
+    quantity >= 0 &&
+    quantity <= 100000
+  );
 }
 
+function validStock(category, stock) {
+  if (!stock || typeof stock !== "object" || Array.isArray(stock)) {
+    return false;
+  }
+
+  if (category === "Cappelli") {
+    return validQuantity(stock.ONE);
+  }
+
+  if (category === "Abbigliamento") {
+    return (
+      validQuantity(stock.S) &&
+      validQuantity(stock.M)
+    );
+  }
+
+  return false;
+}
+
+/* LEGGE LE SCORTE DA NEON */
 async function getStockMap() {
   const sql = getSql();
+
   const rows = await sql`
     SELECT product_id, size, quantity
     FROM product_stock
@@ -126,7 +148,7 @@ async function getStockMap() {
 
   for (const row of rows) {
     if (!result[row.product_id]) {
-      result[row.product_id] = { S: 0, M: 0 };
+      result[row.product_id] = {};
     }
 
     result[row.product_id][row.size] = Number(row.quantity);
@@ -135,7 +157,19 @@ async function getStockMap() {
   return result;
 }
 
-async function saveStock(sql, productId, stock) {
+/* SALVA LE SCORTE */
+async function saveStock(sql, productId, category, stock) {
+  if (category === "Cappelli") {
+    await sql`
+      INSERT INTO product_stock (product_id, size, quantity)
+      VALUES (${productId}, 'ONE', ${stock.ONE})
+      ON CONFLICT (product_id, size)
+      DO UPDATE SET quantity = EXCLUDED.quantity
+    `;
+
+    return;
+  }
+
   await sql`
     INSERT INTO product_stock (product_id, size, quantity)
     VALUES
@@ -146,16 +180,48 @@ async function saveStock(sql, productId, stock) {
   `;
 }
 
+/* NORMALIZZA LE FOTO DEI PRODOTTI */
+function getProductImages(product) {
+  const images = Array.isArray(product.images)
+    ? product.images.filter(url => typeof url === "string" && url.trim())
+    : [];
+
+  if (images.length > 0) {
+    return [...new Set(images)];
+  }
+
+  return product.image ? [product.image] : [];
+}
+
+/* GESTIONE API */
 module.exports = async function handler(req, res) {
   try {
+
+    /* GET: ELENCO PRODOTTI */
     if (req.method === "GET") {
       const products = await getCatalog();
       const stockMap = await getStockMap();
 
-      const enrichedProducts = products.map(product => ({
-        ...product,
-        stock: stockMap[product.id] || { S: 0, M: 0 }
-      }));
+      const enrichedProducts = products.map(product => {
+        const storedStock = stockMap[product.id] || {};
+        const images = getProductImages(product);
+
+        const stock = product.category === "Abbigliamento"
+          ? {
+              S: Number(storedStock.S || 0),
+              M: Number(storedStock.M || 0)
+            }
+          : {
+              ONE: Number(storedStock.ONE || 0)
+            };
+
+        return {
+          ...product,
+          image: images[0] || null,
+          images,
+          stock
+        };
+      });
 
       res.setHeader("Cache-Control", "no-store");
 
@@ -164,18 +230,58 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    /* AUTORIZZAZIONE */
     if (!isAdmin(req)) {
       return res.status(401).json({
         error: "Non autorizzato"
       });
     }
 
+    /* POST: AGGIUNGI PRODOTTO */
     if (req.method === "POST") {
-      const { name, price, category, image, stock } = req.body || {};
+      const {
+        name,
+        price,
+        category,
+        image,
+        images,
+        stock
+      } = req.body || {};
 
-      if (!name || !image) {
+      const cleanImages = Array.isArray(images)
+        ? [...new Set(
+            images.filter(
+              url => typeof url === "string" && url.trim()
+            )
+          )]
+        : [];
+
+      const finalImages = cleanImages.length
+        ? cleanImages
+        : (typeof image === "string" && image.trim() ? [image] : []);
+
+      if (!name || typeof name !== "string" || !name.trim() || finalImages.length === 0) {
         return res.status(400).json({
-          error: "Nome e foto sono obbligatori"
+          error: "Nome e almeno una foto sono obbligatori"
+        });
+      }
+
+      if (finalImages.length > 10) {
+        return res.status(400).json({
+          error: "Puoi inserire al massimo 10 fotografie"
+        });
+      }
+
+      if (!finalImages.every(url => {
+        try {
+          const parsed = new URL(url);
+          return parsed.protocol === "https:";
+        } catch {
+          return false;
+        }
+      })) {
+        return res.status(400).json({
+          error: "Indirizzo di una fotografia non valido"
         });
       }
 
@@ -196,9 +302,11 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      if (!validStock(stock)) {
+      if (!validStock(category, stock)) {
         return res.status(400).json({
-          error: "Inserisci quantità intere valide per S e M"
+          error: category === "Cappelli"
+            ? "Inserisci una quantità intera valida per il cappello"
+            : "Inserisci quantità intere valide per S e M"
         });
       }
 
@@ -211,15 +319,16 @@ module.exports = async function handler(req, res) {
           Date.now() +
           "-" +
           crypto.randomBytes(4).toString("hex"),
-        name: String(name).trim(),
+        name: name.trim(),
         price: Math.round(numericPrice * 100) / 100,
         category,
-        image,
+        image: finalImages[0],
+        images: finalImages,
         createdAt: new Date().toISOString()
       };
 
-      // Salva le scorte in Neon prima di pubblicare il prodotto.
-      await saveStock(sql, product.id, stock);
+      /* SALVA LE SCORTE PRIMA DI PUBBLICARE */
+      await saveStock(sql, product.id, category, stock);
 
       try {
         products.push(product);
@@ -229,6 +338,7 @@ module.exports = async function handler(req, res) {
           DELETE FROM product_stock
           WHERE product_id = ${product.id}
         `;
+
         throw error;
       }
 
@@ -241,6 +351,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    /* DELETE: ELIMINA PRODOTTO */
     if (req.method === "DELETE") {
       const { id } = req.body || {};
 
@@ -272,9 +383,12 @@ module.exports = async function handler(req, res) {
         WHERE product_id = ${id}
       `;
 
-      if (product.image) {
+      /* ELIMINA TUTTE LE FOTO */
+      const images = getProductImages(product);
+
+      for (const imageUrl of images) {
         try {
-          await del(product.image);
+          await del(imageUrl);
         } catch (imageError) {
           console.error(
             "ERRORE ELIMINAZIONE FOTO:",
@@ -292,6 +406,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({
       error: "Metodo non consentito"
     });
+
   } catch (error) {
     console.error("CATALOG ERROR:", error);
 
