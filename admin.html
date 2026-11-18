@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -67,6 +68,12 @@
       color: white;
       margin-top: 10px;
     }
+    .save-stock {
+      background: #d7ff52;
+      color: #102000;
+      width: 100%;
+      margin-top: 5px;
+    }
     .product {
       border: 1px solid #31563d;
       border-radius: 14px;
@@ -106,9 +113,20 @@
       margin-bottom: 15px;
       line-height: 1.5;
     }
+    .stock-editor {
+      border-top: 1px solid #31563d;
+      margin-top: 15px;
+      padding-top: 12px;
+    }
+    .stock-editor h3 { margin-bottom: 5px; }
     #adminArea { display: none; }
     #loginArea { max-width: 500px; margin: 80px auto; }
-    .photo-count { color: #b9c9bf; font-size: 13px; margin-top: -8px; margin-bottom: 15px; }
+    .photo-count {
+      color: #b9c9bf;
+      font-size: 13px;
+      margin-top: -8px;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
@@ -129,7 +147,7 @@
 
 <div id="adminArea" class="container">
   <h1>🌴 Gestione prodotti</h1>
-  <div class="subtitle">Aggiungi o elimina i prodotti del tuo negozio.</div>
+  <div class="subtitle">Aggiungi prodotti, aggiorna le scorte o elimina i prodotti.</div>
 
   <div class="box">
     <h2>➕ Aggiungi prodotto</h2>
@@ -152,14 +170,7 @@
         I cappelli sono a taglia unica. Inserisci il numero totale di pezzi disponibili.
       </div>
       <label for="stockONE">Quantità disponibile</label>
-      <input
-        type="number"
-        id="stockONE"
-        value="0"
-        min="0"
-        step="1"
-        inputmode="numeric"
-      >
+      <input type="number" id="stockONE" value="0" min="0" step="1" inputmode="numeric">
     </div>
 
     <div id="sizeStockFields" style="display:none">
@@ -168,23 +179,9 @@
         Inserisci quante unità hai disponibili per ogni taglia.
       </div>
       <label for="stockS">Quantità taglia S</label>
-      <input
-        type="number"
-        id="stockS"
-        value="0"
-        min="0"
-        step="1"
-        inputmode="numeric"
-      >
+      <input type="number" id="stockS" value="0" min="0" step="1" inputmode="numeric">
       <label for="stockM">Quantità taglia M</label>
-      <input
-        type="number"
-        id="stockM"
-        value="0"
-        min="0"
-        step="1"
-        inputmode="numeric"
-      >
+      <input type="number" id="stockM" value="0" min="0" step="1" inputmode="numeric">
     </div>
 
     <label for="productImages">Foto prodotto</label>
@@ -259,6 +256,99 @@ function updateStockFields() {
 
   document.getElementById("sizeStockFields").style.display =
     category === "Abbigliamento" ? "block" : "none";
+}
+
+/* CONTROLLA UNA QUANTITÀ */
+function validQuantity(value) {
+  return value.trim() !== "" &&
+    Number.isInteger(Number(value)) &&
+    Number(value) >= 0 &&
+    Number(value) <= 100000;
+}
+
+/* CREA CAMPO QUANTITÀ */
+function createStockInput(id, labelText, value) {
+  const wrapper = document.createElement("div");
+
+  const label = document.createElement("label");
+  label.htmlFor = id;
+  label.textContent = labelText;
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.id = id;
+  input.min = "0";
+  input.step = "1";
+  input.inputMode = "numeric";
+  input.value = String(Number(value || 0));
+
+  wrapper.append(label, input);
+  return wrapper;
+}
+
+/* AGGIORNA LE SCORTE DI UN PRODOTTO ESISTENTE */
+async function updateProductStock(product, button, message) {
+  const stock = {};
+
+  if (product.category === "Cappelli") {
+    const input = document.getElementById("edit-stock-" + product.id + "-ONE");
+
+    if (!input || !validQuantity(input.value)) {
+      showMessage(message, "Inserisci una quantità valida per il cappello.", true);
+      return;
+    }
+
+    stock.ONE = Number(input.value);
+
+  } else if (product.category === "Abbigliamento") {
+    const inputS = document.getElementById("edit-stock-" + product.id + "-S");
+    const inputM = document.getElementById("edit-stock-" + product.id + "-M");
+
+    if (
+      !inputS || !inputM ||
+      !validQuantity(inputS.value) ||
+      !validQuantity(inputM.value)
+    ) {
+      showMessage(message, "Inserisci quantità intere valide per S e M.", true);
+      return;
+    }
+
+    stock.S = Number(inputS.value);
+    stock.M = Number(inputM.value);
+
+  } else {
+    showMessage(message, "Categoria prodotto non riconosciuta.", true);
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Salvataggio...";
+
+  try {
+    const response = await fetch("/api/products", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: product.id,
+        stock
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Impossibile aggiornare le scorte.");
+    }
+
+    showMessage(message, "✅ Scorte aggiornate correttamente!", false);
+
+    await loadProducts();
+
+  } catch (error) {
+    showMessage(message, "❌ " + error.message, true);
+    button.disabled = false;
+    button.textContent = "💾 Salva nuove scorte";
+  }
 }
 
 /* CARICA PRODOTTI */
@@ -339,11 +429,60 @@ async function loadProducts() {
 
       div.appendChild(stockInfo);
 
-      const button = document.createElement("button");
-      button.className = "delete";
-      button.textContent = "🗑 Elimina prodotto";
-      button.addEventListener("click", () => deleteProduct(product.id));
-      div.appendChild(button);
+      /* EDITOR SCORTE */
+      const editor = document.createElement("div");
+      editor.className = "stock-editor";
+
+      const editorTitle = document.createElement("h3");
+      editorTitle.textContent = "✏️ Modifica disponibilità";
+      editor.appendChild(editorTitle);
+
+      if (product.category === "Abbigliamento") {
+        editor.appendChild(
+          createStockInput(
+            "edit-stock-" + product.id + "-S",
+            "Nuova quantità taglia S",
+            stock.S
+          )
+        );
+
+        editor.appendChild(
+          createStockInput(
+            "edit-stock-" + product.id + "-M",
+            "Nuova quantità taglia M",
+            stock.M
+          )
+        );
+      } else {
+        editor.appendChild(
+          createStockInput(
+            "edit-stock-" + product.id + "-ONE",
+            "Nuova quantità taglia unica",
+            stock.ONE
+          )
+        );
+      }
+
+      const stockMessage = document.createElement("div");
+      stockMessage.className = "message";
+
+      const saveButton = document.createElement("button");
+      saveButton.className = "save-stock";
+      saveButton.textContent = "💾 Salva nuove scorte";
+      saveButton.addEventListener("click", () => {
+        updateProductStock(product, saveButton, stockMessage);
+      });
+
+      editor.appendChild(saveButton);
+      editor.appendChild(stockMessage);
+      div.appendChild(editor);
+
+      /* ELIMINA PRODOTTO */
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "delete";
+      deleteButton.textContent = "🗑 Elimina prodotto";
+      deleteButton.addEventListener("click", () => deleteProduct(product.id));
+      div.appendChild(deleteButton);
 
       list.appendChild(div);
     });
@@ -494,33 +633,17 @@ async function addProduct() {
     return;
   }
 
-  if (category === "Cappelli") {
-    const validONE = stockONE.trim() !== "" &&
-      Number.isInteger(Number(stockONE)) &&
-      Number(stockONE) >= 0 &&
-      Number(stockONE) <= 100000;
-
-    if (!validONE) {
-      showMessage(message, "Inserisci una quantità valida per il cappello.", true);
-      return;
-    }
+  if (category === "Cappelli" && !validQuantity(stockONE)) {
+    showMessage(message, "Inserisci una quantità valida per il cappello.", true);
+    return;
   }
 
-  if (category === "Abbigliamento") {
-    const validS = stockS.trim() !== "" &&
-      Number.isInteger(Number(stockS)) &&
-      Number(stockS) >= 0 &&
-      Number(stockS) <= 100000;
-
-    const validM = stockM.trim() !== "" &&
-      Number.isInteger(Number(stockM)) &&
-      Number(stockM) >= 0 &&
-      Number(stockM) <= 100000;
-
-    if (!validS || !validM) {
-      showMessage(message, "Inserisci quantità intere valide per S e M.", true);
-      return;
-    }
+  if (
+    category === "Abbigliamento" &&
+    (!validQuantity(stockS) || !validQuantity(stockM))
+  ) {
+    showMessage(message, "Inserisci quantità intere valide per S e M.", true);
+    return;
   }
 
   if (files.length === 0) {
