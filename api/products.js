@@ -1,5 +1,6 @@
 
 
+
 const { put, list, del } = require("@vercel/blob");
 const crypto = require("crypto");
 const { neon } = require("@neondatabase/serverless");
@@ -81,7 +82,6 @@ async function getCatalog() {
   }
 
   const old = await list({ prefix: OLD_CATALOG });
-
   const exactOld =
     old.blobs &&
     old.blobs.find(blob => blob.pathname === OLD_CATALOG);
@@ -348,6 +348,44 @@ module.exports = async function handler(req, res) {
           ...product,
           stock
         }
+      });
+    }
+
+    /* PATCH: MODIFICA LE SCORTE DI UN PRODOTTO ESISTENTE */
+    if (req.method === "PATCH") {
+      const { id, stock } = req.body || {};
+
+      if (!id) {
+        return res.status(400).json({
+          error: "ID prodotto mancante"
+        });
+      }
+
+      const products = await getCatalog();
+      const product = products.find(item => item.id === id);
+
+      if (!product) {
+        return res.status(404).json({
+          error: "Prodotto non trovato"
+        });
+      }
+
+      if (!validStock(product.category, stock)) {
+        return res.status(400).json({
+          error: product.category === "Cappelli"
+            ? "Quantità non valida per il cappello"
+            : "Quantità non valide per le taglie S e M"
+        });
+      }
+
+      const sql = getSql();
+
+      await saveStock(sql, id, product.category, stock);
+
+      return res.status(200).json({
+        ok: true,
+        message: "Scorte aggiornate",
+        stock
       });
     }
 
