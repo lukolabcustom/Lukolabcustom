@@ -1,4 +1,5 @@
 
+
 const https = require("https");
 const crypto = require("crypto");
 const { list } = require("@vercel/blob");
@@ -31,10 +32,15 @@ async function readBlob(blob) {
     blob.url + separator + "cacheBust=" + Date.now()
   );
 
-  if (!response.ok) throw new Error("Impossibile leggere il catalogo");
+  if (!response.ok) {
+    throw new Error("Impossibile leggere il catalogo");
+  }
 
   const data = await response.json();
-  if (!Array.isArray(data)) throw new Error("Catalogo non valido");
+
+  if (!Array.isArray(data)) {
+    throw new Error("Catalogo non valido");
+  }
 
   return data;
 }
@@ -46,10 +52,12 @@ async function getCatalog() {
     const blobs = [...current.blobs].sort((a, b) =>
       a.pathname.localeCompare(b.pathname)
     );
+
     return readBlob(blobs[blobs.length - 1]);
   }
 
   const old = await list({ prefix: OLD_CATALOG });
+
   const legacy = old.blobs &&
     old.blobs.find(blob => blob.pathname === OLD_CATALOG);
 
@@ -69,7 +77,9 @@ function stripeRequest(data, idempotencyKey) {
       headers: {
         Authorization:
           "Basic " +
-          Buffer.from(process.env.STRIPE_SECRET_KEY + ":").toString("base64"),
+          Buffer.from(
+            process.env.STRIPE_SECRET_KEY + ":"
+          ).toString("base64"),
         "Content-Type": "application/x-www-form-urlencoded",
         "Content-Length": Buffer.byteLength(body),
         "Idempotency-Key": idempotencyKey
@@ -77,7 +87,9 @@ function stripeRequest(data, idempotencyKey) {
     }, response => {
       let result = "";
 
-      response.on("data", chunk => { result += chunk; });
+      response.on("data", chunk => {
+        result += chunk;
+      });
 
       response.on("end", () => {
         let json;
@@ -85,13 +97,17 @@ function stripeRequest(data, idempotencyKey) {
         try {
           json = JSON.parse(result);
         } catch {
-          return reject(new Error("Risposta non valida da Stripe"));
+          return reject(
+            new Error("Risposta non valida da Stripe")
+          );
         }
 
         if (response.statusCode >= 400) {
-          return reject(new Error(
-            json.error?.message || "Errore Stripe"
-          ));
+          return reject(
+            new Error(
+              json.error?.message || "Errore Stripe"
+            )
+          );
         }
 
         resolve(json);
@@ -136,8 +152,10 @@ async function releaseStock(sql, reservations) {
   }
 }
 
-module.exports = async (req, res) => {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+
     return res.status(405).json({
       error: "Metodo non consentito"
     });
@@ -156,11 +174,18 @@ module.exports = async (req, res) => {
   try {
     const { items, shippingZone } = req.body || {};
 
-    if (!Array.isArray(items) || items.length === 0 || items.length > 30) {
-      return res.status(400).json({ error: "Carrello non valido" });
+    if (
+      !Array.isArray(items) ||
+      items.length === 0 ||
+      items.length > 30
+    ) {
+      return res.status(400).json({
+        error: "Carrello non valido"
+      });
     }
 
     const shipping = shippingOptions[shippingZone];
+
     if (!shipping) {
       return res.status(400).json({
         error: "Zona di spedizione non valida"
@@ -170,12 +195,15 @@ module.exports = async (req, res) => {
     const catalog = await getCatalog();
     sql = getSql();
 
-    // Combina righe duplicate dello stesso prodotto e taglia.
     const quantities = new Map();
 
     for (const item of items) {
       const id = String(item.id || "");
-      const size = item.size == null || item.size === "" ? null : item.size;
+      const size =
+        item.size == null || item.size === ""
+          ? null
+          : item.size;
+
       const quantity = Number(item.quantity);
 
       if (
@@ -196,7 +224,8 @@ module.exports = async (req, res) => {
       quantities.set(key, {
         id,
         size,
-        quantity: quantity + (previous ? previous.quantity : 0)
+        quantity:
+          quantity + (previous ? previous.quantity : 0)
       });
     }
 
@@ -209,7 +238,9 @@ module.exports = async (req, res) => {
         });
       }
 
-      const product = catalog.find(p => p.id === requested.id);
+      const product = catalog.find(
+        p => p.id === requested.id
+      );
 
       if (!product) {
         return res.status(400).json({
@@ -217,7 +248,8 @@ module.exports = async (req, res) => {
         });
       }
 
-      const isClothing = product.category === "Abbigliamento";
+      const isClothing =
+        product.category === "Abbigliamento";
 
       if (isClothing && !requested.size) {
         return res.status(400).json({
@@ -231,7 +263,10 @@ module.exports = async (req, res) => {
         });
       }
 
-      if (!Number.isFinite(Number(product.price)) || Number(product.price) <= 0) {
+      if (
+        !Number.isFinite(Number(product.price)) ||
+        Number(product.price) <= 0
+      ) {
         throw new Error("Prezzo catalogo non valido");
       }
 
@@ -244,8 +279,7 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Ogni aggiornamento sottrae la quantità solo se è ancora disponibile.
-    // In caso di errore, le prenotazioni già fatte vengono ripristinate.
+    // Prenotazione temporanea delle scorte.
     for (const item of validated) {
       if (item.size) {
         await reserveStock(sql, item);
@@ -253,7 +287,6 @@ module.exports = async (req, res) => {
       }
     }
 
-    // Crea la tabella per collegare la prenotazione alla sessione Stripe.
     await sql`
       CREATE TABLE IF NOT EXISTS stock_reservations (
         reservation_id TEXT PRIMARY KEY,
@@ -286,10 +319,18 @@ module.exports = async (req, res) => {
 
       params.push(
         [`line_items[${index}][price_data][currency]`, "eur"],
-        [`line_items[${index}][price_data][product_data][name]`, productName],
-        [`line_items[${index}][price_data][unit_amount]`,
-          String(Math.round(item.price * 100))],
-        [`line_items[${index}][quantity]`, String(item.quantity)]
+        [
+          `line_items[${index}][price_data][product_data][name]`,
+          productName
+        ],
+        [
+          `line_items[${index}][price_data][unit_amount]`,
+          String(Math.round(item.price * 100))
+        ],
+        [
+          `line_items[${index}][quantity]`,
+          String(item.quantity)
+        ]
       );
     });
 
@@ -297,8 +338,14 @@ module.exports = async (req, res) => {
 
     params.push(
       [`line_items[${shippingIndex}][price_data][currency]`, "eur"],
-      [`line_items[${shippingIndex}][price_data][product_data][name]`, shipping.name],
-      [`line_items[${shippingIndex}][price_data][unit_amount]`, String(shipping.amount)],
+      [
+        `line_items[${shippingIndex}][price_data][product_data][name]`,
+        shipping.name
+      ],
+      [
+        `line_items[${shippingIndex}][price_data][unit_amount]`,
+        String(shipping.amount)
+      ],
       [`line_items[${shippingIndex}][quantity]`, "1"],
       ["mode", "payment"],
       ["payment_method_types[0]", "card"],
@@ -308,11 +355,21 @@ module.exports = async (req, res) => {
       ["customer_creation", "always"],
       ["metadata[shippingZone]", shippingZone],
       ["metadata[reservationId]", reservationId],
+
+      // La sessione Stripe scade dopo 30 minuti.
+      [
+        "expires_at",
+        String(Math.floor(Date.now() / 1000) + 30 * 60)
+      ],
+
       ["success_url", "https://lukolabcustom.vercel.app/?success=1"],
       ["cancel_url", "https://lukolabcustom.vercel.app/?cancel=1"]
     );
 
-    const session = await stripeRequest(params, reservationId);
+    const session = await stripeRequest(
+      params,
+      reservationId
+    );
 
     await sql`
       UPDATE stock_reservations
@@ -320,7 +377,9 @@ module.exports = async (req, res) => {
       WHERE reservation_id = ${reservationId}
     `;
 
-    return res.status(200).json({ url: session.url });
+    return res.status(200).json({
+      url: session.url
+    });
 
   } catch (error) {
     console.error("CHECKOUT ERROR:", error);
@@ -334,10 +393,14 @@ module.exports = async (req, res) => {
             UPDATE stock_reservations
             SET status = 'released'
             WHERE reservation_id = ${reservationId}
+              AND status = 'pending'
           `;
         }
       } catch (rollbackError) {
-        console.error("ERRORE RIPRISTINO SCORTE:", rollbackError);
+        console.error(
+          "ERRORE RIPRISTINO SCORTE:",
+          rollbackError
+        );
       }
     }
 
@@ -348,7 +411,9 @@ module.exports = async (req, res) => {
       message.includes("taglia") ||
       message.includes("non è più disponibile")
     ) {
-      return res.status(409).json({ error: message });
+      return res.status(409).json({
+        error: message
+      });
     }
 
     return res.status(500).json({
