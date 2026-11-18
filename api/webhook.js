@@ -1,9 +1,19 @@
 
-const Stripe = require("stripe");
+
+const https = require("https");
+const crypto = require("crypto");
+const { list } = require("@vercel/blob");
 const { neon } = require("@neondatabase/serverless");
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const RESEND_API_URL = "https://api.resend.com/emails";
+const CURRENT_PREFIX = "catalog/current-";
+const OLD_CATALOG = "catalog/products.json";
+
+const shippingOptions = {
+  north: { name: "Spedizione Nord Italia", amount: 500 },
+  center: { name: "Spedizione Centro Italia", amount: 600 },
+  south: { name: "Spedizione Sud Italia", amount: 700 },
+  islands: { name: "Spedizione Sicilia e Sardegna", amount: 900 }
+};
 
 function getSql() {
   const url =
@@ -16,293 +26,398 @@ function getSql() {
   return neon(url);
 }
 
-function escapeHtml(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-async function sendEmail(order) {
-  const itemsHtml = order.items.map(item => `
-    <tr>
-      <td style="padding:8px 0">${escapeHtml(item.name)}</td>
-      <td style="padding:8px 0;text-align:center">${item.quantity}</td>
-      <td style="padding:8px 0;text-align:right">
-        €${(item.amount / 100).toFixed(2)}
-      </td>
-    </tr>
-  `).join("");
-
-  const html = `
-    <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto">
-      <h1>🌴 Nuovo ordine Luko Lab Custom</h1>
-      <p>Pagamento completato.</p>
-      <hr>
-      <h2>🛍️ Prodotti</h2>
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr>
-            <th style="text-align:left">Prodotto</th>
-            <th>Qtà</th>
-            <th style="text-align:right">Prezzo</th>
-          </tr>
-        </thead>
-        <tbody>${itemsHtml}</tbody>
-      </table>
-      <hr>
-      <h2>👤 Cliente</h2>
-      <p><strong>Nome:</strong> ${escapeHtml(order.name)}</p>
-      <p><strong>Email:</strong> ${escapeHtml(order.email)}</p>
-      <p><strong>Telefono:</strong> ${escapeHtml(order.phone)}</p>
-      <h2>📍 Spedizione</h2>
-      <p>${escapeHtml(order.address)}</p>
-      <p><strong>Zona:</strong> ${escapeHtml(order.shippingZone)}</p>
-      <h2>💰 Totale ordine</h2>
-      <p style="font-size:24px;font-weight:bold">
-        €${(order.total / 100).toFixed(2)}
-      </p>
-      <hr>
-      <p>ID ordine Stripe: ${escapeHtml(order.sessionId)}</p>
-    </div>
-  `;
-
-  const response = await fetch(RESEND_API_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from: "Luko Lab Custom <onboarding@resend.dev>",
-      to: ["Lukolabcustom@gmail.com"],
-      subject: "🌴 Nuovo ordine Luko Lab Custom",
-      html
-    })
-  });
-
-  const data = await response.json().catch(() => ({}));
+async function readBlob(blob) {
+  const separator = blob.url.includes("?") ? "&" : "?";
+  const response = await fetch(
+    blob.url + separator + "cacheBust=" + Date.now()
+  );
 
   if (!response.ok) {
-    throw new Error(data.message || "Errore invio email Resend");
+    throw new Error("Impossibile leggere il catalogo");
+  }
+
+  const data = await response.json();
+
+  if (!Array.isArray(data)) {
+    throw new Error("Catalogo non valido");
   }
 
   return data;
 }
 
-async function releaseReservation(sql, sessionId) {
-  // Una sola richiesta può cambiare una prenotazione da pending a released.
+async function getCatalog() {
+  const current = await list({ prefix: CURRENT_PREFIX });
+
+  if (current.blobs && current.blobs.length) {
+    const blobs = [...current.blobs].sort((a, b) =>
+      a.pathname.localeCompare(b.pathname)
+    );
+
+    return readBlob(blobs[blobs.length - 1]);
+  }
+
+  const old = await list({ prefix: OLD_CATALOG });
+
+  const legacy = old.blobs &&
+    old.blobs.find(blob => blob.pathname === OLD_CATALOG);
+
+  if (legacy) return readBlob(legacy);
+
+  throw new Error("Catalogo prodotti non disponibile");
+}
+
+function stripeRequest(data, idempotencyKey) {
+  return new Promise((resolve, reject) => {
+    const body = new URLSearchParams(data).toString();
+
+    const request = https.request({
+      hostname: "api.stripe.com",
+      path: "/v1/checkout/sessions",
+      method: "POST",
+      headers: {
+        Authorization:
+          "Basic " +
+          Buffer.from(
+            process.env.STRIPE_SECRET_KEY + ":"
+          ).toString("base64"),
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Length": Buffer.byteLength(body),
+        "Idempotency-Key": idempotencyKey
+      }
+    }, response => {
+      let result = "";
+
+      response.on("data", chunk => {
+        result += chunk;
+      });
+
+      response.on("end", () => {
+        let json;
+
+        try {
+          json = JSON.parse(result);
+        } catch {
+          return reject(
+            new Error("Risposta non valida da Stripe")
+          );
+        }
+
+        if (response.statusCode >= 400) {
+          return reject(
+            new Error(
+              json.error?.message || "Errore Stripe"
+            )
+          );
+        }
+
+        resolve(json);
+      });
+    });
+
+    request.on("error", reject);
+    request.write(body);
+    request.end();
+  });
+}
+
+async function reserveStock(sql, item) {
+  if (!item.size) return;
+
   const rows = await sql`
-    UPDATE stock_reservations
-    SET status = 'released'
-    WHERE session_id = ${sessionId}
-      AND status = 'pending'
-    RETURNING items
+    UPDATE product_stock
+    SET quantity = quantity - ${item.quantity}
+    WHERE product_id = ${item.id}
+      AND size = ${item.size}
+      AND quantity >= ${item.quantity}
+    RETURNING product_id
   `;
 
-  if (!rows.length) return;
+  if (!rows.length) {
+    throw new Error(
+      `Disponibilità insufficiente per ${item.name}, taglia ${item.size}`
+    );
+  }
+}
 
-  const items = Array.isArray(rows[0].items)
-    ? rows[0].items
-    : JSON.parse(rows[0].items || "[]");
-
-  // Ripristina le quantità precedentemente prenotate.
-  for (const item of items) {
+async function releaseStock(sql, reservations) {
+  for (const item of [...reservations].reverse()) {
     if (!item.size) continue;
 
     await sql`
       UPDATE product_stock
-      SET quantity = quantity + ${Number(item.quantity)}
+      SET quantity = quantity + ${item.quantity}
       WHERE product_id = ${item.id}
         AND size = ${item.size}
     `;
   }
 }
 
-async function confirmReservation(sql, sessionId) {
-  // Evita di confermare due volte la stessa prenotazione.
-  const rows = await sql`
-    UPDATE stock_reservations
-    SET status = 'confirmed'
-    WHERE session_id = ${sessionId}
-      AND status = 'pending'
-    RETURNING reservation_id
-  `;
-
-  return rows.length > 0;
-}
-
-async function buildOrder(session) {
-  const lineItems = await stripe.checkout.sessions.listLineItems(
-    session.id,
-    { limit: 100 }
-  );
-
-  const items = lineItems.data
-    .filter(item => !String(item.description || "").startsWith("Spedizione "))
-    .map(item => ({
-      name: item.description || "Prodotto",
-      quantity: item.quantity || 1,
-      amount: item.amount_total || 0
-    }));
-
-  const customer = session.customer_details || {};
-  const address = customer.address || {};
-
-  const addressText = [
-    address.line1,
-    address.line2,
-    address.postal_code,
-    address.city,
-    address.state,
-    address.country
-  ].filter(Boolean).join(", ");
-
-  return {
-    sessionId: session.id,
-    name: customer.name || "Non specificato",
-    email: customer.email || "Non specificata",
-    phone: customer.phone || "Non specificato",
-    address: addressText || "Non specificato",
-    shippingZone: session.metadata?.shippingZone || "Non specificata",
-    total: session.amount_total || 0,
-    items
-  };
-}
-
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Metodo non consentito" });
-  }
+    res.setHeader("Allow", "POST");
 
-  try {
-    const signature = req.headers["stripe-signature"];
-
-    if (!signature) {
-      return res.status(400).json({ error: "Firma Stripe mancante" });
-    }
-
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      throw new Error("STRIPE_WEBHOOK_SECRET non configurata");
-    }
-
-    // Il body deve essere quello originale ricevuto da Stripe.
-    const rawBody = Buffer.isBuffer(req.body)
-      ? req.body
-      : req.body;
-
-    const event = stripe.webhooks.constructEvent(
-      rawBody,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-
-    const sql = getSql();
-
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-
-      // Per questa integrazione accettiamo solo pagamenti realmente riusciti.
-      if (session.payment_status !== "paid") {
-        return res.status(200).json({
-          received: true,
-          message: "Pagamento non ancora completato"
-        });
-      }
-
-      const reservationId = session.metadata?.reservationId;
-
-      if (!reservationId) {
-        console.error("Prenotazione mancante per sessione", session.id);
-        return res.status(500).json({
-          error: "Prenotazione inventario non trovata"
-        });
-      }
-
-      // Associa la prenotazione alla sessione, anche se la notifica arriva
-      // prima che il checkout abbia salvato session_id.
-      await sql`
-        UPDATE stock_reservations
-        SET session_id = ${session.id}
-        WHERE reservation_id = ${reservationId}
-          AND (session_id IS NULL OR session_id = ${session.id})
-      `;
-
-      const reservation = await sql`
-        SELECT status
-        FROM stock_reservations
-        WHERE reservation_id = ${reservationId}
-          AND session_id = ${session.id}
-      `;
-
-      if (!reservation.length) {
-        return res.status(500).json({
-          error: "Prenotazione inventario non trovata"
-        });
-      }
-
-      if (reservation[0].status === "released") {
-        console.error("Pagamento riuscito dopo rilascio scorte", session.id);
-        return res.status(500).json({
-          error: "Scorte già rilasciate: verifica manuale necessaria"
-        });
-      }
-
-      if (reservation[0].status === "pending") {
-        const confirmed = await confirmReservation(sql, session.id);
-
-        if (!confirmed) {
-          return res.status(500).json({
-            error: "Impossibile confermare la prenotazione"
-          });
-        }
-      }
-
-      // Il webhook può essere ritentato: evita di inviare nuovamente
-      // l'email se la notifica era già stata gestita.
-      await sql`
-        CREATE TABLE IF NOT EXISTS processed_order_emails (
-          session_id TEXT PRIMARY KEY,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        )
-      `;
-
-      const claim = await sql`
-        INSERT INTO processed_order_emails (session_id)
-        VALUES (${session.id})
-        ON CONFLICT (session_id) DO NOTHING
-        RETURNING session_id
-      `;
-
-      if (claim.length) {
-        const order = await buildOrder(session);
-        await sendEmail(order);
-      }
-    }
-
-    if (
-      event.type === "checkout.session.expired" ||
-      event.type === "checkout.session.async_payment_failed"
-    ) {
-      const session = event.data.object;
-      await releaseReservation(sql, session.id);
-    }
-
-    return res.status(200).json({ received: true });
-
-  } catch (error) {
-    console.error("WEBHOOK ERROR:", error);
-
-    return res.status(400).json({
-      error: error.message || "Errore webhook"
+    return res.status(405).json({
+      error: "Metodo non consentito"
     });
   }
-};
 
-module.exports.config = {
-  api: {
-    bodyParser: false
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.status(500).json({
+      error: "Configurazione Stripe mancante"
+    });
+  }
+
+  let sql;
+  const reserved = [];
+  let reservationId;
+
+  try {
+    const { items, shippingZone } = req.body || {};
+
+    if (
+      !Array.isArray(items) ||
+      items.length === 0 ||
+      items.length > 30
+    ) {
+      return res.status(400).json({
+        error: "Carrello non valido"
+      });
+    }
+
+    const shipping = shippingOptions[shippingZone];
+
+    if (!shipping) {
+      return res.status(400).json({
+        error: "Zona di spedizione non valida"
+      });
+    }
+
+    const catalog = await getCatalog();
+    sql = getSql();
+
+    const quantities = new Map();
+
+    for (const item of items) {
+      const id = String(item.id || "");
+      const size =
+        item.size == null || item.size === ""
+          ? null
+          : item.size;
+
+      const quantity = Number(item.quantity);
+
+      if (
+        !id ||
+        !Number.isInteger(quantity) ||
+        quantity < 1 ||
+        quantity > 10 ||
+        (size !== null && !["S", "M"].includes(size))
+      ) {
+        return res.status(400).json({
+          error: "Prodotto, taglia o quantità non validi"
+        });
+      }
+
+      const key = id + "|" + (size || "");
+      const previous = quantities.get(key);
+
+      quantities.set(key, {
+        id,
+        size,
+        quantity:
+          quantity + (previous ? previous.quantity : 0)
+      });
+    }
+
+    const validated = [];
+
+    for (const requested of quantities.values()) {
+      if (requested.quantity > 10) {
+        return res.status(400).json({
+          error: "Quantità massima per riga: 10"
+        });
+      }
+
+      const product = catalog.find(
+        p => p.id === requested.id
+      );
+
+      if (!product) {
+        return res.status(400).json({
+          error: "Un prodotto non è più disponibile"
+        });
+      }
+
+      const isClothing =
+        product.category === "Abbigliamento";
+
+      if (isClothing && !requested.size) {
+        return res.status(400).json({
+          error: `Seleziona la taglia per ${product.name}`
+        });
+      }
+
+      if (!isClothing && requested.size) {
+        return res.status(400).json({
+          error: `La taglia non è valida per ${product.name}`
+        });
+      }
+
+      if (
+        !Number.isFinite(Number(product.price)) ||
+        Number(product.price) <= 0
+      ) {
+        throw new Error("Prezzo catalogo non valido");
+      }
+
+      validated.push({
+        id: product.id,
+        name: String(product.name),
+        price: Number(product.price),
+        size: isClothing ? requested.size : null,
+        quantity: requested.quantity
+      });
+    }
+
+    // Prenotazione temporanea delle scorte.
+    for (const item of validated) {
+      if (item.size) {
+        await reserveStock(sql, item);
+        reserved.push(item);
+      }
+    }
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS stock_reservations (
+        reservation_id TEXT PRIMARY KEY,
+        session_id TEXT,
+        items JSONB NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `;
+
+    reservationId = crypto.randomUUID();
+
+    await sql`
+      INSERT INTO stock_reservations
+        (reservation_id, items, status)
+      VALUES
+        (
+          ${reservationId},
+          ${JSON.stringify(reserved)},
+          'pending'
+        )
+    `;
+
+    const params = [];
+
+    validated.forEach((item, index) => {
+      const productName = item.size
+        ? `${item.name} - Taglia ${item.size}`
+        : item.name;
+
+      params.push(
+        [`line_items[${index}][price_data][currency]`, "eur"],
+        [
+          `line_items[${index}][price_data][product_data][name]`,
+          productName
+        ],
+        [
+          `line_items[${index}][price_data][unit_amount]`,
+          String(Math.round(item.price * 100))
+        ],
+        [
+          `line_items[${index}][quantity]`,
+          String(item.quantity)
+        ]
+      );
+    });
+
+    const shippingIndex = validated.length;
+
+    params.push(
+      [`line_items[${shippingIndex}][price_data][currency]`, "eur"],
+      [
+        `line_items[${shippingIndex}][price_data][product_data][name]`,
+        shipping.name
+      ],
+      [
+        `line_items[${shippingIndex}][price_data][unit_amount]`,
+        String(shipping.amount)
+      ],
+      [`line_items[${shippingIndex}][quantity]`, "1"],
+      ["mode", "payment"],
+      ["payment_method_types[0]", "card"],
+      ["shipping_address_collection[allowed_countries][0]", "IT"],
+      ["phone_number_collection[enabled]", "true"],
+      ["billing_address_collection", "auto"],
+      ["customer_creation", "always"],
+      ["metadata[shippingZone]", shippingZone],
+      ["metadata[reservationId]", reservationId],
+
+      // La sessione Stripe scade dopo 30 minuti.
+      [
+        "expires_at",
+        String(Math.floor(Date.now() / 1000) + 30 * 60)
+      ],
+
+      ["success_url", "https://lukolabcustom.vercel.app/?success=1"],
+      ["cancel_url", "https://lukolabcustom.vercel.app/?cancel=1"]
+    );
+
+    const session = await stripeRequest(
+      params,
+      reservationId
+    );
+
+    await sql`
+      UPDATE stock_reservations
+      SET session_id = ${session.id}
+      WHERE reservation_id = ${reservationId}
+    `;
+
+    return res.status(200).json({
+      url: session.url
+    });
+
+  } catch (error) {
+    console.error("CHECKOUT ERROR:", error);
+
+    if (sql && reserved.length) {
+      try {
+        await releaseStock(sql, reserved);
+
+        if (reservationId) {
+          await sql`
+            UPDATE stock_reservations
+            SET status = 'released'
+            WHERE reservation_id = ${reservationId}
+              AND status = 'pending'
+          `;
+        }
+      } catch (rollbackError) {
+        console.error(
+          "ERRORE RIPRISTINO SCORTE:",
+          rollbackError
+        );
+      }
+    }
+
+    const message = error.message || "";
+
+    if (
+      message.includes("Disponibilità insufficiente") ||
+      message.includes("taglia") ||
+      message.includes("non è più disponibile")
+    ) {
+      return res.status(409).json({
+        error: message
+      });
+    }
+
+    return res.status(500).json({
+      error: "Impossibile creare il pagamento. Riprova tra poco."
+    });
   }
 };
