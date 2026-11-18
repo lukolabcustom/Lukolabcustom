@@ -1,5 +1,6 @@
 
 
+
 const https = require("https");
 const crypto = require("crypto");
 const { list } = require("@vercel/blob");
@@ -28,6 +29,7 @@ function getSql() {
 
 async function readBlob(blob) {
   const separator = blob.url.includes("?") ? "&" : "?";
+
   const response = await fetch(
     blob.url + separator + "cacheBust=" + Date.now()
   );
@@ -104,9 +106,7 @@ function stripeRequest(data, idempotencyKey) {
 
         if (response.statusCode >= 400) {
           return reject(
-            new Error(
-              json.error?.message || "Errore Stripe"
-            )
+            new Error(json.error?.message || "Errore Stripe")
           );
         }
 
@@ -120,9 +120,8 @@ function stripeRequest(data, idempotencyKey) {
   });
 }
 
+/* PRENOTA LE SCORTE */
 async function reserveStock(sql, item) {
-  if (!item.size) return;
-
   const rows = await sql`
     UPDATE product_stock
     SET quantity = quantity - ${item.quantity}
@@ -134,15 +133,14 @@ async function reserveStock(sql, item) {
 
   if (!rows.length) {
     throw new Error(
-      `Disponibilità insufficiente per ${item.name}, taglia ${item.size}`
+      `Disponibilità insufficiente per ${item.name}, ${item.size === "ONE" ? "taglia unica" : "taglia " + item.size}`
     );
   }
 }
 
-async function releaseStock(sql, reservations) {
+/* RIPRISTINA LE SCORTE */
+async function restoreStock(sql, reservations) {
   for (const item of [...reservations].reverse()) {
-    if (!item.size) continue;
-
     await sql`
       UPDATE product_stock
       SET quantity = quantity + ${item.quantity}
@@ -150,6 +148,25 @@ async function releaseStock(sql, reservations) {
         AND size = ${item.size}
     `;
   }
+}
+
+/*
+  RILASCIO SICURO:
+  prima cambia lo stato della prenotazione,
+  poi restituisce le quantità.
+*/
+async function releaseReservation(sql, reservationId) {
+  const rows = await sql`
+    UPDATE stock_reservations
+    SET status = 'released'
+    WHERE reservation_id = ${reservationId}
+      AND status = 'pending'
+    RETURNING items
+  `;
+
+  if (!rows.length) return;
+
+  await restoreStock(sql, rows[0].items || []);
 }
 
 module.exports = async function handler(req, res) {
@@ -168,8 +185,11 @@ module.exports = async function handler(req, res) {
   }
 
   let sql;
-  const reserved = [];
   let reservationId;
+  let reservationCreated = false;
+  let stripeSessionCreated = false;
+
+  const reserved = [];
 
   try {
     const { items, shippingZone } = req.body || {};
@@ -197,9 +217,10 @@ module.exports = async function handler(req, res) {
 
     const quantities = new Map();
 
+    /* CONTROLLA E RAGGRUPPA GLI ARTICOLI */
     for (const item of items) {
       const id = String(item.id || "");
-      const size =
+      const requestedSize =
         item.size == null || item.size === ""
           ? null
           : item.size;
@@ -211,19 +232,22 @@ module.exports = async function handler(req, res) {
         !Number.isInteger(quantity) ||
         quantity < 1 ||
         quantity > 10 ||
-        (size !== null && !["S", "M"].includes(size))
+        (
+          requestedSize !== null &&
+          !["S", "M", "ONE"].includes(requestedSize)
+        )
       ) {
         return res.status(400).json({
           error: "Prodotto, taglia o quantità non validi"
         });
       }
 
-      const key = id + "|" + (size || "");
+      const key = id + "|" + (requestedSize || "");
       const previous = quantities.get(key);
 
       quantities.set(key, {
         id,
-        size,
+        requestedSize,
         quantity:
           quantity + (previous ? previous.quantity : 0)
       });
@@ -231,6 +255,7 @@ module.exports = async function handler(req, res) {
 
     const validated = [];
 
+    /* VERIFICA CATEGORIA E TAGLIA */
     for (const requested of quantities.values()) {
       if (requested.quantity > 10) {
         return res.status(400).json({
@@ -251,16 +276,36 @@ module.exports = async function handler(req, res) {
       const isClothing =
         product.category === "Abbigliamento";
 
-      if (isClothing && !requested.size) {
+      const isHat =
+        product.category === "Cappelli";
+
+      if (!isClothing && !isHat) {
         return res.status(400).json({
-          error: `Seleziona la taglia per ${product.name}`
+          error: "Categoria prodotto non valida"
         });
       }
 
-      if (!isClothing && requested.size) {
-        return res.status(400).json({
-          error: `La taglia non è valida per ${product.name}`
-        });
+      let size;
+
+      if (isClothing) {
+        if (!["S", "M"].includes(requested.requestedSize)) {
+          return res.status(400).json({
+            error: `Seleziona una taglia valida per ${product.name}`
+          });
+        }
+
+        size = requested.requestedSize;
+      } else {
+        if (
+          requested.requestedSize !== null &&
+          requested.requestedSize !== "ONE"
+        ) {
+          return res.status(400).json({
+            error: `Il cappello ${product.name} è a taglia unica`
+          });
+        }
+
+        size = "ONE";
       }
 
       if (
@@ -274,19 +319,15 @@ module.exports = async function handler(req, res) {
         id: product.id,
         name: String(product.name),
         price: Number(product.price),
-        size: isClothing ? requested.size : null,
+        size,
         quantity: requested.quantity
       });
     }
 
-    // Prenotazione temporanea delle scorte.
-    for (const item of validated) {
-      if (item.size) {
-        await reserveStock(sql, item);
-        reserved.push(item);
-      }
-    }
-
+    /*
+      CREA LA TABELLA DELLE PRENOTAZIONI
+      Se esiste già, non modifica i dati.
+    */
     await sql`
       CREATE TABLE IF NOT EXISTS stock_reservations (
         reservation_id TEXT PRIMARY KEY,
@@ -299,6 +340,13 @@ module.exports = async function handler(req, res) {
 
     reservationId = crypto.randomUUID();
 
+    /* PRENOTA LE SCORTE */
+    for (const item of validated) {
+      await reserveStock(sql, item);
+      reserved.push(item);
+    }
+
+    /* REGISTRA LA PRENOTAZIONE */
     await sql`
       INSERT INTO stock_reservations
         (reservation_id, items, status)
@@ -310,12 +358,16 @@ module.exports = async function handler(req, res) {
         )
     `;
 
+    reservationCreated = true;
+
+    /* PREPARA I PRODOTTI PER STRIPE */
     const params = [];
 
     validated.forEach((item, index) => {
-      const productName = item.size
-        ? `${item.name} - Taglia ${item.size}`
-        : item.name;
+      const productName =
+        item.size === "ONE"
+          ? `${item.name} - Taglia unica`
+          : `${item.name} - Taglia ${item.size}`;
 
       params.push(
         [`line_items[${index}][price_data][currency]`, "eur"],
@@ -334,6 +386,7 @@ module.exports = async function handler(req, res) {
       );
     });
 
+    /* SPEDIZIONE */
     const shippingIndex = validated.length;
 
     params.push(
@@ -356,7 +409,7 @@ module.exports = async function handler(req, res) {
       ["metadata[shippingZone]", shippingZone],
       ["metadata[reservationId]", reservationId],
 
-      // La sessione Stripe scade dopo 30 minuti.
+      /* SESSIONE CON SCADENZA DI 30 MINUTI */
       [
         "expires_at",
         String(Math.floor(Date.now() / 1000) + 30 * 60)
@@ -366,10 +419,13 @@ module.exports = async function handler(req, res) {
       ["cancel_url", "https://lukolabcustom.vercel.app/?cancel=1"]
     );
 
+    /* CREA SESSIONE STRIPE */
     const session = await stripeRequest(
       params,
       reservationId
     );
+
+    stripeSessionCreated = true;
 
     await sql`
       UPDATE stock_reservations
@@ -384,18 +440,28 @@ module.exports = async function handler(req, res) {
   } catch (error) {
     console.error("CHECKOUT ERROR:", error);
 
-    if (sql && reserved.length) {
+    /*
+      Se Stripe ha già creato la sessione,
+      NON liberiamo le scorte automaticamente.
+      Evitiamo che una sessione valida possa vendere
+      prodotti le cui quantità sono state restituite.
+    */
+    if (sql && reservationCreated && !stripeSessionCreated) {
       try {
-        await releaseStock(sql, reserved);
-
-        if (reservationId) {
-          await sql`
-            UPDATE stock_reservations
-            SET status = 'released'
-            WHERE reservation_id = ${reservationId}
-              AND status = 'pending'
-          `;
-        }
+        await releaseReservation(sql, reservationId);
+      } catch (rollbackError) {
+        console.error(
+          "ERRORE RIPRISTINO SCORTE:",
+          rollbackError
+        );
+      }
+    } else if (sql && !reservationCreated && reserved.length) {
+      /*
+        Se la prenotazione non è stata registrata,
+        ripristina solo le quantità effettivamente scalate.
+      */
+      try {
+        await restoreStock(sql, reserved);
       } catch (rollbackError) {
         console.error(
           "ERRORE RIPRISTINO SCORTE:",
