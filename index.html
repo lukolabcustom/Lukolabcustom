@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -8,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#071b12">
 <title>Luko Lab Custom</title>
-<script type="text/javascript" src="https://embeds.iubenda.com/widgets/26825356-06ce-43a4-8e58-15215c31c983.js"></script>
+<script src="https://embeds.iubenda.com/widgets/26825356-06ce-43a4-8e58-15215c31c983.js"></script>
 
 <style>
 *{box-sizing:border-box}
@@ -62,16 +63,30 @@ nav a:hover{opacity:1}
 #products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
 .card{overflow:hidden;border-radius:28px;background:linear-gradient(145deg,#123c28f5,#071b12f5);border:1px solid #ffffff1a;box-shadow:0 20px 60px #0005;transition:transform .25s,border-color .25s}
 .card:hover{transform:translateY(-5px);border-color:#35e17c59}
-.photo{width:100%;aspect-ratio:1/1;overflow:hidden;background:radial-gradient(circle at 30% 20%,#175f37,#071b12 70%)}
-.photo img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* GALLERIA FOTO */
+.photo{width:100%;aspect-ratio:1/1;position:relative;overflow:hidden;background:radial-gradient(circle at 30% 20%,#175f37,#071b12 70%)}
+.gallery-track{width:100%;height:100%;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.gallery-track::-webkit-scrollbar{display:none}
+.gallery-slide{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:center}
+.gallery-slide img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:14px}
+.gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:38px;height:38px;border:1px solid #ffffff55;border-radius:50%;background:#04160ebd;color:white;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.gallery-prev{left:10px}
+.gallery-next{right:10px}
+.gallery-dots{position:absolute;bottom:12px;left:0;right:0;z-index:2;display:flex;justify-content:center;gap:7px}
+.gallery-dot{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:#ffffff80;cursor:pointer}
+.gallery-dot.active{background:#35e17c;transform:scale(1.25)}
+.gallery-count{position:absolute;top:12px;right:12px;z-index:2;padding:5px 9px;border-radius:20px;background:#04160ebd;color:white;font-size:11px}
+
 .card-body{padding:24px}
 .card-body h3{margin:0 0 12px;font-size:20px;line-height:1.3}
 .price{font-size:21px;font-weight:800;margin-bottom:16px}
 .size-label{display:block;font-size:13px;font-weight:800;margin:14px 0 8px}
 .size-select{width:100%;padding:13px;border-radius:10px;border:1px solid #ffffff30;background:#071b12;color:white;margin-bottom:12px}
 .stock-note{font-size:12px;color:#c0cec5;margin:0 0 12px;line-height:1.5}
-.card-body button{width:100%;border:0;padding:15px;border-radius:13px;background:#35e17c;color:#06150d;font-weight:900;font-size:14px;cursor:pointer;transition:.2s}
-.card-body button:hover{filter:brightness(1.08)}
+.card-body button.add-button{width:100%;border:0;padding:15px;border-radius:13px;background:#35e17c;color:#06150d;font-weight:900;font-size:14px;cursor:pointer;transition:.2s}
+.card-body button.add-button:hover{filter:brightness(1.08)}
 .empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:#c0cec5;font-size:18px}
 
 /* CART */
@@ -106,7 +121,7 @@ footer strong{color:white}
  .card-body{padding:16px}
  .card-body h3{font-size:16px}
  .price{font-size:18px}
- .card-body button{font-size:11px;padding:13px 8px}
+ .card-body button.add-button{font-size:11px;padding:13px 8px}
  .shop{padding:60px 15px 100px}
  .shop::before{background:linear-gradient(#071b12e8,#071b12f2),url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1000&q=75") center/cover}
 }
@@ -240,6 +255,16 @@ function isSized(product) {
  return product.category === "Abbigliamento";
 }
 
+function productImages(product) {
+ const images = Array.isArray(product.images)
+  ? product.images.filter(url => typeof url === "string" && url.trim())
+  : [];
+
+ if (!images.length && product.image) images.push(product.image);
+
+ return [...new Set(images)].slice(0,10);
+}
+
 async function loadProducts() {
  const container = document.getElementById("products");
 
@@ -253,13 +278,13 @@ async function loadProducts() {
 
   products = data.products;
 
-  // Aggiorna i dati dal catalogo senza perdere la taglia scelta.
   cart = cart.map(item => {
    const product = products.find(p => p.id === item.id);
    if (!product) return null;
 
    const sized = isSized(product);
-   const size = sized ? item.size : null;
+   const size = sized ? item.size : "ONE";
+
    if (sized && !["S","M"].includes(size)) return null;
 
    return {
@@ -286,6 +311,77 @@ function getCurrentFilter() {
  return active ? active.dataset.filter : "all";
 }
 
+function renderGallery(product) {
+ const images = productImages(product);
+ const id = escapeHtml(product.id);
+
+ if (!images.length) {
+  return '<div class="photo"><div class="gallery-placeholder">FOTO PRODOTTO</div></div>';
+ }
+
+ const slides = images.map(url => `
+  <div class="gallery-slide">
+   <img src="${escapeHtml(url)}" alt="${escapeHtml(product.name)}" loading="lazy">
+  </div>
+ `).join("");
+
+ if (images.length === 1) {
+  return `<div class="photo"><div class="gallery-track">${slides}</div></div>`;
+ }
+
+ const dots = images.map((url,index) => `
+  <button type="button" class="gallery-dot ${index===0?"active":""}"
+   aria-label="Mostra foto ${index+1}"
+   onclick="galleryGo('${id}',${index})"></button>
+ `).join("");
+
+ return `
+  <div class="photo" id="gallery-${id}">
+   <div class="gallery-track" id="track-${id}"
+    onscroll="galleryScroll('${id}')">
+    ${slides}
+   </div>
+   <button type="button" class="gallery-arrow gallery-prev"
+    aria-label="Foto precedente"
+    onclick="galleryMove('${id}',-1)">‹</button>
+   <button type="button" class="gallery-arrow gallery-next"
+    aria-label="Foto successiva"
+    onclick="galleryMove('${id}',1)">›</button>
+   <div class="gallery-count">${images.length} foto</div>
+   <div class="gallery-dots">${dots}</div>
+  </div>
+ `;
+}
+
+function galleryGo(id,index) {
+ const track = document.getElementById("track-" + id);
+ if (!track) return;
+ track.scrollTo({left:index * track.clientWidth,behavior:"smooth"});
+}
+
+function galleryMove(id,direction) {
+ const track = document.getElementById("track-" + id);
+ if (!track) return;
+
+ const current = Math.round(track.scrollLeft / track.clientWidth);
+ const total = track.children.length;
+ const next = (current + direction + total) % total;
+
+ galleryGo(id,next);
+}
+
+function galleryScroll(id) {
+ const track = document.getElementById("track-" + id);
+ const gallery = document.getElementById("gallery-" + id);
+ if (!track || !gallery || !track.clientWidth) return;
+
+ const index = Math.round(track.scrollLeft / track.clientWidth);
+
+ gallery.querySelectorAll(".gallery-dot").forEach((dot,i) => {
+  dot.classList.toggle("active",i === index);
+ });
+}
+
 function renderProducts(filter = "all") {
  const container = document.getElementById("products");
  const list = filter === "all" ? products : products.filter(p => p.category === filter);
@@ -296,37 +392,45 @@ function renderProducts(filter = "all") {
  }
 
  container.innerHTML = list.map(product => {
-  const image = product.image
-   ? `<img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" loading="lazy">`
-   : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:14px">FOTO PRODOTTO</div>';
-
   const sized = isSized(product);
-  const stockS = stockFor(product, "S");
-  const stockM = stockFor(product, "M");
-  const hasStock = sized ? stockS + stockM > 0 : true;
+  const stockS = stockFor(product,"S");
+  const stockM = stockFor(product,"M");
+  const stockONE = stockFor(product,"ONE");
+
+  const hasStock = sized ? stockS + stockM > 0 : stockONE > 0;
 
   const sizeControl = sized ? `
    <label class="size-label" for="size-${escapeHtml(product.id)}">Scegli la taglia</label>
    <select class="size-select" id="size-${escapeHtml(product.id)}">
-    <option value="S" ${stockS === 0 ? "disabled" : ""}>S ${stockS === 0 ? "— Esaurita" : "— " + stockS + " disponibili"}</option>
-    <option value="M" ${stockM === 0 ? "disabled" : ""}>M ${stockM === 0 ? "— Esaurita" : "— " + stockM + " disponibili"}</option>
+    <option value="S" ${stockS===0?"disabled":""}>
+     S ${stockS===0?"— Esaurita":"— "+stockS+" disponibili"}
+    </option>
+    <option value="M" ${stockM===0?"disabled":""}>
+     M ${stockM===0?"— Esaurita":"— "+stockM+" disponibili"}
+    </option>
    </select>
-   <p class="stock-note">${hasStock ? "Disponibilità aggiornata dal catalogo." : "Taglie esaurite."}</p>
-  ` : "";
+   <p class="stock-note">${hasStock?"Disponibilità aggiornata dal catalogo.":"Taglie esaurite."}</p>
+  ` : `
+   <p class="stock-note">
+    Taglia unica · ${stockONE} ${stockONE===1?"disponibile":"disponibili"}
+   </p>
+  `;
 
   return `
    <article class="card">
-    <div class="photo">${image}</div>
+    ${renderGallery(product)}
     <div class="card-body">
      <h3>${escapeHtml(product.name)}</h3>
      <div class="price">€${Number(product.price).toFixed(2)}</div>
      ${sizeControl}
-     <button type="button" ${sized && !hasStock ? "disabled" : ""}
+     <button class="add-button" type="button"
+      ${!hasStock?"disabled":""}
       onclick="addToCart('${escapeHtml(product.id)}')">
-      ${sized && !hasStock ? "ESAURITO" : "AGGIUNGI AL CARRELLO"}
+      ${!hasStock?"ESAURITO":"AGGIUNGI AL CARRELLO"}
      </button>
     </div>
-   </article>`;
+   </article>
+  `;
  }).join("");
 }
 
@@ -335,7 +439,7 @@ function addToCart(id) {
  if (!product) { alert("Prodotto non trovato."); return; }
 
  const sized = isSized(product);
- let size = null;
+ let size = "ONE";
 
  if (sized) {
   const selector = document.getElementById("size-" + id);
@@ -345,32 +449,31 @@ function addToCart(id) {
    alert("Seleziona una taglia disponibile.");
    return;
   }
-
-  const inStock = stockFor(product, size);
-  if (inStock < 1) {
-   alert("Questa taglia è esaurita.");
-   return;
-  }
  }
 
- const item = cart.find(p => p.id === id && (p.size || null) === size);
- const currentQuantity = item ? Number(item.quantity) : 0;
- const available = sized ? stockFor(product, size) : 10;
+ const available = stockFor(product,size);
+ if (available < 1) {
+  alert("Prodotto esaurito.");
+  return;
+ }
 
- if (currentQuantity >= Math.min(10, available)) {
-  alert("Hai raggiunto la quantità disponibile per questa taglia.");
+ const item = cart.find(p => p.id === id && p.size === size);
+ const currentQuantity = item ? Number(item.quantity) : 0;
+
+ if (currentQuantity >= Math.min(10,available)) {
+  alert("Hai raggiunto la quantità disponibile.");
   return;
  }
 
  if (item) item.quantity++;
  else {
   cart.push({
-   id: product.id,
-   name: product.name,
-   price: Number(product.price),
-   category: product.category,
+   id:product.id,
+   name:product.name,
+   price:Number(product.price),
+   category:product.category,
    size,
-   quantity: 1
+   quantity:1
   });
  }
 
@@ -379,22 +482,25 @@ function addToCart(id) {
  openCart();
 }
 
-function changeQuantity(id, size, amount) {
- const item = cart.find(p => p.id === id && (p.size || null) === (size || null));
+function changeQuantity(id,size,amount) {
+ const item = cart.find(p => p.id === id && p.size === size);
  if (!item) return;
 
  const product = products.find(p => p.id === id);
  if (!product) return;
 
  const next = Number(item.quantity) + Number(amount);
+
  if (next <= 0) {
-  cart = cart.filter(p => !(p.id === id && (p.size || null) === (size || null)));
+  cart = cart.filter(p => !(p.id === id && p.size === size));
  } else {
-  const available = isSized(product) ? stockFor(product, size) : 10;
-  if (next > Math.min(10, available)) {
+  const available = stockFor(product,size);
+
+  if (next > Math.min(10,available)) {
    alert("La quantità supera la disponibilità mostrata.");
    return;
   }
+
   item.quantity = next;
  }
 
@@ -414,9 +520,13 @@ function renderCart() {
    const product = products.find(p => p.id === item.id);
    if (!product) return "";
 
-   const sizeText = item.size ? ` · Taglia ${escapeHtml(item.size)}` : "";
-   const available = isSized(product) ? stockFor(product, item.size) : 10;
-   const plusDisabled = Number(item.quantity) >= Math.min(10, available);
+   const size = isSized(product) ? item.size : "ONE";
+   const sizeText = isSized(product)
+    ? ` · Taglia ${escapeHtml(size)}`
+    : " · Taglia unica";
+
+   const available = stockFor(product,size);
+   const plusDisabled = Number(item.quantity) >= Math.min(10,available);
 
    return `
     <div class="cart-item">
@@ -427,12 +537,13 @@ function renderCart() {
      </div>
      <div class="qty">
       <button type="button" aria-label="Diminuisci quantità"
-       onclick="changeQuantity('${escapeHtml(product.id)}','${item.size || ""}',-1)">−</button>
+       onclick="changeQuantity('${escapeHtml(product.id)}','${size}',-1)">−</button>
       <button type="button" aria-label="Aumenta quantità"
-       ${plusDisabled ? "disabled" : ""}
-       onclick="changeQuantity('${escapeHtml(product.id)}','${item.size || ""}',1)">+</button>
+       ${plusDisabled?"disabled":""}
+       onclick="changeQuantity('${escapeHtml(product.id)}','${size}',1)">+</button>
      </div>
-    </div>`;
+    </div>
+   `;
   }).join("");
  }
 
@@ -442,6 +553,7 @@ function renderCart() {
  },0);
 
  const count = cart.reduce((sum,item) => sum + Number(item.quantity),0);
+
  document.getElementById("total").textContent = total.toFixed(2);
  document.getElementById("cartCount").textContent = count;
  document.getElementById("checkoutBtn").disabled = cart.length === 0;
@@ -465,25 +577,32 @@ function toggleCart() {
 }
 
 async function checkout() {
- if (!cart.length) { alert("Il carrello è vuoto."); return; }
+ if (!cart.length) {
+  alert("Il carrello è vuoto.");
+  return;
+ }
 
  const shippingZone = document.getElementById("shippingZone").value;
- if (!shippingZone) { alert("Seleziona la zona di spedizione."); return; }
+ if (!shippingZone) {
+  alert("Seleziona la zona di spedizione.");
+  return;
+ }
 
- // Controllo preliminare dell'inventario mostrato al cliente.
  for (const item of cart) {
   const product = products.find(p => p.id === item.id);
+
   if (!product) {
    alert("Un prodotto non è più disponibile. Aggiorna la pagina.");
    return;
   }
 
-  if (isSized(product)) {
-   const available = stockFor(product, item.size);
-   if (!["S","M"].includes(item.size) || item.quantity > available) {
-    alert("Disponibilità insufficiente per " + product.name + ", taglia " + item.size + ". Aggiorna il carrello.");
-    return;
-   }
+  const size = isSized(product) ? item.size : "ONE";
+  const available = stockFor(product,size);
+
+  if ((isSized(product) && !["S","M"].includes(size)) ||
+      item.quantity > available) {
+   alert("Disponibilità insufficiente per " + product.name + ". Aggiorna il carrello.");
+   return;
   }
  }
 
@@ -493,26 +612,31 @@ async function checkout() {
 
  try {
   const response = await fetch("/api/checkout", {
-   method: "POST",
-   headers: {"Content-Type":"application/json"},
-   body: JSON.stringify({
-    items: cart.map(item => ({
-     id: item.id,
-     size: item.size || null,
-     quantity: Number(item.quantity)
-    })),
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    items:cart.map(item => {
+     const product = products.find(p => p.id === item.id);
+     return {
+      id:item.id,
+      size:isSized(product)?item.size:"ONE",
+      quantity:Number(item.quantity)
+     };
+    }),
     shippingZone
    })
   });
 
   const data = await response.json().catch(() => ({}));
+
   if (!response.ok || !data.url) {
    throw new Error(data.error || "Errore nel pagamento");
   }
 
   window.location.href = data.url;
- } catch (error) {
-  console.error("CHECKOUT:", error);
+
+ } catch(error) {
+  console.error("CHECKOUT:",error);
   alert(error.message || "Non è stato possibile aprire il pagamento. Riprova.");
   button.disabled = false;
   button.textContent = "PAGA CON CARTA";
@@ -520,7 +644,7 @@ async function checkout() {
 }
 
 document.querySelectorAll(".filters button").forEach(button => {
- button.addEventListener("click", () => {
+ button.addEventListener("click",() => {
   document.querySelectorAll(".filters button").forEach(btn => btn.classList.remove("active"));
   button.classList.add("active");
   renderProducts(button.dataset.filter);
