@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -13,15 +14,9 @@
       color: white;
       padding: 20px;
     }
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
+    .container { max-width: 900px; margin: auto; }
     h1 { margin-bottom: 8px; }
-    .subtitle {
-      color: #b9c9bf;
-      margin-bottom: 25px;
-    }
+    .subtitle { color: #b9c9bf; margin-bottom: 25px; }
     .box {
       background: #10271b;
       border: 1px solid #244833;
@@ -55,10 +50,7 @@
       font-weight: bold;
       cursor: pointer;
     }
-    button:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
+    button:disabled { opacity: 0.6; cursor: wait; }
     .primary {
       background: #d7ff52;
       color: #102000;
@@ -82,21 +74,22 @@
       margin-bottom: 15px;
       background: #0b2115;
     }
-    .product img {
-      width: 100%;
-      max-width: 220px;
-      display: block;
-      border-radius: 12px;
+    .product-gallery {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
       margin-bottom: 12px;
+      padding-bottom: 5px;
     }
-    .product-name {
-      font-size: 18px;
-      font-weight: bold;
+    .product-gallery img {
+      width: 150px;
+      height: 150px;
+      flex: 0 0 150px;
+      object-fit: cover;
+      border-radius: 12px;
     }
-    .product-info {
-      color: #b9c9bf;
-      margin-top: 5px;
-    }
+    .product-name { font-size: 18px; font-weight: bold; }
+    .product-info { color: #b9c9bf; margin-top: 5px; }
     .message {
       margin-top: 15px;
       padding: 12px;
@@ -104,28 +97,22 @@
       display: none;
       overflow-wrap: anywhere;
     }
-    .success {
-      background: #164b2b;
-      color: #baffc9;
-    }
-    .error {
-      background: #571f1f;
-      color: #ffc1c1;
-    }
+    .success { background: #164b2b; color: #baffc9; }
+    .error { background: #571f1f; color: #ffc1c1; }
     .stock-note {
       color: #b9c9bf;
       font-size: 14px;
       margin-top: -5px;
       margin-bottom: 15px;
+      line-height: 1.5;
     }
     #adminArea { display: none; }
-    #loginArea {
-      max-width: 500px;
-      margin: 80px auto;
-    }
+    #loginArea { max-width: 500px; margin: 80px auto; }
+    .photo-count { color: #b9c9bf; font-size: 13px; margin-top: -8px; margin-bottom: 15px; }
   </style>
 </head>
 <body>
+
 <div id="loginArea" class="box">
   <h1>🔐 Luko Lab Custom</h1>
   <div class="subtitle">Accesso area amministratore</div>
@@ -136,38 +123,46 @@
     placeholder="Inserisci password"
     autocomplete="current-password"
   >
-  <button class="primary" id="loginButton" onclick="login()">
-    Accedi
-  </button>
+  <button class="primary" id="loginButton" onclick="login()">Accedi</button>
   <div id="loginMessage" class="message error"></div>
 </div>
+
 <div id="adminArea" class="container">
   <h1>🌴 Gestione prodotti</h1>
-  <div class="subtitle">
-    Aggiungi o elimina i prodotti del tuo negozio.
-  </div>
+  <div class="subtitle">Aggiungi o elimina i prodotti del tuo negozio.</div>
+
   <div class="box">
     <h2>➕ Aggiungi prodotto</h2>
+
     <label for="productName">Nome prodotto</label>
-    <input
-      type="text"
-      id="productName"
-      placeholder="Es. Felpa Luko Lab"
-    >
+    <input type="text" id="productName" placeholder="Es. Felpa Luko Lab">
+
     <label for="productPrice">Prezzo (€)</label>
-    <input
-      type="number"
-      id="productPrice"
-      value="35"
-      min="0.01"
-      step="0.01"
-    >
+    <input type="number" id="productPrice" value="35" min="0.01" step="0.01">
+
     <label for="productCategory">Categoria</label>
     <select id="productCategory" onchange="updateStockFields()">
       <option value="Cappelli">Cappelli</option>
       <option value="Abbigliamento">Abbigliamento</option>
     </select>
-    <div id="sizeStockFields">
+
+    <div id="oneSizeStockFields">
+      <h3>🧢 Disponibilità cappello</h3>
+      <div class="stock-note">
+        I cappelli sono a taglia unica. Inserisci il numero totale di pezzi disponibili.
+      </div>
+      <label for="stockONE">Quantità disponibile</label>
+      <input
+        type="number"
+        id="stockONE"
+        value="0"
+        min="0"
+        step="1"
+        inputmode="numeric"
+      >
+    </div>
+
+    <div id="sizeStockFields" style="display:none">
       <h3>📏 Disponibilità taglie</h3>
       <div class="stock-note">
         Inserisci quante unità hai disponibili per ogni taglia.
@@ -191,138 +186,193 @@
         inputmode="numeric"
       >
     </div>
-    <label for="productImage">Foto prodotto</label>
+
+    <label for="productImages">Foto prodotto</label>
     <input
       type="file"
-      id="productImage"
+      id="productImages"
       accept="image/jpeg,image/png,image/webp"
+      multiple
     >
-    <button
-      class="primary"
-      id="publishButton"
-      onclick="addProduct()"
-    >
+    <div class="photo-count">
+      Puoi selezionare più fotografie dello stesso prodotto.
+    </div>
+
+    <button class="primary" id="publishButton" onclick="addProduct()">
       Pubblica prodotto
     </button>
     <div id="addMessage" class="message"></div>
   </div>
+
   <div class="box">
     <h2>📦 Prodotti presenti</h2>
     <div id="productsList">Caricamento...</div>
   </div>
+
   <button class="logout" onclick="logout()">Esci</button>
 </div>
+
 <script>
 "use strict";
+
 /* LOGIN */
 async function login() {
   const password = document.getElementById("loginPassword").value;
   const message = document.getElementById("loginMessage");
   const button = document.getElementById("loginButton");
+
   message.style.display = "none";
   button.disabled = true;
+
   try {
     const response = await fetch("/api/admin-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password })
     });
+
     const data = await response.json();
+
     if (!response.ok) {
       throw new Error(data.error || "Password non corretta.");
     }
+
     document.getElementById("loginArea").style.display = "none";
     document.getElementById("adminArea").style.display = "block";
+
     updateStockFields();
     await loadProducts();
+
   } catch (error) {
     showMessage(message, error.message, true);
   } finally {
     button.disabled = false;
   }
 }
-/* MOSTRA LE TAGLIE SOLO PER ABBIGLIAMENTO */
+
+/* CAMBIO CAMPI MAGAZZINO */
 function updateStockFields() {
   const category = document.getElementById("productCategory").value;
-  const fields = document.getElementById("sizeStockFields");
-  fields.style.display =
+
+  document.getElementById("oneSizeStockFields").style.display =
+    category === "Cappelli" ? "block" : "none";
+
+  document.getElementById("sizeStockFields").style.display =
     category === "Abbigliamento" ? "block" : "none";
 }
+
 /* CARICA PRODOTTI */
 async function loadProducts() {
   const list = document.getElementById("productsList");
   list.textContent = "Caricamento...";
+
   try {
     const response = await fetch("/api/products?cache=" + Date.now(), {
       cache: "no-store"
     });
+
     const data = await response.json();
+
     if (!response.ok) {
       throw new Error(data.error || "Errore caricamento prodotti.");
     }
+
     const products = data.products || [];
+
     if (products.length === 0) {
       list.textContent = "Nessun prodotto presente.";
       return;
     }
+
     list.replaceChildren();
+
     products.forEach(product => {
       const div = document.createElement("div");
       div.className = "product";
-      if (product.image) {
-        const img = document.createElement("img");
-        img.src = product.image;
-        img.alt = product.name || "Foto prodotto";
-        img.loading = "lazy";
-        div.appendChild(img);
+
+      const images = Array.isArray(product.images) && product.images.length
+        ? product.images
+        : (product.image ? [product.image] : []);
+
+      if (images.length) {
+        const gallery = document.createElement("div");
+        gallery.className = "product-gallery";
+
+        images.forEach(url => {
+          const img = document.createElement("img");
+          img.src = url;
+          img.alt = product.name || "Foto prodotto";
+          img.loading = "lazy";
+          gallery.appendChild(img);
+        });
+
+        div.appendChild(gallery);
       }
+
       const name = document.createElement("div");
       name.className = "product-name";
       name.textContent = product.name || "Prodotto";
       div.appendChild(name);
+
       const price = document.createElement("div");
       price.className = "product-info";
       price.textContent = "€" + Number(product.price || 0).toFixed(2);
       div.appendChild(price);
+
       const category = document.createElement("div");
       category.className = "product-info";
       category.textContent = "Categoria: " + (product.category || "—");
       div.appendChild(category);
+
+      const stock = product.stock || {};
+      const stockInfo = document.createElement("div");
+      stockInfo.className = "product-info";
+
       if (product.category === "Abbigliamento") {
-        const stock = product.stock || {};
-        const stockInfo = document.createElement("div");
-        stockInfo.className = "product-info";
         stockInfo.textContent =
           "Taglia S: " + Number(stock.S || 0) +
           " · Taglia M: " + Number(stock.M || 0);
-        div.appendChild(stockInfo);
+      } else {
+        stockInfo.textContent =
+          "Taglia unica: " + Number(stock.ONE || 0);
       }
+
+      div.appendChild(stockInfo);
+
       const button = document.createElement("button");
       button.className = "delete";
       button.textContent = "🗑 Elimina prodotto";
       button.addEventListener("click", () => deleteProduct(product.id));
       div.appendChild(button);
+
       list.appendChild(div);
     });
+
   } catch (error) {
     list.replaceChildren();
+
     const message = document.createElement("div");
     message.className = "message error";
     message.style.display = "block";
     message.textContent = error.message;
+
     list.appendChild(message);
   }
 }
-/* COMPRIME LA FOTO */
+
+/* COMPRIME UNA FOTO */
 function compressImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
+
     reader.onload = event => {
       const image = new Image();
+
       image.onload = () => {
         const maxSize = 1600;
         let width = image.width;
         let height = image.height;
+
         if (width > maxSize || height > maxSize) {
           if (width > height) {
             height = Math.round(height * maxSize / width);
@@ -332,127 +382,213 @@ function compressImage(file) {
             height = maxSize;
           }
         }
+
         const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
+
         const context = canvas.getContext("2d");
+
         if (!context) {
           reject(new Error("Impossibile preparare la foto."));
           return;
         }
+
         context.drawImage(image, 0, 0, width, height);
+
         canvas.toBlob(blob => {
           if (!blob) {
             reject(new Error("Impossibile preparare la foto."));
             return;
           }
+
           resolve(blob);
         }, "image/jpeg", 0.82);
       };
+
       image.onerror = () => reject(new Error("Impossibile leggere la foto."));
       image.src = event.target.result;
     };
+
     reader.onerror = () => reject(new Error("Impossibile leggere il file."));
     reader.readAsDataURL(file);
   });
 }
-/* CONVERTE LA FOTO IN BASE64 */
+
+/* CONVERTE IN BASE64 */
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
+
     reader.onload = () => resolve(reader.result);
     reader.onerror = () => reject(new Error("Errore lettura foto."));
+
     reader.readAsDataURL(blob);
   });
 }
+
+/* CARICA UNA FOTO */
+async function uploadPhoto(file, index, total) {
+  const button = document.getElementById("publishButton");
+
+  button.textContent =
+    "Preparazione foto " + index + " di " + total + "...";
+
+  const compressed = await compressImage(file);
+  const base64 = await blobToBase64(compressed);
+
+  button.textContent =
+    "Caricamento foto " + index + " di " + total + "...";
+
+  const uploadResponse = await fetch("/api/upload", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      filename: file.name,
+      contentType: "image/jpeg",
+      data: base64
+    })
+  });
+
+  const uploadData = await uploadResponse.json();
+
+  if (!uploadResponse.ok) {
+    throw new Error(
+      uploadData.error || "Impossibile caricare la foto " + index + "."
+    );
+  }
+
+  if (!uploadData.url) {
+    throw new Error("Indirizzo della foto non ricevuto dal server.");
+  }
+
+  return uploadData.url;
+}
+
 /* AGGIUNGE UN PRODOTTO */
 async function addProduct() {
   const button = document.getElementById("publishButton");
   const message = document.getElementById("addMessage");
+
   const name = document.getElementById("productName").value.trim();
   const price = Number(document.getElementById("productPrice").value);
   const category = document.getElementById("productCategory").value;
-  const file = document.getElementById("productImage").files[0];
+
+  const files = Array.from(
+    document.getElementById("productImages").files
+  );
+
+  const stockONE = document.getElementById("stockONE").value;
   const stockS = document.getElementById("stockS").value;
   const stockM = document.getElementById("stockM").value;
+
   message.style.display = "none";
+
   if (!name) {
     showMessage(message, "Inserisci il nome del prodotto.", true);
     return;
   }
+
   if (!Number.isFinite(price) || price <= 0) {
     showMessage(message, "Inserisci un prezzo valido.", true);
     return;
   }
+
+  if (category === "Cappelli") {
+    const validONE = stockONE.trim() !== "" &&
+      Number.isInteger(Number(stockONE)) &&
+      Number(stockONE) >= 0 &&
+      Number(stockONE) <= 100000;
+
+    if (!validONE) {
+      showMessage(message, "Inserisci una quantità valida per il cappello.", true);
+      return;
+    }
+  }
+
   if (category === "Abbigliamento") {
     const validS = stockS.trim() !== "" &&
-      Number.isInteger(Number(stockS)) && Number(stockS) >= 0;
+      Number.isInteger(Number(stockS)) &&
+      Number(stockS) >= 0 &&
+      Number(stockS) <= 100000;
+
     const validM = stockM.trim() !== "" &&
-      Number.isInteger(Number(stockM)) && Number(stockM) >= 0;
+      Number.isInteger(Number(stockM)) &&
+      Number(stockM) >= 0 &&
+      Number(stockM) <= 100000;
+
     if (!validS || !validM) {
       showMessage(message, "Inserisci quantità intere valide per S e M.", true);
       return;
     }
   }
-  if (!file) {
-    showMessage(message, "Seleziona una foto del prodotto.", true);
+
+  if (files.length === 0) {
+    showMessage(message, "Seleziona almeno una foto del prodotto.", true);
     return;
   }
-  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-    showMessage(message, "Usa una foto JPG, PNG o WebP.", true);
+
+  if (files.length > 10) {
+    showMessage(message, "Puoi caricare al massimo 10 fotografie per prodotto.", true);
     return;
   }
+
+  for (const file of files) {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      showMessage(message, "Usa solamente foto JPG, PNG o WebP.", true);
+      return;
+    }
+  }
+
   button.disabled = true;
+
   try {
-    button.textContent = "Preparazione foto...";
-    const compressed = await compressImage(file);
-    const base64 = await blobToBase64(compressed);
-    button.textContent = "Caricamento foto...";
-    const uploadResponse = await fetch("/api/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        filename: file.name,
-        contentType: "image/jpeg",
-        data: base64
-      })
-    });
-    const uploadData = await uploadResponse.json();
-    if (!uploadResponse.ok) {
-      throw new Error(uploadData.error || "Impossibile caricare la foto.");
+    const imageUrls = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const url = await uploadPhoto(files[i], i + 1, files.length);
+      imageUrls.push(url);
     }
-    if (!uploadData.url) {
-      throw new Error("Il server non ha restituito l'indirizzo della foto.");
-    }
+
     button.textContent = "Salvataggio prodotto...";
+
     const productPayload = {
       name,
       price,
       category,
-      image: uploadData.url
+      image: imageUrls[0],
+      images: imageUrls,
+      stock: category === "Cappelli"
+        ? { ONE: Number(stockONE) }
+        : {
+            S: Number(stockS),
+            M: Number(stockM)
+          }
     };
-    if (category === "Abbigliamento") {
-      productPayload.stock = {
-        S: Number(stockS),
-        M: Number(stockM)
-      };
-    }
+
     const response = await fetch("/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(productPayload)
     });
+
     const data = await response.json();
+
     if (!response.ok) {
       throw new Error(data.error || "Impossibile salvare il prodotto.");
     }
+
     showMessage(message, "✅ Prodotto aggiunto correttamente!", false);
+
     document.getElementById("productName").value = "";
     document.getElementById("productPrice").value = "35";
-    document.getElementById("productImage").value = "";
+    document.getElementById("productImages").value = "";
+    document.getElementById("stockONE").value = "0";
     document.getElementById("stockS").value = "0";
     document.getElementById("stockM").value = "0";
+
     await loadProducts();
+
   } catch (error) {
     showMessage(message, "❌ " + error.message, true);
   } finally {
@@ -460,42 +596,52 @@ async function addProduct() {
     button.textContent = "Pubblica prodotto";
   }
 }
-/* ELIMINA UN PRODOTTO */
+
+/* ELIMINA PRODOTTO */
 async function deleteProduct(id) {
   if (!confirm("Vuoi davvero eliminare questo prodotto?")) {
     return;
   }
+
   try {
     const response = await fetch("/api/products", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id })
     });
+
     const data = await response.json();
+
     if (!response.ok) {
       throw new Error(data.error || "Impossibile eliminare il prodotto.");
     }
+
     await loadProducts();
+
   } catch (error) {
     alert("Errore: " + error.message);
   }
 }
+
 /* ESCI */
 function logout() {
   location.reload();
 }
+
 /* MESSAGGI */
 function showMessage(element, text, isError) {
   element.textContent = text;
   element.className = "message " + (isError ? "error" : "success");
   element.style.display = "block";
 }
+
 /* INVIO PASSWORD CON INVIO */
 document.getElementById("loginPassword").addEventListener("keydown", event => {
   if (event.key === "Enter") {
     login();
   }
 });
+
 updateStockFields();
 </script>
 </body>
