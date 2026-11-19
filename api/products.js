@@ -1,6 +1,7 @@
 
 
 
+
 const { put, list, del } = require("@vercel/blob");
 const crypto = require("crypto");
 const { neon } = require("@neondatabase/serverless");
@@ -17,7 +18,13 @@ const defaultProducts = Array.from({ length: 14 }, (_, index) => {
     price: 35,
     category: "Cappelli",
     image: null,
-    images: []
+    images: [],
+    material: "",
+    description: "",
+    inspiration: "",
+    workmanship: "",
+    fit: "",
+    care: ""
   };
 });
 
@@ -193,6 +200,24 @@ function getProductImages(product) {
   return product.image ? [product.image] : [];
 }
 
+/* PULISCE I NUOVI DETTAGLI PRODOTTO */
+function cleanText(value, maxLength) {
+  if (typeof value !== "string") return "";
+
+  return value.trim().slice(0, maxLength);
+}
+
+function getProductDetails(data) {
+  return {
+    material: cleanText(data.material, 500),
+    description: cleanText(data.description, 3000),
+    inspiration: cleanText(data.inspiration, 2000),
+    workmanship: cleanText(data.workmanship, 2000),
+    fit: cleanText(data.fit, 1000),
+    care: cleanText(data.care, 1500)
+  };
+}
+
 /* GESTIONE API */
 module.exports = async function handler(req, res) {
   try {
@@ -217,6 +242,7 @@ module.exports = async function handler(req, res) {
 
         return {
           ...product,
+          ...getProductDetails(product),
           image: images[0] || null,
           images,
           stock
@@ -324,6 +350,7 @@ module.exports = async function handler(req, res) {
         category,
         image: finalImages[0],
         images: finalImages,
+        ...getProductDetails(req.body || {}),
         createdAt: new Date().toISOString()
       };
 
