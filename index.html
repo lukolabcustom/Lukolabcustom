@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -52,7 +53,7 @@ nav a{color:var(--white);text-decoration:none;opacity:.88;transition:.2s}nav a:h
 .filters{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .filters button{border:1px solid #c6a76a55;background:#ffffff09;color:white;padding:11px 23px;border-radius:40px;font-size:10px;font-weight:900;letter-spacing:1px;cursor:pointer}
 .filters button.active{background:var(--gold);color:#11130f;border-color:var(--gold)}
-.shop{position:relative;isolation:isolate;max-width:1450px;margin:auto;padding:40px 25px 100px}
+.shop{position:relative;isolation:isolate;max-width:1450px;margin:auto;padding:40px 25px 100px;scroll-margin-top:145px}
 .shop:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(#080b08a0,#080b08c0)}
 .shop-title{text-align:center;margin-bottom:30px}
 .shop-title .eyebrow{color:var(--gold);font-size:10px;font-weight:900;letter-spacing:4px;margin-bottom:10px}
@@ -139,6 +140,7 @@ footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spaci
 </style>
 </head>
 <body class="intro-open">
+
 <section id="intro" aria-label="Benvenuto in Luko Lab Custom">
  <div class="intro-content">
   <div class="intro-logo-frame"><img class="intro-logo" src="/lukolab-logo-bianco-trasparente.png" alt="Logo Luko Lab Custom" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;color:white;font-weight:900;text-align:center&quot;>LUKO LAB CUSTOM</div>'"></div>
@@ -153,7 +155,7 @@ footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spaci
  <a class="logo" href="#home" style="text-decoration:none;color:inherit">LUKO LAB <span>CUSTOM</span></a>
  <nav aria-label="Navigazione principale">
   <a href="#home">HOME</a>
-  <a href="#il-lab">IL LAB</a>
+  <a href="#shop">IL LAB</a>
   <a href="#chi-siamo">CHI SIAMO</a>
   <a href="#contatti">CONTATTI</a>
  </nav>
@@ -175,24 +177,17 @@ footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spaci
   <button type="button" data-filter="Cappelli">CAPPELLI</button>
   <button type="button" data-filter="Abbigliamento">ABBIGLIAMENTO</button>
  </div></div>
+
  <section class="shop" id="shop">
-  <div class="shop-title"><div class="eyebrow">THE LUKO LAB COLLECTION</div><h2>Esplora la collezione</h2><p>Creazioni handmade. Carattere unico.</p></div>
+  <div class="shop-title">
+   <div class="eyebrow">THE LUKO LAB COLLECTION</div>
+   <h2>IL LAB</h2>
+   <p>Le creazioni Luko Lab Custom. Scopri tutti i prodotti.</p>
+  </div>
   <div id="favoritesBar"><button id="favoritesButton" type="button" onclick="toggleFavoritesFilter()">♥ MOSTRA I PREFERITI</button></div>
   <div id="products"><div class="empty">Caricamento collezione...</div></div>
  </section>
 </main>
-
-<section class="info-section" id="il-lab">
- <div class="section-kicker">INSIDE THE LAB</div>
- <h2>IL LAB</h2>
- <div class="about-panel">
-  <h3>Dove le idee prendono forma.</h3>
-  <p>Il Lab è il cuore creativo di Luko Lab Custom: uno spazio di ricerca, sperimentazione e personalizzazione, dove ogni idea può diventare qualcosa di unico.</p>
-  <p>Qui materiali, dettagli e ispirazioni si incontrano. Ogni progetto nasce da una visione e prende forma attraverso cura, passione e attenzione alla lavorazione.</p>
-  <p>Non cerchiamo la perfezione della produzione in serie: cerchiamo il carattere di un pezzo che sappia distinguersi e raccontare chi lo sceglie.</p>
-  <div class="about-signature">IDEAS · CRAFT · PERSONALITY</div>
- </div>
-</section>
 
 <section class="info-section" id="chi-siamo">
  <div class="section-kicker">OUR WORLD · OUR IDENTITY</div>
@@ -220,12 +215,20 @@ footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spaci
 </section>
 
 <button id="cartToggle" type="button" onclick="toggleCart()" aria-label="Apri carrello">🛒 <span id="cartCount">0</span></button>
+
 <aside id="cart" class="hidden">
  <div class="cart-header"><h2>Il tuo carrello</h2><button class="cart-close" type="button" onclick="closeCart()" aria-label="Chiudi carrello">×</button></div>
  <div id="cartItems"><div style="color:#999;padding:20px 0">Il carrello è vuoto.</div></div>
- <div id="shippingBox"><label for="shippingZone">Zona di spedizione</label><select id="shippingZone">
-  <option value="">Seleziona la zona</option><option value="north">Nord Italia — €5,00</option><option value="center">Centro Italia — €6,00</option><option value="south">Sud Italia — €7,00</option><option value="islands">Sicilia e Sardegna — €9,00</option>
- </select></div>
+ <div id="shippingBox">
+  <label for="shippingZone">Zona di spedizione</label>
+  <select id="shippingZone">
+   <option value="">Seleziona la zona</option>
+   <option value="north">Nord Italia — €5,00</option>
+   <option value="center">Centro Italia — €6,00</option>
+   <option value="south">Sud Italia — €7,00</option>
+   <option value="islands">Sicilia e Sardegna — €9,00</option>
+  </select>
+ </div>
  <div class="cart-total"><span>Totale prodotti</span><span>€<span id="total">0.00</span></span></div>
  <button id="checkoutBtn" type="button" onclick="checkout()">PAGA CON CARTA</button>
 </aside>
@@ -233,108 +236,556 @@ footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spaci
 <footer>
  <strong>LUKO LAB CUSTOM</strong>
  <div class="footer-tag">CUSTOM · HANDMADE · JUNGLE SPIRIT</div>
- <div class="footer-links"><a href="#home">HOME</a><a href="#il-lab">IL LAB</a><a href="#chi-siamo">CHI SIAMO</a><a href="#contatti">CONTATTI</a></div>
+ <div class="footer-links">
+  <a href="#home">HOME</a>
+  <a href="#shop">IL LAB</a>
+  <a href="#chi-siamo">CHI SIAMO</a>
+  <a href="#contatti">CONTATTI</a>
+ </div>
  Handmade pieces. Jungle spirit.
 </footer>
 
 <script>
 "use strict";
+
 let products=[],cart=[],favorites=[],showingFavorites=false;
 
 document.getElementById("enterSite").addEventListener("click",function(){
- const intro=document.getElementById("intro");intro.classList.add("leaving");document.body.classList.remove("intro-open");
+ const intro=document.getElementById("intro");
+ intro.classList.add("leaving");
+ document.body.classList.remove("intro-open");
  window.setTimeout(()=>intro.remove(),900);
 });
 
-try{const saved=JSON.parse(localStorage.getItem("lukoCart")||"[]");if(Array.isArray(saved))cart=saved.filter(item=>item&&typeof item.id==="string"&&Number.isInteger(Number(item.quantity))&&Number(item.quantity)>0)}catch{cart=[]}
-try{const saved=JSON.parse(localStorage.getItem("lukoFavorites")||"[]");if(Array.isArray(saved))favorites=saved.filter(id=>typeof id==="string")}catch{favorites=[]}
-function save(){try{localStorage.setItem("lukoCart",JSON.stringify(cart));localStorage.setItem("lukoFavorites",JSON.stringify(favorites))}catch{}}
-function escapeHtml(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
-function stockFor(product,size){const stock=product.stock||{};const quantity=Number(stock[size]||0);return Number.isInteger(quantity)&&quantity>0?quantity:0}
-function isSized(product){return product.category==="Abbigliamento"}
-function productImages(product){const images=Array.isArray(product.images)?product.images.filter(url=>typeof url==="string"&&url.trim()):[];if(!images.length&&product.image)images.push(product.image);return [...new Set(images)].slice(0,10)}
+try{
+ const saved=JSON.parse(localStorage.getItem("lukoCart")||"[]");
+ if(Array.isArray(saved)){
+  cart=saved.filter(item=>item&&typeof item.id==="string"&&Number.isInteger(Number(item.quantity))&&Number(item.quantity)>0);
+ }
+}catch{cart=[]}
+
+try{
+ const saved=JSON.parse(localStorage.getItem("lukoFavorites")||"[]");
+ if(Array.isArray(saved))favorites=saved.filter(id=>typeof id==="string");
+}catch{favorites=[]}
+
+function save(){
+ try{
+  localStorage.setItem("lukoCart",JSON.stringify(cart));
+  localStorage.setItem("lukoFavorites",JSON.stringify(favorites));
+ }catch{}
+}
+
+function escapeHtml(value){
+ return String(value??"")
+ .replaceAll("&","&amp;")
+ .replaceAll("<","&lt;")
+ .replaceAll(">","&gt;")
+ .replaceAll('"',"&quot;")
+ .replaceAll("'","&#039;");
+}
+
+function stockFor(product,size){
+ const stock=product.stock||{};
+ const quantity=Number(stock[size]||0);
+ return Number.isInteger(quantity)&&quantity>0?quantity:0;
+}
+
+function isSized(product){
+ return product.category==="Abbigliamento";
+}
+
+function productImages(product){
+ const images=Array.isArray(product.images)
+  ?product.images.filter(url=>typeof url==="string"&&url.trim())
+  :[];
+ if(!images.length&&product.image)images.push(product.image);
+ return [...new Set(images)].slice(0,10);
+}
 
 async function loadProducts(){
  const container=document.getElementById("products");
+
  try{
-  const response=await fetch("/api/products",{cache:"no-store"});const data=await response.json();
-  if(!response.ok||!Array.isArray(data.products))throw new Error("Catalogo non disponibile");
+  const response=await fetch("/api/products",{cache:"no-store"});
+  const data=await response.json();
+
+  if(!response.ok||!Array.isArray(data.products)){
+   throw new Error("Catalogo non disponibile");
+  }
+
   products=data.products;
-  cart=cart.map(item=>{const product=products.find(p=>p.id===item.id);if(!product)return null;const sized=isSized(product),size=sized?item.size:"ONE";if(sized&&!["S","M"].includes(size))return null;return{id:product.id,name:product.name,price:Number(product.price),category:product.category,size,quantity:Math.min(10,Math.max(1,Number(item.quantity)||1))}}).filter(Boolean);
-  favorites=favorites.filter(id=>products.some(product=>product.id===id));save();updateFavoritesButton();renderProducts(getCurrentFilter());renderCart();
- }catch(error){console.error(error);container.innerHTML='<div class="empty">Impossibile caricare la collezione.<br><br>Riprova tra poco.</div>'}
+
+  cart=cart.map(item=>{
+   const product=products.find(p=>p.id===item.id);
+   if(!product)return null;
+
+   const sized=isSized(product);
+   const size=sized?item.size:"ONE";
+
+   if(sized&&!["S","M"].includes(size))return null;
+
+   return{
+    id:product.id,
+    name:product.name,
+    price:Number(product.price),
+    category:product.category,
+    size,
+    quantity:Math.min(10,Math.max(1,Number(item.quantity)||1))
+   };
+  }).filter(Boolean);
+
+  favorites=favorites.filter(id=>products.some(product=>product.id===id));
+
+  save();
+  updateFavoritesButton();
+  renderProducts(getCurrentFilter());
+  renderCart();
+
+ }catch(error){
+  console.error(error);
+  container.innerHTML='<div class="empty">Impossibile caricare la collezione.<br><br>Riprova tra poco.</div>';
+ }
 }
-function getCurrentFilter(){const active=document.querySelector(".filters button.active");return active?active.dataset.filter:"all"}
-function isFavorite(id){return favorites.includes(id)}
-function toggleFavorite(id){favorites=isFavorite(id)?favorites.filter(item=>item!==id):[...favorites,id];save();updateFavoritesButton();renderProducts(getCurrentFilter())}
-function updateFavoritesButton(){const bar=document.getElementById("favoritesBar"),button=document.getElementById("favoritesButton");bar.classList.toggle("visible",favorites.length>0);button.classList.toggle("active",showingFavorites);button.textContent=showingFavorites?"♥ MOSTRA TUTTI I PRODOTTI":"♥ MOSTRA I PREFERITI"}
-function toggleFavoritesFilter(){showingFavorites=!showingFavorites;updateFavoritesButton();renderProducts(getCurrentFilter())}
+
+function getCurrentFilter(){
+ const active=document.querySelector(".filters button.active");
+ return active?active.dataset.filter:"all";
+}
+
+function isFavorite(id){
+ return favorites.includes(id);
+}
+
+function toggleFavorite(id){
+ favorites=isFavorite(id)
+  ?favorites.filter(item=>item!==id)
+  :[...favorites,id];
+
+ save();
+ updateFavoritesButton();
+ renderProducts(getCurrentFilter());
+}
+
+function updateFavoritesButton(){
+ const bar=document.getElementById("favoritesBar");
+ const button=document.getElementById("favoritesButton");
+
+ bar.classList.toggle("visible",favorites.length>0);
+ button.classList.toggle("active",showingFavorites);
+ button.textContent=showingFavorites
+  ?"♥ MOSTRA TUTTI I PRODOTTI"
+  :"♥ MOSTRA I PREFERITI";
+}
+
+function toggleFavoritesFilter(){
+ showingFavorites=!showingFavorites;
+ updateFavoritesButton();
+ renderProducts(getCurrentFilter());
+}
 
 function renderGallery(product){
- const images=productImages(product),id=escapeHtml(product.id),favorite=isFavorite(product.id);
- if(!images.length)return `<div class="photo"><div class="gallery-placeholder">FOTO PRODOTTO</div><button type="button" class="favorite-button ${favorite?"active":""}" onclick="toggleFavorite('${id}')" aria-label="Aggiungi ai preferiti">♥</button></div>`;
- const slides=images.map(url=>`<div class="gallery-slide"><img src="${escapeHtml(url)}" alt="${escapeHtml(product.name)}" loading="lazy"></div>`).join("");
- if(images.length===1)return `<div class="photo"><div class="gallery-track">${slides}</div><button type="button" class="favorite-button ${favorite?"active":""}" onclick="toggleFavorite('${id}')" aria-label="Aggiungi ai preferiti">♥</button></div>`;
- const dots=images.map((url,index)=>`<button type="button" class="gallery-dot ${index===0?"active":""}" aria-label="Mostra foto ${index+1}" onclick="galleryGo('${id}',${index})"></button>`).join("");
- return `<div class="photo" id="gallery-${id}"><div class="gallery-track" id="track-${id}" onscroll="galleryScroll('${id}')">${slides}</div><button type="button" class="favorite-button ${favorite?"active":""}" onclick="toggleFavorite('${id}')" aria-label="Aggiungi ai preferiti">♥</button><button type="button" class="gallery-arrow gallery-prev" aria-label="Foto precedente" onclick="galleryMove('${id}',-1)">‹</button><button type="button" class="gallery-arrow gallery-next" aria-label="Foto successiva" onclick="galleryMove('${id}',1)">›</button><div class="gallery-count">${images.length} foto</div><div class="gallery-dots">${dots}</div></div>`;
+ const images=productImages(product);
+ const id=escapeHtml(product.id);
+ const favorite=isFavorite(product.id);
+
+ if(!images.length){
+  return `<div class="photo">
+   <div class="gallery-placeholder">FOTO PRODOTTO</div>
+   <button type="button" class="favorite-button ${favorite?"active":""}" onclick="toggleFavorite('${id}')" aria-label="Aggiungi ai preferiti">♥</button>
+  </div>`;
+ }
+
+ const slides=images.map(url=>
+  `<div class="gallery-slide"><img src="${escapeHtml(url)}" alt="${escapeHtml(product.name)}" loading="lazy"></div>`
+ ).join("");
+
+ if(images.length===1){
+  return `<div class="photo">
+   <div class="gallery-track">${slides}</div>
+   <button type="button" class="favorite-button ${favorite?"active":""}" onclick="toggleFavorite('${id}')" aria-label="Aggiungi ai preferiti">♥</button>
+  </div>`;
+ }
+
+ const dots=images.map((url,index)=>
+  `<button type="button" class="gallery-dot ${index===0?"active":""}" aria-label="Mostra foto ${index+1}" onclick="galleryGo('${id}',${index})"></button>`
+ ).join("");
+
+ return `<div class="photo" id="gallery-${id}">
+  <div class="gallery-track" id="track-${id}" onscroll="galleryScroll('${id}')">${slides}</div>
+  <button type="button" class="favorite-button ${favorite?"active":""}" onclick="toggleFavorite('${id}')" aria-label="Aggiungi ai preferiti">♥</button>
+  <button type="button" class="gallery-arrow gallery-prev" aria-label="Foto precedente" onclick="galleryMove('${id}',-1)">‹</button>
+  <button type="button" class="gallery-arrow gallery-next" aria-label="Foto successiva" onclick="galleryMove('${id}',1)">›</button>
+  <div class="gallery-count">${images.length} foto</div>
+  <div class="gallery-dots">${dots}</div>
+ </div>`;
 }
-function galleryGo(id,index){const track=document.getElementById("track-"+id);if(track)track.scrollTo({left:index*track.clientWidth,behavior:"smooth"})}
-function galleryMove(id,direction){const track=document.getElementById("track-"+id);if(!track)return;const current=Math.round(track.scrollLeft/track.clientWidth),total=track.children.length;galleryGo(id,(current+direction+total)%total)}
-function galleryScroll(id){const track=document.getElementById("track-"+id),gallery=document.getElementById("gallery-"+id);if(!track||!gallery||!track.clientWidth)return;const index=Math.round(track.scrollLeft/track.clientWidth);gallery.querySelectorAll(".gallery-dot").forEach((dot,i)=>dot.classList.toggle("active",i===index))}
+
+function galleryGo(id,index){
+ const track=document.getElementById("track-"+id);
+ if(track)track.scrollTo({left:index*track.clientWidth,behavior:"smooth"});
+}
+
+function galleryMove(id,direction){
+ const track=document.getElementById("track-"+id);
+ if(!track)return;
+
+ const current=Math.round(track.scrollLeft/track.clientWidth);
+ const total=track.children.length;
+
+ galleryGo(id,(current+direction+total)%total);
+}
+
+function galleryScroll(id){
+ const track=document.getElementById("track-"+id);
+ const gallery=document.getElementById("gallery-"+id);
+
+ if(!track||!gallery||!track.clientWidth)return;
+
+ const index=Math.round(track.scrollLeft/track.clientWidth);
+
+ gallery.querySelectorAll(".gallery-dot").forEach((dot,i)=>{
+  dot.classList.toggle("active",i===index);
+ });
+}
+
 function renderProductDetails(product){
- const fields=[["Materiale",product.material],["Descrizione",product.description],["Ispirazione",product.inspiration],["Lavorazione",product.workmanship],["Vestibilità",product.fit],["Cura del prodotto",product.care]].filter(([,value])=>typeof value==="string"&&value.trim());
- const id=escapeHtml(product.id),content=fields.length?fields.map(([label,value])=>`<div class="detail-item"><strong>${escapeHtml(label)}</strong><p>${escapeHtml(value).replaceAll("\n","<br>")}</p></div>`).join(""):'<p class="no-details">Dettagli non ancora disponibili per questo prodotto.</p>';
- return `<button type="button" class="details-toggle" id="details-button-${id}" aria-expanded="false" aria-controls="details-${id}" onclick="toggleDetails('${id}')"><span>SCOPRI IL PRODOTTO</span><span>+</span></button><div class="product-details" id="details-${id}" aria-hidden="true"><div class="details-inner">${content}</div></div>`;
+ const fields=[
+  ["Materiale",product.material],
+  ["Descrizione",product.description],
+  ["Ispirazione",product.inspiration],
+  ["Lavorazione",product.workmanship],
+  ["Vestibilità",product.fit],
+  ["Cura del prodotto",product.care]
+ ].filter(([,value])=>typeof value==="string"&&value.trim());
+
+ const id=escapeHtml(product.id);
+
+ const content=fields.length
+  ?fields.map(([label,value])=>
+   `<div class="detail-item"><strong>${escapeHtml(label)}</strong><p>${escapeHtml(value).replaceAll("\n","<br>")}</p></div>`
+  ).join("")
+  :'<p class="no-details">Dettagli non ancora disponibili per questo prodotto.</p>';
+
+ return `<button type="button" class="details-toggle" id="details-button-${id}" aria-expanded="false" aria-controls="details-${id}" onclick="toggleDetails('${id}')">
+  <span>SCOPRI IL PRODOTTO</span><span>+</span>
+ </button>
+ <div class="product-details" id="details-${id}" aria-hidden="true">
+  <div class="details-inner">${content}</div>
+ </div>`;
 }
-function toggleDetails(id){const panel=document.getElementById("details-"+id),button=document.getElementById("details-button-"+id);if(!panel||!button)return;const open=panel.classList.toggle("open");button.setAttribute("aria-expanded",String(open));panel.setAttribute("aria-hidden",String(!open))}
+
+function toggleDetails(id){
+ const panel=document.getElementById("details-"+id);
+ const button=document.getElementById("details-button-"+id);
+
+ if(!panel||!button)return;
+
+ const open=panel.classList.toggle("open");
+
+ button.setAttribute("aria-expanded",String(open));
+ panel.setAttribute("aria-hidden",String(!open));
+}
 
 function renderProducts(filter="all"){
- const container=document.getElementById("products");let list=filter==="all"?products:products.filter(p=>p.category===filter);if(showingFavorites)list=list.filter(product=>isFavorite(product.id));
- if(!list.length){container.innerHTML=showingFavorites?'<div class="empty">Non hai ancora salvato prodotti tra i preferiti. Tocca il cuore su un prodotto per aggiungerlo.</div>':'<div class="empty">Nessun prodotto disponibile in questa categoria.</div>';return}
+ const container=document.getElementById("products");
+
+ let list=filter==="all"
+  ?products
+  :products.filter(p=>p.category===filter);
+
+ if(showingFavorites){
+  list=list.filter(product=>isFavorite(product.id));
+ }
+
+ if(!list.length){
+  container.innerHTML=showingFavorites
+   ?'<div class="empty">Non hai ancora salvato prodotti tra i preferiti. Tocca il cuore su un prodotto per aggiungerlo.</div>'
+   :'<div class="empty">Nessun prodotto disponibile in questa categoria.</div>';
+  return;
+ }
+
  container.innerHTML=list.map(product=>{
-  const sized=isSized(product),stockS=stockFor(product,"S"),stockM=stockFor(product,"M"),stockONE=stockFor(product,"ONE"),hasStock=sized?stockS+stockM>0:stockONE>0;
-  const sizeControl=sized?`<label class="size-label" for="size-${escapeHtml(product.id)}">SCEGLI LA TAGLIA</label><select class="size-select" id="size-${escapeHtml(product.id)}"><option value="S" ${stockS===0?"disabled":""}>S ${stockS===0?"— Esaurita":"— "+stockS+" disponibili"}</option><option value="M" ${stockM===0?"disabled":""}>M ${stockM===0?"— Esaurita":"— "+stockM+" disponibili"}</option></select><p class="stock-note">${hasStock?"Disponibilità aggiornata dal catalogo.":"Taglie esaurite."}</p>`:`<p class="stock-note">Taglia unica · ${stockONE} ${stockONE===1?"disponibile":"disponibili"}</p>`;
-  return `<article class="card">${renderGallery(product)}<div class="card-body"><div class="card-topline"><span class="category-label">${escapeHtml(product.category||"Luko Lab")}</span></div><h3>${escapeHtml(product.name)}</h3><div class="price">€${Number(product.price).toFixed(2)}</div>${sizeControl}<button class="add-button" type="button" ${!hasStock?"disabled":""} onclick="addToCart('${escapeHtml(product.id)}')">${!hasStock?"ESAURITO":"AGGIUNGI AL CARRELLO"}</button>${renderProductDetails(product)}</div></article>`;
+  const sized=isSized(product);
+  const stockS=stockFor(product,"S");
+  const stockM=stockFor(product,"M");
+  const stockONE=stockFor(product,"ONE");
+
+  const hasStock=sized
+   ?stockS+stockM>0
+   :stockONE>0;
+
+  const sizeControl=sized
+   ?`<label class="size-label" for="size-${escapeHtml(product.id)}">SCEGLI LA TAGLIA</label>
+     <select class="size-select" id="size-${escapeHtml(product.id)}">
+      <option value="S" ${stockS===0?"disabled":""}>S ${stockS===0?"— Esaurita":"— "+stockS+" disponibili"}</option>
+      <option value="M" ${stockM===0?"disabled":""}>M ${stockM===0?"— Esaurita":"— "+stockM+" disponibili"}</option>
+     </select>
+     <p class="stock-note">${hasStock?"Disponibilità aggiornata dal catalogo.":"Taglie esaurite."}</p>`
+   :`<p class="stock-note">Taglia unica · ${stockONE} ${stockONE===1?"disponibile":"disponibili"}</p>`;
+
+  return `<article class="card">
+   ${renderGallery(product)}
+   <div class="card-body">
+    <div class="card-topline">
+     <span class="category-label">${escapeHtml(product.category||"Luko Lab")}</span>
+    </div>
+    <h3>${escapeHtml(product.name)}</h3>
+    <div class="price">€${Number(product.price).toFixed(2)}</div>
+    ${sizeControl}
+    <button class="add-button" type="button" ${!hasStock?"disabled":""} onclick="addToCart('${escapeHtml(product.id)}')">
+     ${!hasStock?"ESAURITO":"AGGIUNGI AL CARRELLO"}
+    </button>
+    ${renderProductDetails(product)}
+   </div>
+  </article>`;
  }).join("");
 }
+
 function addToCart(id){
- const product=products.find(p=>p.id===id);if(!product){alert("Prodotto non trovato.");return}
- const sized=isSized(product);let size="ONE";if(sized){const selector=document.getElementById("size-"+id);size=selector?selector.value:null;if(!["S","M"].includes(size)){alert("Seleziona una taglia disponibile.");return}}
- const available=stockFor(product,size);if(available<1){alert("Prodotto esaurito.");return}
- const item=cart.find(p=>p.id===id&&p.size===size),current=item?Number(item.quantity):0;if(current>=Math.min(10,available)){alert("Hai raggiunto la quantità disponibile.");return}
- if(item)item.quantity++;else cart.push({id:product.id,name:product.name,price:Number(product.price),category:product.category,size,quantity:1});
- save();renderCart();const cartButton=document.getElementById("cartToggle");cartButton.classList.remove("bump");void cartButton.offsetWidth;cartButton.classList.add("bump");openCart();
+ const product=products.find(p=>p.id===id);
+
+ if(!product){
+  alert("Prodotto non trovato.");
+  return;
+ }
+
+ const sized=isSized(product);
+ let size="ONE";
+
+ if(sized){
+  const selector=document.getElementById("size-"+id);
+  size=selector?selector.value:null;
+
+  if(!["S","M"].includes(size)){
+   alert("Seleziona una taglia disponibile.");
+   return;
+  }
+ }
+
+ const available=stockFor(product,size);
+
+ if(available<1){
+  alert("Prodotto esaurito.");
+  return;
+ }
+
+ const item=cart.find(p=>p.id===id&&p.size===size);
+ const current=item?Number(item.quantity):0;
+
+ if(current>=Math.min(10,available)){
+  alert("Hai raggiunto la quantità disponibile.");
+  return;
+ }
+
+ if(item)item.quantity++;
+ else cart.push({
+  id:product.id,
+  name:product.name,
+  price:Number(product.price),
+  category:product.category,
+  size,
+  quantity:1
+ });
+
+ save();
+ renderCart();
+
+ const cartButton=document.getElementById("cartToggle");
+ cartButton.classList.remove("bump");
+ void cartButton.offsetWidth;
+ cartButton.classList.add("bump");
+
+ openCart();
 }
+
 function changeQuantity(id,size,amount){
- const item=cart.find(p=>p.id===id&&p.size===size);if(!item)return;const product=products.find(p=>p.id===id);if(!product)return;const next=Number(item.quantity)+Number(amount);
- if(next<=0)cart=cart.filter(p=>!(p.id===id&&p.size===size));else{const available=stockFor(product,size);if(next>Math.min(10,available)){alert("La quantità supera la disponibilità mostrata.");return}item.quantity=next}save();renderCart();
+ const item=cart.find(p=>p.id===id&&p.size===size);
+ if(!item)return;
+
+ const product=products.find(p=>p.id===id);
+ if(!product)return;
+
+ const next=Number(item.quantity)+Number(amount);
+
+ if(next<=0){
+  cart=cart.filter(p=>!(p.id===id&&p.size===size));
+ }else{
+  const available=stockFor(product,size);
+
+  if(next>Math.min(10,available)){
+   alert("La quantità supera la disponibilità mostrata.");
+   return;
+  }
+
+  item.quantity=next;
+ }
+
+ save();
+ renderCart();
 }
+
 function renderCart(){
- const box=document.getElementById("cartItems");cart=cart.filter(item=>products.some(p=>p.id===item.id));
- if(!cart.length)box.innerHTML='<div style="color:#999;padding:20px 0">Il carrello è vuoto.</div>';
- else box.innerHTML=cart.map(item=>{
-  const product=products.find(p=>p.id===item.id);if(!product)return "";const size=isSized(product)?item.size:"ONE",sizeText=isSized(product)?` · Taglia ${escapeHtml(size)}`:" · Taglia unica",available=stockFor(product,size),plusDisabled=Number(item.quantity)>=Math.min(10,available);
-  return `<div class="cart-item"><div><strong>${escapeHtml(product.name)}</strong><div class="cart-meta">€${Number(product.price).toFixed(2)}${sizeText}</div><div class="cart-meta">Quantità: ${item.quantity}</div></div><div class="qty"><button type="button" aria-label="Diminuisci quantità" onclick="changeQuantity('${escapeHtml(product.id)}','${size}',-1)">−</button><button type="button" aria-label="Aumenta quantità" ${plusDisabled?"disabled":""} onclick="changeQuantity('${escapeHtml(product.id)}','${size}',1)">+</button></div></div>`;
- }).join("");
- const total=cart.reduce((sum,item)=>{const product=products.find(p=>p.id===item.id);return product?sum+Number(product.price)*Number(item.quantity):sum},0),count=cart.reduce((sum,item)=>sum+Number(item.quantity),0);
- document.getElementById("total").textContent=total.toFixed(2);document.getElementById("cartCount").textContent=count;document.getElementById("checkoutBtn").disabled=cart.length===0;save();
+ const box=document.getElementById("cartItems");
+
+ cart=cart.filter(item=>products.some(p=>p.id===item.id));
+
+ if(!cart.length){
+  box.innerHTML='<div style="color:#999;padding:20px 0">Il carrello è vuoto.</div>';
+ }else{
+  box.innerHTML=cart.map(item=>{
+   const product=products.find(p=>p.id===item.id);
+   if(!product)return "";
+
+   const size=isSized(product)?item.size:"ONE";
+   const sizeText=isSized(product)
+    ?` · Taglia ${escapeHtml(size)}`
+    :" · Taglia unica";
+
+   const available=stockFor(product,size);
+   const plusDisabled=Number(item.quantity)>=Math.min(10,available);
+
+   return `<div class="cart-item">
+    <div>
+     <strong>${escapeHtml(product.name)}</strong>
+     <div class="cart-meta">€${Number(product.price).toFixed(2)}${sizeText}</div>
+     <div class="cart-meta">Quantità: ${item.quantity}</div>
+    </div>
+    <div class="qty">
+     <button type="button" aria-label="Diminuisci quantità" onclick="changeQuantity('${escapeHtml(product.id)}','${size}',-1)">−</button>
+     <button type="button" aria-label="Aumenta quantità" ${plusDisabled?"disabled":""} onclick="changeQuantity('${escapeHtml(product.id)}','${size}',1)">+</button>
+    </div>
+   </div>`;
+  }).join("");
+ }
+
+ const total=cart.reduce((sum,item)=>{
+  const product=products.find(p=>p.id===item.id);
+  return product
+   ?sum+Number(product.price)*Number(item.quantity)
+   :sum;
+ },0);
+
+ const count=cart.reduce((sum,item)=>sum+Number(item.quantity),0);
+
+ document.getElementById("total").textContent=total.toFixed(2);
+ document.getElementById("cartCount").textContent=count;
+ document.getElementById("checkoutBtn").disabled=cart.length===0;
+
+ save();
 }
-function openCart(){document.getElementById("cart").classList.remove("hidden");document.getElementById("cartToggle").classList.add("hidden")}
-function closeCart(){document.getElementById("cart").classList.add("hidden");document.getElementById("cartToggle").classList.remove("hidden")}
-function toggleCart(){const box=document.getElementById("cart");box.classList.contains("hidden")?openCart():closeCart()}
+
+function openCart(){
+ document.getElementById("cart").classList.remove("hidden");
+ document.getElementById("cartToggle").classList.add("hidden");
+}
+
+function closeCart(){
+ document.getElementById("cart").classList.add("hidden");
+ document.getElementById("cartToggle").classList.remove("hidden");
+}
+
+function toggleCart(){
+ const box=document.getElementById("cart");
+
+ box.classList.contains("hidden")
+  ?openCart()
+  :closeCart();
+}
+
 async function checkout(){
- if(!cart.length){alert("Il carrello è vuoto.");return}
- const shippingZone=document.getElementById("shippingZone").value;if(!shippingZone){alert("Seleziona la zona di spedizione.");return}
- for(const item of cart){const product=products.find(p=>p.id===item.id);if(!product){alert("Un prodotto non è più disponibile. Aggiorna la pagina.");return}const size=isSized(product)?item.size:"ONE",available=stockFor(product,size);if((isSized(product)&&!["S","M"].includes(size))||item.quantity>available){alert("Disponibilità insufficiente per "+product.name+". Aggiorna il carrello.");return}}
- const button=document.getElementById("checkoutBtn");button.disabled=true;button.textContent="APERTURA PAGAMENTO…";
+ if(!cart.length){
+  alert("Il carrello è vuoto.");
+  return;
+ }
+
+ const shippingZone=document.getElementById("shippingZone").value;
+
+ if(!shippingZone){
+  alert("Seleziona la zona di spedizione.");
+  return;
+ }
+
+ for(const item of cart){
+  const product=products.find(p=>p.id===item.id);
+
+  if(!product){
+   alert("Un prodotto non è più disponibile. Aggiorna la pagina.");
+   return;
+  }
+
+  const size=isSized(product)?item.size:"ONE";
+  const available=stockFor(product,size);
+
+  if((isSized(product)&&!["S","M"].includes(size))||item.quantity>available){
+   alert("Disponibilità insufficiente per "+product.name+". Aggiorna il carrello.");
+   return;
+  }
+ }
+
+ const button=document.getElementById("checkoutBtn");
+
+ button.disabled=true;
+ button.textContent="APERTURA PAGAMENTO…";
+
  try{
-  const response=await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items:cart.map(item=>{const product=products.find(p=>p.id===item.id);return{id:item.id,size:isSized(product)?item.size:"ONE",quantity:Number(item.quantity)}}),shippingZone})});
-  const data=await response.json().catch(()=>({}));if(!response.ok||!data.url)throw new Error(data.error||"Errore nel pagamento");window.location.href=data.url;
- }catch(error){console.error("CHECKOUT:",error);alert(error.message||"Non è stato possibile aprire il pagamento. Riprova.");button.disabled=false;button.textContent="PAGA CON CARTA"}
+  const response=await fetch("/api/checkout",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    items:cart.map(item=>{
+     const product=products.find(p=>p.id===item.id);
+
+     return{
+      id:item.id,
+      size:isSized(product)?item.size:"ONE",
+      quantity:Number(item.quantity)
+     };
+    }),
+    shippingZone
+   })
+  });
+
+  const data=await response.json().catch(()=>({}));
+
+  if(!response.ok||!data.url){
+   throw new Error(data.error||"Errore nel pagamento");
+  }
+
+  window.location.href=data.url;
+
+ }catch(error){
+  console.error("CHECKOUT:",error);
+  alert(error.message||"Non è stato possibile aprire il pagamento. Riprova.");
+  button.disabled=false;
+  button.textContent="PAGA CON CARTA";
+ }
 }
-document.querySelectorAll(".filters button").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".filters button").forEach(btn=>btn.classList.remove("active"));button.classList.add("active");renderProducts(button.dataset.filter)}));
-document.querySelectorAll('nav a[href^="#"],.footer-links a[href^="#"]').forEach(link=>link.addEventListener("click",()=>{const intro=document.getElementById("intro");if(intro){intro.classList.add("leaving");document.body.classList.remove("intro-open");window.setTimeout(()=>intro.remove(),900)}}));
-renderCart();updateFavoritesButton();loadProducts();
+
+document.querySelectorAll(".filters button").forEach(button=>{
+ button.addEventListener("click",()=>{
+  document.querySelectorAll(".filters button").forEach(btn=>btn.classList.remove("active"));
+  button.classList.add("active");
+  renderProducts(button.dataset.filter);
+ });
+});
+
+document.querySelectorAll('nav a[href^="#"],.footer-links a[href^="#"]').forEach(link=>{
+ link.addEventListener("click",()=>{
+  const intro=document.getElementById("intro");
+
+  if(intro){
+   intro.classList.add("leaving");
+   document.body.classList.remove("intro-open");
+   window.setTimeout(()=>intro.remove(),900);
+  }
+ });
+});
+
+renderCart();
+updateFavoritesButton();
+loadProducts();
 </script>
+
 </body>
 </html>
