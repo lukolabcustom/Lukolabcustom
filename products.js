@@ -1,3 +1,4 @@
+
 const { put, list } = require("@vercel/blob");
 const crypto = require("crypto");
 
@@ -23,6 +24,14 @@ function isAdmin(req) {
   return cookie.includes("luko_admin=");
 }
 
+function cleanText(value, maxLength = 3000) {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  return value.trim().slice(0, maxLength);
+}
+
 async function getCatalog() {
   try {
     const result = await list({
@@ -42,7 +51,6 @@ async function getCatalog() {
     }
 
     return data;
-
   } catch (error) {
     console.error(error);
     return defaultProducts;
@@ -62,11 +70,8 @@ async function saveCatalog(products) {
 }
 
 module.exports = async (req, res) => {
-
   try {
-
     if (req.method === "GET") {
-
       const products = await getCatalog();
 
       return res.status(200).json({
@@ -75,7 +80,6 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === "POST") {
-
       if (!isAdmin(req)) {
         return res.status(401).json({
           error: "Non autorizzato"
@@ -86,7 +90,13 @@ module.exports = async (req, res) => {
         name,
         price,
         category,
-        image
+        image,
+        material,
+        description,
+        inspiration,
+        workmanship,
+        fit,
+        care
       } = req.body || {};
 
       if (!name || !image) {
@@ -124,7 +134,7 @@ module.exports = async (req, res) => {
           "-" +
           crypto.randomBytes(4).toString("hex"),
 
-        name: String(name).trim(),
+        name: cleanText(name, 150),
 
         price:
           Math.round(numericPrice * 100) / 100,
@@ -133,8 +143,14 @@ module.exports = async (req, res) => {
 
         image,
 
-        createdAt:
-          new Date().toISOString()
+        material: cleanText(material),
+        description: cleanText(description),
+        inspiration: cleanText(inspiration),
+        workmanship: cleanText(workmanship),
+        fit: cleanText(fit),
+        care: cleanText(care),
+
+        createdAt: new Date().toISOString()
       };
 
       products.push(product);
@@ -150,9 +166,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({
       error: "Metodo non consentito"
     });
-
   } catch (error) {
-
     console.error(error);
 
     return res.status(500).json({
