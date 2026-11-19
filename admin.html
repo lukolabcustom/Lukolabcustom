@@ -1,162 +1,355 @@
 
 
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — Luko Lab Custom</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #071b12;
-      color: white;
-      padding: 20px;
-    }
-    .container { max-width: 900px; margin: auto; }
-    h1 { margin-bottom: 8px; }
-    .subtitle { color: #b9c9bf; margin-bottom: 25px; }
-    .box {
-      background: #10271b;
-      border: 1px solid #244833;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    input, select {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      margin-top: 8px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      border: 1px solid #41624b;
-      background: #071b12;
-      color: white;
-      font-size: 16px;
-    }
-    input[type="file"] { padding: 10px; }
-    label {
-      display: block;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    button {
-      border: 0;
-      border-radius: 10px;
-      padding: 13px 18px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:disabled { opacity: 0.6; cursor: wait; }
-    .primary {
-      background: #d7ff52;
-      color: #102000;
-      width: 100%;
-    }
-    .delete {
-      background: #c93636;
-      color: white;
-      margin-top: 10px;
-      width: 100%;
-    }
-    .logout {
-      background: #304b39;
-      color: white;
-      margin-top: 10px;
-    }
-    .save-stock {
-      background: #d7ff52;
-      color: #102000;
-      width: 100%;
-      margin-top: 5px;
-    }
-    .product {
-      border: 1px solid #31563d;
-      border-radius: 14px;
-      padding: 15px;
-      margin-bottom: 15px;
-      background: #0b2115;
-    }
-    .product-gallery {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      margin-bottom: 12px;
-      padding-bottom: 5px;
-    }
-    .product-gallery img {
-      width: 150px;
-      height: 150px;
-      flex: 0 0 150px;
-      object-fit: cover;
-      border-radius: 12px;
-    }
-    .product-name { font-size: 18px; font-weight: bold; }
-    .product-info { color: #b9c9bf; margin-top: 5px; }
-    .message {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 10px;
-      display: none;
-      overflow-wrap: anywhere;
-    }
-    .success { background: #164b2b; color: #baffc9; }
-    .error { background: #571f1f; color: #ffc1c1; }
-    .stock-note {
-      color: #b9c9bf;
-      font-size: 14px;
-      margin-top: -5px;
-      margin-bottom: 15px;
-      line-height: 1.5;
-    }
-    .stock-editor {
-      border-top: 1px solid #31563d;
-      margin-top: 15px;
-      padding-top: 12px;
-    }
-    .stock-editor h3 { margin-bottom: 5px; }
-    #adminArea { display: none; }
-    #loginArea { max-width: 500px; margin: 80px auto; }
-    .photo-count {
-      color: #b9c9bf;
-      font-size: 13px;
-      margin-top: -8px;
-      margin-bottom: 15px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#071b12">
+<title>Admin — Luko Lab Custom</title>
+
+<style>
+:root {
+  --bg:#06150e;
+  --panel:#0d2418;
+  --panel2:#102d1d;
+  --green:#35e17c;
+  --green-light:#baffcf;
+  --text:#f4f8f5;
+  --muted:#a9bdb0;
+  --border:#ffffff19;
+  --danger:#d94b4b;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  padding:22px;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(ellipse at 10% 0%,#17472c66,transparent 38%),
+    radial-gradient(ellipse at 100% 40%,#0d573333,transparent 35%),
+    var(--bg);
+  min-height:100vh;
+}
+
+button,input,select,textarea { font:inherit; }
+
+button { cursor:pointer; }
+
+button:disabled {
+  opacity:.55;
+  cursor:wait;
+}
+
+.container {
+  max-width:950px;
+  margin:auto;
+}
+
+h1 {
+  font-size:clamp(27px,6vw,38px);
+  letter-spacing:-1px;
+  margin:0 0 10px;
+}
+
+h2 {
+  font-size:23px;
+  margin:0 0 22px;
+}
+
+h3 { margin:18px 0 8px; }
+
+.subtitle {
+  color:var(--muted);
+  margin-bottom:25px;
+  line-height:1.6;
+}
+
+.box {
+  background:linear-gradient(145deg,#102d1deF,#0a1e14f5);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:clamp(18px,4vw,28px);
+  margin-bottom:22px;
+  box-shadow:0 18px 55px #0003;
+  animation:fadeUp .55s ease both;
+}
+
+input,select,textarea {
+  display:block;
+  width:100%;
+  padding:14px 15px;
+  margin-top:8px;
+  margin-bottom:17px;
+  border-radius:12px;
+  border:1px solid #ffffff25;
+  background:#06170f;
+  color:white;
+  font-size:16px;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+
+input:focus,select:focus,textarea:focus {
+  border-color:var(--green);
+  box-shadow:0 0 0 3px #35e17c18;
+}
+
+input[type="file"] { padding:11px; }
+
+textarea {
+  min-height:95px;
+  resize:vertical;
+  line-height:1.55;
+}
+
+label {
+  display:block;
+  font-weight:800;
+  margin-top:13px;
+  font-size:14px;
+}
+
+.field-help {
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+  margin-top:-10px;
+  margin-bottom:15px;
+}
+
+button {
+  border:0;
+  border-radius:12px;
+  padding:14px 18px;
+  font-size:14px;
+  font-weight:900;
+  transition:transform .2s,filter .2s,background .2s;
+}
+
+button:active { transform:scale(.98); }
+
+.primary,.save-stock {
+  background:var(--green);
+  color:#06150d;
+  width:100%;
+}
+
+.primary:hover,.save-stock:hover {
+  filter:brightness(1.08);
+}
+
+.delete {
+  background:var(--danger);
+  color:white;
+  margin-top:12px;
+  width:100%;
+}
+
+.logout {
+  background:#233e2e;
+  color:white;
+  margin-top:8px;
+}
+
+.product {
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:17px;
+  margin-bottom:17px;
+  background:#071b12;
+  transition:border-color .2s,transform .2s;
+}
+
+.product:hover {
+  border-color:#35e17c66;
+  transform:translateY(-2px);
+}
+
+.product-gallery {
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  margin-bottom:15px;
+  padding-bottom:7px;
+}
+
+.product-gallery img {
+  width:145px;
+  height:145px;
+  flex:0 0 145px;
+  object-fit:cover;
+  border-radius:13px;
+}
+
+.product-name {
+  font-size:19px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.product-info {
+  color:var(--muted);
+  margin-top:6px;
+  line-height:1.5;
+  font-size:14px;
+}
+
+.product-details {
+  margin-top:14px;
+  padding:13px;
+  background:#ffffff08;
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+
+.product-details strong {
+  color:var(--green-light);
+}
+
+.stock-note {
+  color:var(--muted);
+  font-size:13px;
+  margin:5px 0 15px;
+  line-height:1.6;
+}
+
+.stock-editor {
+  border-top:1px solid var(--border);
+  margin-top:17px;
+  padding-top:14px;
+}
+
+.stock-editor h3 { margin-top:5px; }
+
+.message {
+  margin-top:15px;
+  padding:13px;
+  border-radius:12px;
+  display:none;
+  overflow-wrap:anywhere;
+  line-height:1.5;
+  font-size:14px;
+}
+
+.success { background:#164b2b;color:#baffc9; }
+.error { background:#571f1f;color:#ffc1c1; }
+
+#adminArea { display:none; }
+
+#loginArea {
+  max-width:500px;
+  margin:clamp(45px,12vh,110px) auto;
+}
+
+.photo-count {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:-9px;
+  margin-bottom:18px;
+  line-height:1.5;
+}
+
+.section-heading {
+  color:var(--green-light);
+  font-size:15px;
+  letter-spacing:.5px;
+  margin:27px 0 8px;
+}
+
+.section-heading:first-of-type { margin-top:12px; }
+
+.form-divider {
+  border:0;
+  border-top:1px solid var(--border);
+  margin:24px 0;
+}
+
+.top-label {
+  color:var(--green);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+  margin-bottom:10px;
+}
+
+@keyframes fadeUp {
+  from { opacity:0;transform:translateY(12px); }
+  to { opacity:1;transform:translateY(0); }
+}
+
+@media(max-width:600px) {
+  body { padding:14px; }
+  .box { border-radius:18px; }
+  .product-gallery img {
+    width:125px;
+    height:125px;
+    flex-basis:125px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation:none!important;
+    transition:none!important;
+  }
+}
+</style>
 </head>
+
 <body>
 
 <div id="loginArea" class="box">
-  <h1>🔐 Luko Lab Custom</h1>
-  <div class="subtitle">Accesso area amministratore</div>
-  <label for="loginPassword">Password</label>
+  <div class="top-label">LUKO LAB CUSTOM · PRIVATE AREA</div>
+  <h1>🌴 Il tuo Lab</h1>
+  <div class="subtitle">Accedi per gestire la collezione.</div>
+
+  <label for="loginPassword">Password amministratore</label>
   <input
     type="password"
     id="loginPassword"
     placeholder="Inserisci password"
     autocomplete="current-password"
   >
-  <button class="primary" id="loginButton" onclick="login()">Accedi</button>
+
+  <button class="primary" id="loginButton" onclick="login()">
+    ACCEDI AL LAB
+  </button>
+
   <div id="loginMessage" class="message error"></div>
 </div>
 
 <div id="adminArea" class="container">
-  <h1>🌴 Gestione prodotti</h1>
-  <div class="subtitle">Aggiungi prodotti, aggiorna le scorte o elimina i prodotti.</div>
+
+  <div class="top-label">LUKO LAB CUSTOM · MANAGEMENT</div>
+  <h1>🌴 Gestione collezione</h1>
+  <div class="subtitle">
+    Crea prodotti, racconta la loro storia e gestisci le disponibilità.
+  </div>
 
   <div class="box">
-    <h2>➕ Aggiungi prodotto</h2>
+    <h2>✦ Nuovo prodotto</h2>
 
     <label for="productName">Nome prodotto</label>
-    <input type="text" id="productName" placeholder="Es. Felpa Luko Lab">
+    <input
+      type="text"
+      id="productName"
+      placeholder="Es. Felpa Luko Lab"
+      maxlength="120"
+    >
 
     <label for="productPrice">Prezzo (€)</label>
-    <input type="number" id="productPrice" value="35" min="0.01" step="0.01">
+    <input
+      type="number"
+      id="productPrice"
+      value="35"
+      min="0.01"
+      step="0.01"
+    >
 
     <label for="productCategory">Categoria</label>
     <select id="productCategory" onchange="updateStockFields()">
@@ -167,22 +360,79 @@
     <div id="oneSizeStockFields">
       <h3>🧢 Disponibilità cappello</h3>
       <div class="stock-note">
-        I cappelli sono a taglia unica. Inserisci il numero totale di pezzi disponibili.
+        I cappelli sono a taglia unica.
       </div>
+
       <label for="stockONE">Quantità disponibile</label>
-      <input type="number" id="stockONE" value="0" min="0" step="1" inputmode="numeric">
+      <input type="number" id="stockONE" value="0" min="0" max="100000" step="1" inputmode="numeric">
     </div>
 
     <div id="sizeStockFields" style="display:none">
-      <h3>📏 Disponibilità taglie</h3>
+      <h3>📏 Disponibilità abbigliamento</h3>
       <div class="stock-note">
-        Inserisci quante unità hai disponibili per ogni taglia.
+        Inserisci le quantità disponibili per ciascuna taglia.
       </div>
+
       <label for="stockS">Quantità taglia S</label>
-      <input type="number" id="stockS" value="0" min="0" step="1" inputmode="numeric">
+      <input type="number" id="stockS" value="0" min="0" max="100000" step="1" inputmode="numeric">
+
       <label for="stockM">Quantità taglia M</label>
-      <input type="number" id="stockM" value="0" min="0" step="1" inputmode="numeric">
+      <input type="number" id="stockM" value="0" min="0" max="100000" step="1" inputmode="numeric">
     </div>
+
+    <hr class="form-divider">
+
+    <div class="section-heading">✦ RACCONTA IL TUO PRODOTTO</div>
+    <div class="stock-note">
+      Queste informazioni saranno associate a questo prodotto e potranno essere mostrate nella sua scheda sul negozio.
+      Puoi lasciare vuoti i campi che non ti servono.
+    </div>
+
+    <label for="productMaterial">Materiale</label>
+    <textarea
+      id="productMaterial"
+      maxlength="500"
+      placeholder="Es. 100% cotone, tessuto riciclato..."
+    ></textarea>
+
+    <label for="productDescription">Descrizione prodotto</label>
+    <textarea
+      id="productDescription"
+      maxlength="3000"
+      placeholder="Racconta il prodotto, i suoi dettagli e cosa lo rende speciale..."
+    ></textarea>
+
+    <label for="productInspiration">Ispirazione</label>
+    <textarea
+      id="productInspiration"
+      maxlength="2000"
+      placeholder="Da dove nasce l'idea? Qual è la sua storia?"
+    ></textarea>
+
+    <label for="productWorkmanship">Lavorazione e dettagli handmade</label>
+    <textarea
+      id="productWorkmanship"
+      maxlength="2000"
+      placeholder="Descrivi tecniche, personalizzazioni e lavorazioni..."
+    ></textarea>
+
+    <label for="productFit">Vestibilità e taglia</label>
+    <textarea
+      id="productFit"
+      maxlength="1000"
+      placeholder="Es. vestibilità regolare, oversize, taglia unica..."
+    ></textarea>
+
+    <label for="productCare">Istruzioni per la cura</label>
+    <textarea
+      id="productCare"
+      maxlength="1500"
+      placeholder="Es. lavaggio delicato, non usare candeggina..."
+    ></textarea>
+
+    <hr class="form-divider">
+
+    <div class="section-heading">✦ FOTOGRAFIE</div>
 
     <label for="productImages">Foto prodotto</label>
     <input
@@ -191,13 +441,16 @@
       accept="image/jpeg,image/png,image/webp"
       multiple
     >
+
     <div class="photo-count">
-      Puoi selezionare più fotografie dello stesso prodotto.
+      Puoi selezionare fino a 10 fotografie dello stesso prodotto.
+      Formati accettati: JPG, PNG e WebP.
     </div>
 
     <button class="primary" id="publishButton" onclick="addProduct()">
-      Pubblica prodotto
+      PUBBLICA PRODOTTO
     </button>
+
     <div id="addMessage" class="message"></div>
   </div>
 
@@ -206,7 +459,8 @@
     <div id="productsList">Caricamento...</div>
   </div>
 
-  <button class="logout" onclick="logout()">Esci</button>
+  <button class="logout" onclick="logout()">ESCI DALL'AREA ADMIN</button>
+
 </div>
 
 <script>
@@ -286,7 +540,7 @@ function createStockInput(id, labelText, value) {
   return wrapper;
 }
 
-/* AGGIORNA LE SCORTE DI UN PRODOTTO ESISTENTE */
+/* AGGIORNA LE SCORTE */
 async function updateProductStock(product, button, message) {
   const stock = {};
 
@@ -340,14 +594,13 @@ async function updateProductStock(product, button, message) {
       throw new Error(data.error || "Impossibile aggiornare le scorte.");
     }
 
-    showMessage(message, "✅ Scorte aggiornate correttamente!", false);
-
+    showMessage(message, "Scorte aggiornate correttamente!", false);
     await loadProducts();
 
   } catch (error) {
-    showMessage(message, "❌ " + error.message, true);
+    showMessage(message, error.message, true);
     button.disabled = false;
-    button.textContent = "💾 Salva nuove scorte";
+    button.textContent = "SALVA NUOVE SCORTE";
   }
 }
 
@@ -429,6 +682,34 @@ async function loadProducts() {
 
       div.appendChild(stockInfo);
 
+      /* MOSTRA DETTAGLI SALVATI */
+      const details = [
+        ["Materiale", product.material],
+        ["Descrizione", product.description],
+        ["Ispirazione", product.inspiration],
+        ["Lavorazione", product.workmanship],
+        ["Vestibilità", product.fit],
+        ["Cura", product.care]
+      ].filter(([, value]) => typeof value === "string" && value.trim());
+
+      if (details.length) {
+        const detailsBox = document.createElement("div");
+        detailsBox.className = "product-details";
+
+        details.forEach(([labelText, value]) => {
+          const paragraph = document.createElement("p");
+          paragraph.className = "product-info";
+
+          const strong = document.createElement("strong");
+          strong.textContent = labelText + ": ";
+
+          paragraph.append(strong, document.createTextNode(value));
+          detailsBox.appendChild(paragraph);
+        });
+
+        div.appendChild(detailsBox);
+      }
+
       /* EDITOR SCORTE */
       const editor = document.createElement("div");
       editor.className = "stock-editor";
@@ -468,7 +749,7 @@ async function loadProducts() {
 
       const saveButton = document.createElement("button");
       saveButton.className = "save-stock";
-      saveButton.textContent = "💾 Salva nuove scorte";
+      saveButton.textContent = "SALVA NUOVE SCORTE";
       saveButton.addEventListener("click", () => {
         updateProductStock(product, saveButton, stockMessage);
       });
@@ -480,7 +761,7 @@ async function loadProducts() {
       /* ELIMINA PRODOTTO */
       const deleteButton = document.createElement("button");
       deleteButton.className = "delete";
-      deleteButton.textContent = "🗑 Elimina prodotto";
+      deleteButton.textContent = "ELIMINA PRODOTTO";
       deleteButton.addEventListener("click", () => deleteProduct(product.id));
       div.appendChild(deleteButton);
 
@@ -679,8 +960,17 @@ async function addProduct() {
       name,
       price,
       category,
+
+      material: document.getElementById("productMaterial").value.trim(),
+      description: document.getElementById("productDescription").value.trim(),
+      inspiration: document.getElementById("productInspiration").value.trim(),
+      workmanship: document.getElementById("productWorkmanship").value.trim(),
+      fit: document.getElementById("productFit").value.trim(),
+      care: document.getElementById("productCare").value.trim(),
+
       image: imageUrls[0],
       images: imageUrls,
+
       stock: category === "Cappelli"
         ? { ONE: Number(stockONE) }
         : {
@@ -701,22 +991,30 @@ async function addProduct() {
       throw new Error(data.error || "Impossibile salvare il prodotto.");
     }
 
-    showMessage(message, "✅ Prodotto aggiunto correttamente!", false);
+    showMessage(message, "Prodotto aggiunto correttamente!", false);
 
     document.getElementById("productName").value = "";
     document.getElementById("productPrice").value = "35";
     document.getElementById("productImages").value = "";
+
     document.getElementById("stockONE").value = "0";
     document.getElementById("stockS").value = "0";
     document.getElementById("stockM").value = "0";
 
+    document.getElementById("productMaterial").value = "";
+    document.getElementById("productDescription").value = "";
+    document.getElementById("productInspiration").value = "";
+    document.getElementById("productWorkmanship").value = "";
+    document.getElementById("productFit").value = "";
+    document.getElementById("productCare").value = "";
+
     await loadProducts();
 
   } catch (error) {
-    showMessage(message, "❌ " + error.message, true);
+    showMessage(message, error.message, true);
   } finally {
     button.disabled = false;
-    button.textContent = "Pubblica prodotto";
+    button.textContent = "PUBBLICA PRODOTTO";
   }
 }
 
@@ -767,5 +1065,6 @@ document.getElementById("loginPassword").addEventListener("keydown", event => {
 
 updateStockFields();
 </script>
+
 </body>
 </html>
