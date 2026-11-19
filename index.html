@@ -4,6 +4,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -41,6 +42,10 @@ body {
   overflow-x:hidden;
   position:relative;
   isolation:isolate;
+}
+
+body.intro-open {
+  overflow:hidden;
 }
 
 /* SFONDO JUNGLE ANIMATO */
@@ -88,12 +93,101 @@ body::after {
   100% { transform:scale(1.06) translate3d(-1%,-1%,0) rotate(-.5deg); }
 }
 
-a { color:inherit;text-decoration:none; }
-button,select { font:inherit; }
+/* INTRO */
 
-button:disabled {
-  opacity:.45;
-  cursor:not-allowed!important;
+#intro {
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  overflow:hidden;
+  background:
+    linear-gradient(#020d08a8,#020d08e8),
+    url("https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1800&q=85")
+    center/cover no-repeat,
+    #06180f;
+  transition:opacity .85s ease,visibility .85s ease;
+}
+
+#intro.leaving {
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+.intro-content {
+  position:relative;
+  z-index:1;
+  width:min(100%,540px);
+  text-align:center;
+  animation:fadeUp 1s ease both;
+}
+
+.intro-logo-frame {
+  width:clamp(190px,48vw,280px);
+  height:clamp(240px,58vw,340px);
+  margin:0 auto 25px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:900px;
+}
+
+.intro-logo {
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  animation:logoFloat 5s ease-in-out infinite;
+  filter:drop-shadow(0 0 25px #35e17c55);
+}
+
+.intro-brand {
+  margin:0;
+  font-size:clamp(30px,8vw,48px);
+  line-height:1;
+  letter-spacing:3px;
+  font-weight:900;
+  text-shadow:0 4px 25px #0008;
+}
+
+.intro-tagline {
+  margin:18px 0 30px;
+  color:#d4e2d9;
+  font-size:13px;
+  letter-spacing:3px;
+  line-height:1.8;
+}
+
+#enterSite {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:54px;
+  padding:16px 30px;
+  border:1px solid var(--green);
+  border-radius:40px;
+  background:var(--green);
+  color:#06150d;
+  font-weight:900;
+  letter-spacing:1.5px;
+  cursor:pointer;
+  transition:transform .25s,box-shadow .25s;
+}
+
+#enterSite:hover {
+  transform:translateY(-3px);
+  box-shadow:0 12px 35px #35e17c45;
+}
+
+.intro-note {
+  margin:22px 0 0;
+  font-size:11px;
+  letter-spacing:2px;
+  color:#ffffffb3;
 }
 
 /* ANIMAZIONI */
@@ -104,8 +198,8 @@ button:disabled {
 }
 
 @keyframes logoFloat {
-  0%,100% { transform:translateY(0); }
-  50% { transform:translateY(-9px); }
+  0%,100% { transform:translateY(0) rotateY(0); }
+  50% { transform:translateY(-9px) rotateY(9deg); }
 }
 
 @keyframes pop {
@@ -163,7 +257,7 @@ nav a:hover {
   color:var(--green);
 }
 
-/* HERO COMPATTO */
+/* HERO */
 
 .hero {
   min-height:255px;
@@ -903,7 +997,7 @@ footer {
   text-align:center;
   border-top:1px solid var(--border);
   color:#a9b9af;
-  background:#06170feF;
+  background:#06170fef;
   line-height:1.8;
 }
 
@@ -1000,7 +1094,36 @@ footer .footer-tag {
 </style>
 </head>
 
-<body>
+<body class="intro-open">
+
+<!-- SCHERMATA INIZIALE -->
+
+<section id="intro" aria-label="Benvenuto in Luko Lab Custom">
+  <div class="intro-content">
+    <div class="intro-logo-frame">
+      <img
+        class="intro-logo"
+        src="/lukolab-logo-bianco-trasparente.png"
+        alt="Logo Luko Lab Custom"
+        onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;color:white;font-weight:900;text-align:center&quot;>LUKO LAB CUSTOM</div>';"
+      >
+    </div>
+
+    <h1 class="intro-brand">LUKO LAB CUSTOM</h1>
+
+    <p class="intro-tagline">
+      CUSTOM · HANDMADE · JUNGLE SPIRIT
+    </p>
+
+    <button id="enterSite" type="button">
+      ENTRA NELLA GIUNGLA
+    </button>
+
+    <p class="intro-note">
+      HANDMADE PIECES · JUNGLE SPIRIT
+    </p>
+  </div>
+</section>
 
 <header>
   <div class="logo">LUKO LAB <span>CUSTOM</span></div>
@@ -1109,6 +1232,21 @@ let cart = [];
 let favorites = [];
 let showingFavorites = false;
 
+/* APERTURA INTRO */
+
+document.getElementById("enterSite").addEventListener("click", function() {
+  const intro = document.getElementById("intro");
+
+  intro.classList.add("leaving");
+  document.body.classList.remove("intro-open");
+
+  window.setTimeout(() => {
+    intro.remove();
+  }, 900);
+});
+
+/* CARRELLO SALVATO */
+
 try {
   const savedCart = JSON.parse(localStorage.getItem("lukoCart") || "[]");
 
@@ -1124,6 +1262,8 @@ try {
   cart = [];
 }
 
+/* PREFERITI SALVATI */
+
 try {
   const savedFavorites = JSON.parse(
     localStorage.getItem("lukoFavorites") || "[]"
@@ -1137,6 +1277,7 @@ try {
 }
 
 /* SALVATAGGIO */
+
 function save() {
   try {
     localStorage.setItem("lukoCart", JSON.stringify(cart));
@@ -1145,6 +1286,7 @@ function save() {
 }
 
 /* SICUREZZA TESTI */
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -1155,6 +1297,7 @@ function escapeHtml(value) {
 }
 
 /* SCORTE */
+
 function stockFor(product, size) {
   const stock = product.stock || {};
   const quantity = Number(stock[size] || 0);
@@ -1169,6 +1312,7 @@ function isSized(product) {
 }
 
 /* FOTO */
+
 function productImages(product) {
   const images = Array.isArray(product.images)
     ? product.images.filter(url =>
@@ -1184,6 +1328,7 @@ function productImages(product) {
 }
 
 /* CARICA PRODOTTI */
+
 async function loadProducts() {
   const container = document.getElementById("products");
 
@@ -1238,6 +1383,7 @@ async function loadProducts() {
 }
 
 /* FILTRI */
+
 function getCurrentFilter() {
   const active = document.querySelector(".filters button.active");
 
@@ -1245,6 +1391,7 @@ function getCurrentFilter() {
 }
 
 /* PREFERITI */
+
 function isFavorite(id) {
   return favorites.includes(id);
 }
@@ -1280,10 +1427,10 @@ function toggleFavoritesFilter() {
 }
 
 /* GALLERIA */
+
 function renderGallery(product) {
   const images = productImages(product);
   const id = escapeHtml(product.id);
-
   const favorite = isFavorite(product.id);
 
   if (!images.length) {
@@ -1407,6 +1554,7 @@ function galleryScroll(id) {
 }
 
 /* DETTAGLI */
+
 function renderProductDetails(product) {
   const fields = [
     ["Materiale",product.material],
@@ -1468,6 +1616,7 @@ function toggleDetails(id) {
 }
 
 /* MOSTRA PRODOTTI */
+
 function renderProducts(filter = "all") {
   const container = document.getElementById("products");
 
@@ -1562,6 +1711,7 @@ function renderProducts(filter = "all") {
 }
 
 /* AGGIUNGI AL CARRELLO */
+
 function addToCart(id) {
   const product = products.find(p => p.id === id);
 
@@ -1623,6 +1773,7 @@ function addToCart(id) {
 }
 
 /* MODIFICA QUANTITÀ */
+
 function changeQuantity(id,size,amount) {
   const item = cart.find(p => p.id === id && p.size === size);
 
@@ -1652,6 +1803,7 @@ function changeQuantity(id,size,amount) {
 }
 
 /* RENDER CARRELLO */
+
 function renderCart() {
   const box = document.getElementById("cartItems");
 
@@ -1730,6 +1882,7 @@ function renderCart() {
 }
 
 /* APERTURA CARRELLO */
+
 function openCart() {
   document.getElementById("cart").classList.remove("hidden");
   document.getElementById("cartToggle").classList.add("hidden");
@@ -1751,6 +1904,7 @@ function toggleCart() {
 }
 
 /* CHECKOUT STRIPE */
+
 async function checkout() {
   if (!cart.length) {
     alert("Il carrello è vuoto.");
@@ -1834,6 +1988,7 @@ async function checkout() {
 }
 
 /* FILTRI CATEGORIA */
+
 document.querySelectorAll(".filters button").forEach(button => {
   button.addEventListener("click",() => {
     document.querySelectorAll(".filters button").forEach(btn => {
@@ -1846,6 +2001,7 @@ document.querySelectorAll(".filters button").forEach(button => {
 });
 
 /* AVVIO */
+
 renderCart();
 updateFavoritesButton();
 loadProducts();
