@@ -6,7 +6,6 @@
 <meta name="theme-color" content="#080b08">
 <meta name="description" content="Luko Lab Custom — Luxury attitude. Wild spirit.">
 <title>Luko Lab Custom — Jungle Luxury</title>
-<script src="https://embeds.iubenda.com/widgets/26825356-06ce-43a4-8e58-15215c31c983.js"></script>
 <style>
 :root{--bg:#080b08;--panel:#111812;--green:#174d35;--gold:#c6a76a;--gold2:#e5d2a5;--white:#f5f2e9;--muted:#b8b6aa;--border:#c6a76a38}
 *{box-sizing:border-box}
@@ -77,20 +76,6 @@ nav a{color:var(--white);text-decoration:none;opacity:.88;transition:.2s}nav a:h
 .gallery-count{position:absolute;top:9px;right:9px;z-index:2;padding:5px 8px;border-radius:20px;background:#04160ebd;color:white;font-size:10px}
 .favorite-button{position:absolute;top:9px;left:9px;z-index:3;width:35px;height:35px;border:1px solid #ffffff55;border-radius:50%;background:#04160ebd;color:white;font-size:18px;cursor:pointer}
 .favorite-button.active{background:#ffffffed;color:#e83e65;animation:pop .25s}
-.card-body{padding:18px}.card-topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
-.gallery-track::-webkit-scrollbar{display:none}
-.gallery-slide{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:center}
-.gallery-slide img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
-.card:hover .gallery-slide img{transform:scale(1.035)}
-.gallery-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px}
-.gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:35px;height:35px;border:1px solid #ffffff55;border-radius:50%;background:#04160ebd;color:white;font-size:22px;cursor:pointer}
-.gallery-prev{left:7px}.gallery-next{right:7px}
-.gallery-dots{position:absolute;bottom:10px;left:0;right:0;z-index:2;display:flex;justify-content:center;gap:6px}
-.gallery-dot{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:#ffffff80;cursor:pointer}
-.gallery-dot.active{background:var(--gold);transform:scale(1.3)}
-.gallery-count{position:absolute;top:9px;right:9px;z-index:2;padding:5px 8px;border-radius:20px;background:#04160ebd;color:white;font-size:10px}
-.favorite-button{position:absolute;top:9px;left:9px;z-index:3;width:35px;height:35px;border:1px solid #ffffff55;border-radius:50%;background:#04160ebd;color:white;font-size:18px;cursor:pointer}
-.favorite-button.active{background:#ffffffed;color:#e83e65;animation:pop .25s}
 .card-body{padding:18px}.card-topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
 .category-label{color:var(--gold2);font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase}
 .card-body h3{margin:0 0 9px;font-size:18px;line-height:1.3;overflow-wrap:anywhere}
@@ -140,7 +125,7 @@ nav a{color:var(--white);text-decoration:none;opacity:.88;transition:.2s}nav a:h
 .contact-card:hover{transform:translateY(-5px);border-color:var(--gold)}
 .contact-icon{font-size:27px;color:var(--gold2)}
 .contact-card strong{font-size:12px;letter-spacing:1.5px}
-.contact-card span:last-child{font-size:12px;color:var(--muted);overflow-wrap:anywhere;text-align:center}r}
+.contact-card span:last-child{font-size:12px;color:var(--muted);overflow-wrap:anywhere;text-align:center}
 footer{padding:45px 25px;text-align:center;border-top:1px solid var(--border);color:#b8b6aa;background:#080d09ef;line-height:1.8}
 footer strong{color:white;font-size:18px;letter-spacing:2px}
 footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spacing:3px;margin-top:10px}
@@ -258,7 +243,9 @@ footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spaci
   </select>
  </div>
  <button id="checkoutBtn" type="button" onclick="checkout()" disabled>PAGA CON CARTA</button>
-</aside> <script>
+</aside>
+
+<script>
 let products=[];
 let cart=[];
 let favorites=[];
@@ -444,7 +431,10 @@ function renderProducts(filter="all"){
    ?`<label class="size-label" for="size-${escapeHtml(product.id)}">SCEGLI LA TAGLIA</label><select class="size-select" id="size-${escapeHtml(product.id)}"><option value="S" ${stockS===0?"disabled":""}>S ${stockS===0?"— Esaurita":"— "+stockS+" disponibili"}</option><option value="M" ${stockM===0?"disabled":""}>M ${stockM===0?"— Esaurita":"— "+stockM+" disponibili"}</option></select><p class="stock-note">${hasStock?"Disponibilità aggiornata dal catalogo.":"Taglie esaurite."}</p>`
    :`<p class="stock-note">Taglia unica · ${stockONE} ${stockONE===1?"disponibile":"disponibili"}</p>`;
   return `<article class="card">${renderGallery(product)}<div class="card-body"><div class="card-topline"><span class="category-label">${escapeHtml(product.category||"Luko Lab")}</span></div><h3>${escapeHtml(product.name)}</h3><div class="price">€${Number(product.price).toFixed(2)}</div>${sizeControl}<button class="add-button" type="button" ${!hasStock?"disabled":""} onclick="addToCart('${escapeHtml(product.id)}')">${!hasStock?"ESAURITO":"AGGIUNGI AL CARRELLO"}</button>${renderProductDetails(product)}</div></article>`;
- }).join("");function addToCart(id){
+ }).join("");
+}
+
+function addToCart(id){
  const product=products.find(p=>p.id===id);
  if(!product){alert("Prodotto non trovato.");return}
  const sized=isSized(product);
@@ -594,4 +584,3 @@ loadProducts();
 </script>
 </body>
 </html>
-}
