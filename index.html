@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -36,7 +37,9 @@ body:after{z-index:-1;opacity:.22;background-image:radial-gradient(ellipse at 15
 header{position:sticky;top:0;z-index:50;min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px 28px;background:#080d09ed;backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
 .logo{font-size:19px;font-weight:900;letter-spacing:1.7px}.logo span{color:var(--gold)}
 nav{display:flex;align-items:center;gap:clamp(13px,3vw,30px);font-size:12px;font-weight:800;letter-spacing:1.5px}
-nav a{color:var(--white);text-decoration:none;opacity:.88;transition:.2s}nav a:hover{opacity:1;color:var(--gold2)}
+nav a{color:var(--white);text-decoration:none;opacity:.88;transition:.2s}
+nav a:hover{opacity:1;color:var(--gold2)}
+nav a.lab-link{color:var(--gold2)}
 .hero{min-height:255px;display:flex;align-items:center;justify-content:center;text-align:center;padding:45px 20px;position:relative;overflow:hidden;isolation:isolate;background:linear-gradient(90deg,#030805c9,#03080588,#030805c9);border-bottom:1px solid #ffffff12}
 .hero:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 20% 20%,#c6a76a24,transparent 38%),radial-gradient(circle at 85% 30%,#174d3540,transparent 42%);animation:heroGlow 9s ease-in-out infinite alternate}
 @keyframes heroGlow{from{opacity:.55;transform:scale(1)}to{opacity:1;transform:scale(1.15)}}
@@ -133,9 +136,49 @@ footer strong{color:white;font-size:18px;letter-spacing:2px}
 footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spacing:3px;margin-top:10px}
 .footer-links{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin:20px 0 5px}
 .footer-links a{color:var(--gold2);text-decoration:none;font-size:11px;font-weight:800;letter-spacing:1px}
+.footer-links a.lab-link{color:var(--gold)}
 @media(min-width:1100px){#products{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:800px){header{padding:12px 18px}.hero{min-height:225px;padding:35px 18px}.filters-bar{top:70px}.filters button{padding:11px 17px}.shop{padding:35px 15px 85px}.card-body{padding:14px}.card-body h3{font-size:17px}.price{font-size:19px}#products{gap:16px}}
-@media(max-width:520px){#products{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.hero{min-height:205px;padding:30px 15px}.hero-text{font-size:13px;margin-top:12px}.hero h1{font-size:49px}.hero-subtitle{font-size:10px}.hero-kicker{font-size:9px;letter-spacing:3px}.hero-cta{margin-top:15px;padding:11px 18px;font-size:10px}.shop-title{margin-bottom:23px}.shop-title h2{font-size:29px}.shop-title p{font-size:13px}.logo{font-size:13px;letter-spacing:.7px}nav{gap:10px;font-size:9px;letter-spacing:.7px}.brand-strip{gap:10px 14px;font-size:8px;padding:13px 8px}.filters button{padding:10px 13px;font-size:10px}.card{border-radius:13px}.card-body{padding:11px}.card-body h3{font-size:14px}.price{font-size:17px;margin-bottom:9px}.category-label{font-size:8px;letter-spacing:1px}.stock-note{font-size:10px}.size-label{font-size:9px}.size-select{padding:9px 5px;font-size:11px}.add-button{padding:11px 5px;font-size:9px}.details-toggle{font-size:9px}.gallery-arrow{width:29px;height:29px;font-size:19px}.favorite-button{width:31px;height:31px;font-size:16px}.gallery-count{font-size:9px}#cart{right:10px;bottom:10px;width:calc(100vw - 20px)}#cartToggle{right:15px;bottom:15px}.info-section{padding:65px 17px}.contact-grid{grid-template-columns:1fr;gap:12px}.contact-card{min-height:105px}.about-panel p{font-size:14px}}
+@media(max-width:520px){
+ #products{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .hero{min-height:205px;padding:30px 15px}
+ .hero-text{font-size:13px;margin-top:12px}
+ .hero h1{font-size:49px}
+ .hero-subtitle{font-size:10px}
+ .hero-kicker{font-size:9px;letter-spacing:3px}
+ .hero-cta{margin-top:15px;padding:11px 18px;font-size:10px}
+ .shop-title{margin-bottom:23px}
+ .shop-title h2{font-size:29px}
+ .shop-title p{font-size:13px}
+ header{padding:11px 10px;gap:7px}
+ .logo{font-size:12px;letter-spacing:.4px;white-space:nowrap}
+ nav{gap:7px;font-size:8px;letter-spacing:.3px;white-space:nowrap}
+ .brand-strip{gap:10px 14px;font-size:8px;padding:13px 8px}
+ .filters button{padding:10px 13px;font-size:10px}
+ .card{border-radius:13px}
+ .card-body{padding:11px}
+ .card-body h3{font-size:14px}
+ .price{font-size:17px;margin-bottom:9px}
+ .category-label{font-size:8px;letter-spacing:1px}
+ .stock-note{font-size:10px}
+ .size-label{font-size:9px}
+ .size-select{padding:9px 5px;font-size:11px}
+ .add-button{padding:11px 5px;font-size:9px}
+ .details-toggle{font-size:9px}
+ .gallery-arrow{width:29px;height:29px;font-size:19px}
+ .favorite-button{width:31px;height:31px;font-size:16px}
+ .gallery-count{font-size:9px}
+ #cart{right:10px;bottom:10px;width:calc(100vw - 20px)}
+ #cartToggle{right:15px;bottom:15px}
+ .info-section{padding:65px 17px}
+ .contact-grid{grid-template-columns:1fr;gap:12px}
+ .contact-card{min-height:105px}
+ .about-panel p{font-size:14px}
+}
+@media(max-width:370px){
+ header{align-items:flex-start;flex-direction:column;padding:10px 12px}
+ nav{width:100%;justify-content:space-between;gap:5px;font-size:9px}
+}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}body:before,body:after,.hero:before{animation:none!important}*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -155,7 +198,8 @@ footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spaci
  <a class="logo" href="#home" style="text-decoration:none;color:inherit">LUKO LAB <span>CUSTOM</span></a>
  <nav aria-label="Navigazione principale">
   <a href="#home">HOME</a>
-  <a href="#shop">IL LAB</a>
+  <a href="#shop">SHOP</a>
+  <a class="lab-link" href="/admin.html">IL LAB</a>
   <a href="#chi-siamo">CHI SIAMO</a>
   <a href="#contatti">CONTATTI</a>
  </nav>
@@ -181,7 +225,7 @@ footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spaci
  <section class="shop" id="shop">
   <div class="shop-title">
    <div class="eyebrow">THE LUKO LAB COLLECTION</div>
-   <h2>IL LAB</h2>
+   <h2>SHOP</h2>
    <p>Le creazioni Luko Lab Custom. Scopri tutti i prodotti.</p>
   </div>
   <div id="favoritesBar"><button id="favoritesButton" type="button" onclick="toggleFavoritesFilter()">♥ MOSTRA I PREFERITI</button></div>
@@ -238,7 +282,8 @@ footer .footer-tag{color:var(--gold);font-size:10px;font-weight:900;letter-spaci
  <div class="footer-tag">CUSTOM · HANDMADE · JUNGLE SPIRIT</div>
  <div class="footer-links">
   <a href="#home">HOME</a>
-  <a href="#shop">IL LAB</a>
+  <a href="#shop">SHOP</a>
+  <a class="lab-link" href="/admin.html">IL LAB</a>
   <a href="#chi-siamo">CHI SIAMO</a>
   <a href="#contatti">CONTATTI</a>
  </div>
